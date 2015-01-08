@@ -1,0 +1,12 @@
+{% extends "page.html" %}
+
+{% block subtitle %}{{ _('Data Requests') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li class="active">{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
+{% endblock %}
+
+{% block primary %}
+{% endblock %}
+
+{% block secondary %}{% endblock %}

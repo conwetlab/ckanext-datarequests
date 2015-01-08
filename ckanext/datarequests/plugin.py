@@ -17,8 +17,36 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckan.plugins as plugins
+import ckan.plugins as p
+import ckan.plugins.toolkit as tk
 
 
-class DataRequestsPlugin(plugins.SingletonPlugin):
-    pass
+class DataRequestsPlugin(p.SingletonPlugin):
+
+    p.implements(p.IConfigurer)
+    p.implements(p.IRoutes, inherit=True)
+
+    ######################################################################
+    ############################ ICONFIGURER #############################
+    ######################################################################
+
+    def update_config(self, config):
+        # Add this plugin's templates dir to CKAN's extra_template_paths, so
+        # that CKAN will use this plugin's custom templates.
+        tk.add_template_directory(config, 'templates')
+
+        # Register this plugin's fanstatic directory with CKAN.
+        # TODO: Maybe in the future this will be important
+        # tk.add_resource('fanstatic', 'privatedatasets')
+
+    ######################################################################
+    ############################## IROUTES ###############################
+    ######################################################################
+
+    def before_map(self, m):
+        # DataSet acquired notification
+        m.connect('data_requests', '/datarequests',
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='index', conditions=dict(method=['GET']))
+
+        return m
