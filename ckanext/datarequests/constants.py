@@ -17,10 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-# this is a namespace package
-try:
-    import pkg_resources
-    pkg_resources.declare_namespace(__name__)
-except ImportError:
-    import pkgutil
-    __path__ = pkgutil.extend_path(__path__, __name__)
+DATAREQUEST_CREATE = 'datarequest_create'
+NAME_MAX_LENGTH = 100
+DESCRIPTION_MAX_LENGTH = 1000

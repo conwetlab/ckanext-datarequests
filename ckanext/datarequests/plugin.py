@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -19,12 +19,33 @@
 
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
+import auth
+import actions
+import constants
+
+DATAREQUEST_BASIC_PATH = '/datarequests'
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
 
+    p.implements(p.IActions)
+    p.implements(p.IAuthFunctions)
     p.implements(p.IConfigurer)
     p.implements(p.IRoutes, inherit=True)
+
+    ######################################################################
+    ############################## IACTIONS ##############################
+    ######################################################################
+
+    def get_actions(self):
+        return {constants.DATAREQUEST_CREATE: actions.datarequest_create}
+
+    ######################################################################
+    ########################### AUTH FUNCTIONS ###########################
+    ######################################################################
+
+    def get_auth_functions(self):
+        return {constants.DATAREQUEST_CREATE: auth.datarequest_create}
 
     ######################################################################
     ############################ ICONFIGURER #############################
@@ -45,8 +66,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def before_map(self, m):
         # Data Requests index
-        m.connect('data_requests', '/datarequests',
+        m.connect('data_requests', DATAREQUEST_BASIC_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='index', conditions=dict(method=['GET']))
+
+        # Create Data Request
+        m.connect('%s/new' % DATAREQUEST_BASIC_PATH,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='new', conditions=dict(method=['GET', 'POST']))
 
         return m

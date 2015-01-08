@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -18,10 +18,53 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 import ckan.lib.base as base
+import ckan.model as model
 import ckan.plugins as plugins
+import ckanext.datarequests.constants as constants
+
+from ckan.common import request
+
+tk = plugins.toolkit
+c = tk.c
 
 
 class DataRequestsUI(base.BaseController):
 
     def index(self):
         return plugins.toolkit.render('datarequests/index.html')
+
+    def new(self):
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+
+        # Basic intialization
+        c.datarequest = None
+        c.errors = None
+        c.errors_summary = None
+
+        # Check access
+        try:
+            tk.check_access(constants.DATAREQUEST_CREATE, context, None)
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('Unauthorized to create a Data Request'))
+
+        # If the user has submitted the form, the data request must be created
+        if request.POST:
+            request_data = {}
+            request_data['title'] = request.POST.get('title', '')
+            request_data['description'] = request.POST.get('description', '')
+            request_data['organization'] = request.POST.get('organization', '')
+
+            try:
+                tk.get_action(constants.DATAREQUEST_CREATE)(context, request_data)
+            except tk.ValidationError as e:
+                # Fill the fields that will display some information in the page
+                c.datarequest = {'title': request_data['title'], 'description': request_data['description']}
+                c.errors = e.error_dict
+                c.errors_summary = {}
+
+                for key, error in c.errors.items():
+                    c.errors_summary[key] = ', '.join(error)
+
+        return plugins.toolkit.render('datarequests/new.html')

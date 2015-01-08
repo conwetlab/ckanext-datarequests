@@ -1,0 +1,10 @@
+{% extends "datarequests/base_form_page.html" %}
+
+{% block subtitle %}{{ _('Create Data Request') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li>{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
+  <li class="active"><a href="">{{ _('Create Dataset') }}</a></li>
+{% endblock %}
+
+{% block page_heading %}{{ _('Create Data Request') }}{% endblock %}
