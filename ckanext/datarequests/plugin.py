@@ -44,7 +44,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def before_map(self, m):
-        # DataSet acquired notification
+        # Data Requests index
         m.connect('data_requests', '/datarequests',
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='index', conditions=dict(method=['GET']))
