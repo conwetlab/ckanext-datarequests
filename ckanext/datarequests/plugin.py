@@ -23,7 +23,7 @@ import auth
 import actions
 import constants
 
-DATAREQUEST_BASIC_PATH = '/datarequests'
+DATAREQUEST_BASIC_PATH = '/datarequest'
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
@@ -66,7 +66,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def before_map(self, m):
         # Data Requests index
-        m.connect('data_requests', DATAREQUEST_BASIC_PATH,
+        m.connect('datarequests_index', DATAREQUEST_BASIC_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='index', conditions=dict(method=['GET']))
 
