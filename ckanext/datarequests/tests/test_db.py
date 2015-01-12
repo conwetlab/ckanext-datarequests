@@ -69,30 +69,32 @@ class DBTest(unittest.TestCase):
     ])
     def test_datarequest_exist(self, first_result, expected_result):
 
-        title = 'DR Title'
+        title = 'DataRequest Title'
 
         # Prepare the mocks
         def _lower(text):
-            # If expected_result == true is because lower is supossed
+            # If expected_result == true it's because lower is supossed
             # to return the same result in the two calls
             if expected_result:
-                return title
+                return title.lower()
             else:
                 return text
 
         db.func.lower.side_effect = _lower
 
         # Query
-        model = MagicMock()
-        model.DomainObject = object
-        model.Session = MagicMock()
-        final_query = MagicMock()
-        query = MagicMock()
-        query.autoflush = MagicMock(return_value=final_query)
-        model.Session.query = MagicMock(return_value=query)
         query_result = MagicMock()
         query_result.first.return_value = first_result
+
+        final_query = MagicMock()
         final_query.filter.return_value = query_result
+
+        query = MagicMock()
+        query.autoflush = MagicMock(return_value=final_query)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
 
         # Init the database
         db.init_db(model)
