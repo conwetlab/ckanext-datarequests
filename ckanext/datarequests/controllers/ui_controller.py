@@ -31,12 +31,12 @@ c = tk.c
 class DataRequestsUI(base.BaseController):
 
     def index(self):
-        return plugins.toolkit.render('datarequests/index.html')
+        return tk.render('datarequests/index.html')
 
     def new(self):
 
         context = {'model': model, 'session': model.Session,
-                   'user': c.user or c.author, 'auth_user_obj': c.userobj}
+                   'user': c.user, 'auth_user_obj': c.userobj}
 
         # Basic intialization
         c.datarequest = None
@@ -46,25 +46,31 @@ class DataRequestsUI(base.BaseController):
         # Check access
         try:
             tk.check_access(constants.DATAREQUEST_CREATE, context, None)
+
+            # If the user has submitted the form, the data request must be created
+            if request.POST:
+                request_data = {}
+                request_data['title'] = request.POST.get('title', '')
+                request_data['description'] = request.POST.get('description', '')
+                request_data['organization'] = request.POST.get('organization', '')
+
+                try:
+                    tk.get_action(constants.DATAREQUEST_CREATE)(context, request_data)
+                except tk.ValidationError as e:
+                    # Fill the fields that will display some information in the page
+                    c.datarequest = {
+                        'title': request_data['title'],
+                        'description': request_data['description'],
+                        'organization': request_data['organization']
+                    }
+                    c.errors = e.error_dict
+                    c.errors_summary = {}
+
+                    for key, error in c.errors.items():
+                        c.errors_summary[key] = ', '.join(error)
+
+            # The form is always rendered
+            return tk.render('datarequests/new.html')
+
         except tk.NotAuthorized:
             tk.abort(401, tk._('Unauthorized to create a Data Request'))
-
-        # If the user has submitted the form, the data request must be created
-        if request.POST:
-            request_data = {}
-            request_data['title'] = request.POST.get('title', '')
-            request_data['description'] = request.POST.get('description', '')
-            request_data['organization'] = request.POST.get('organization', '')
-
-            try:
-                tk.get_action(constants.DATAREQUEST_CREATE)(context, request_data)
-            except tk.ValidationError as e:
-                # Fill the fields that will display some information in the page
-                c.datarequest = {'title': request_data['title'], 'description': request_data['description']}
-                c.errors = e.error_dict
-                c.errors_summary = {}
-
-                for key, error in c.errors.items():
-                    c.errors_summary[key] = ', '.join(error)
-
-        return plugins.toolkit.render('datarequests/new.html')
