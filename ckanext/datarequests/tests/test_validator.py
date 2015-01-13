@@ -56,6 +56,9 @@ class ValidatorTest(unittest.TestCase):
     def test_validate_valid_data_request(self):
         context = MagicMock()
         self.assertIsNone(validator.validate_datarequest(context, self.request_data))
+        validator.tk.get_validator.assert_called_once_with('group_id_exists')
+        group_validator = validator.tk.get_validator.return_value
+        group_validator.assert_called_once_with(self.request_data['organization'], context)
 
     @parameterized.expand([
         ('Title', generate_string(validator.constants.NAME_MAX_LENGTH + 1), False,
@@ -87,3 +90,12 @@ class ValidatorTest(unittest.TestCase):
 
         self.assertEquals({'Organization': ['Organization is not valid']},
                           context.exception.error_dict)
+
+    def test_missing_org(self):
+        self.request_data['organization'] = ''
+        context = MagicMock()
+        self.assertIsNone(validator.validate_datarequest(context, self.request_data))
+        self.assertEquals(0, validator.tk.get_validator.call_count)
+
+
+

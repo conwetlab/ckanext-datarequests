@@ -43,10 +43,11 @@ def validate_datarequest(context, request_data):
         errors['Description'] = [tk._('Description must be a maximum of %d characters long') % constants.DESCRIPTION_MAX_LENGTH]
 
     # Check organization
-    try:
-        tk.get_validator('group_id_exists')(request_data['organization'], context)
-    except Exception:
-        errors['Organization'] = ['Organization is not valid']
+    if request_data['organization']:
+        try:
+            tk.get_validator('group_id_exists')(request_data['organization'], context)
+        except Exception:
+            errors['Organization'] = ['Organization is not valid']
 
     if len(errors) > 0:
         raise tk.ValidationError(errors)
