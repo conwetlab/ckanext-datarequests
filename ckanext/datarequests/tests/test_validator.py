@@ -96,6 +96,3 @@ class ValidatorTest(unittest.TestCase):
         context = MagicMock()
         self.assertIsNone(validator.validate_datarequest(context, self.request_data))
         self.assertEquals(0, validator.tk.get_validator.call_count)
-
-
-
