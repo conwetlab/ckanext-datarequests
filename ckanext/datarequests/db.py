@@ -50,15 +50,15 @@ def init_db(model):
 
         DataRequest = _DataRequest
 
-        # FIXME: Maybe a default value should not be included...
+        # FIXME: References to the other tables...
         datarequests_table = sa.Table('datarequests', model.meta.metadata,
             sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
             sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
             sa.Column('title', sa.types.UnicodeText, primary_key=True, default=u''),
             sa.Column('description', sa.types.UnicodeText, primary_key=False, default=u''),
-            sa.Column('organization', sa.types.UnicodeText, primary_key=False, default=u''),
+            sa.Column('organization', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
-            sa.Column('accepted_dataset', sa.types.UnicodeText, primary_key=False, default=u''),
+            sa.Column('accepted_dataset', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
             sa.Column('closed', sa.types.Boolean, primary_key=False, default=False)
         )

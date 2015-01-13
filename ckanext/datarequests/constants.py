@@ -18,5 +18,6 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 DATAREQUEST_CREATE = 'datarequest_create'
+DATAREQUEST_SHOW = 'datarequest_show'
 NAME_MAX_LENGTH = 100
 DESCRIPTION_MAX_LENGTH = 1000

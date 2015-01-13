@@ -20,3 +20,7 @@
 
 def datarequest_create(context, data_dict):
     return {'success': True}
+
+
+def datarequest_show(context, data_dict):
+    return {'success': True}
