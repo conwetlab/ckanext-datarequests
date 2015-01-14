@@ -38,14 +38,20 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def get_actions(self):
-        return {constants.DATAREQUEST_CREATE: actions.datarequest_create}
+        return {
+            constants.DATAREQUEST_CREATE: actions.datarequest_create,
+            constants.DATAREQUEST_SHOW: actions.datarequest_show
+        }
 
     ######################################################################
     ########################### AUTH FUNCTIONS ###########################
     ######################################################################
 
     def get_auth_functions(self):
-        return {constants.DATAREQUEST_CREATE: auth.datarequest_create}
+        return {
+            constants.DATAREQUEST_CREATE: auth.datarequest_create,
+            constants.DATAREQUEST_SHOW: auth.datarequest_show
+        }
 
     ######################################################################
     ############################ ICONFIGURER #############################
@@ -57,8 +63,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         tk.add_template_directory(config, 'templates')
 
         # Register this plugin's fanstatic directory with CKAN.
-        # TODO: Maybe in the future this will be important
-        # tk.add_resource('fanstatic', 'privatedatasets')
+        tk.add_public_directory(config, 'public')
 
     ######################################################################
     ############################## IROUTES ###############################
@@ -74,5 +79,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
         m.connect('%s/new' % DATAREQUEST_BASIC_PATH,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='new', conditions=dict(method=['GET', 'POST']))
+
+        # Show Data Request
+        m.connect('%s/{datarequest_id}' % DATAREQUEST_BASIC_PATH,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='show', conditions=dict(method=['GET']))
 
         return m

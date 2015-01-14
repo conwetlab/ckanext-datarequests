@@ -1,5 +1,10 @@
 {% extends "page.html" %}
 
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/datarequests.css" />
+{% endblock %}
+
 {% block subtitle %}{{ _('Data Requests') }}{% endblock %}
 
 {% block breadcrumb_content %}

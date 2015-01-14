@@ -15,14 +15,14 @@ then itself be extended to add/remove blocks of functionality. #}
   {% endblock %}
 
   {% block offering_description %}
-    {{ form.textarea('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description']) }}
+    {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description']) }}
   {% endblock %}
 
   {% set existing_org = data.organization %}
   <div class="control-group">
     <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
     <div class="controls">
-      <select id="field-organizations" name="organization" data-module="autocomplete">
+      <select id="field-organizations" name="organization_id" data-module="autocomplete">
         {% if h.check_config_permission('create_unowned_dataset') %}
            <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
         {% endif %}

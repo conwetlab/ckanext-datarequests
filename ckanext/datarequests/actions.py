@@ -28,6 +28,30 @@ c = plugins.toolkit.c
 tk = plugins.toolkit
 
 
+def _dictize_datarequest(datarequest):
+    # Transform time
+    open_time = str(datarequest.open_time)
+    # Close time can be None and the transformation is only needed when the
+    # fields contains a valid date
+    close_time = datarequest.close_time
+    close_time = str(close_time) if close_time else close_time
+
+    # Convert the data request into a dict
+    datarequest = {
+        'id': datarequest.id,
+        'user_id': datarequest.user_id,
+        'title': datarequest.title,
+        'description': datarequest.description,
+        'organization_id': datarequest.organization_id,
+        'open_time': open_time,
+        'accepted_dataset': datarequest.accepted_dataset,
+        'close_time': close_time,
+        'closed': datarequest.closed
+    }
+
+    return datarequest
+
+
 def datarequest_create(context, data_dict):
 
     model = context['model']
@@ -47,12 +71,14 @@ def datarequest_create(context, data_dict):
     data_req.user_id = context['auth_user_obj'].id
     data_req.title = data_dict['title']
     data_req.description = data_dict['description']
-    organization = data_dict['organization']
-    data_req.organization = organization if organization else None
+    organization = data_dict['organization_id']
+    data_req.organization_id = organization if organization else None
     data_req.open_time = datetime.datetime.now()
 
     session.add(data_req)
     session.commit()
+
+    return _dictize_datarequest(data_req)
 
 
 def datarequest_show(context, data_dict):
@@ -71,25 +97,5 @@ def datarequest_show(context, data_dict):
     if not result:
         raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
 
-    dr_db = result[0]
-    # Transform time
-    open_time = str(dr_db.open_time)
-    # Close time can be None and the transformation is only needed when the
-    # fields contains a valid date
-    close_time = dr_db.close_time
-    close_time = str(close_time) if close_time else close_time
-
-    # Convert the data request into a dict
-    datarequest = {
-        'id': dr_db.id,
-        'user_id': dr_db.user_id,
-        'title': dr_db.title,
-        'description': dr_db.description,
-        'organization': dr_db.organization,
-        'open_time': open_time,
-        'accepted_dataset': dr_db.accepted_dataset,
-        'close_time': close_time,
-        'closed': dr_db.closed
-    }
-
-    return datarequest
+    data_req = result[0]
+    return _dictize_datarequest(data_req)

@@ -49,19 +49,22 @@ class DataRequestsUI(base.BaseController):
 
             # If the user has submitted the form, the data request must be created
             if request.POST:
-                request_data = {}
-                request_data['title'] = request.POST.get('title', '')
-                request_data['description'] = request.POST.get('description', '')
-                request_data['organization'] = request.POST.get('organization', '')
+                data_dict = {}
+                data_dict['title'] = request.POST.get('title', '')
+                data_dict['description'] = request.POST.get('description', '')
+                data_dict['organization_id'] = request.POST.get('organization_id', '')
 
                 try:
-                    tk.get_action(constants.DATAREQUEST_CREATE)(context, request_data)
+                    result = tk.get_action(constants.DATAREQUEST_CREATE)(context, data_dict)
+                    tk.response.status_int = 302
+                    tk.response.location = '/datarequest/%s' % result['id']
+
                 except tk.ValidationError as e:
                     # Fill the fields that will display some information in the page
                     c.datarequest = {
-                        'title': request_data['title'],
-                        'description': request_data['description'],
-                        'organization': request_data['organization']
+                        'title': data_dict['title'],
+                        'description': data_dict['description'],
+                        'organization': data_dict['organization_id']
                     }
                     c.errors = e.error_dict
                     c.errors_summary = {}
@@ -74,3 +77,27 @@ class DataRequestsUI(base.BaseController):
 
         except tk.NotAuthorized:
             tk.abort(401, tk._('Unauthorized to create a Data Request'))
+
+    def show(self, datarequest_id):
+        data_dict = {'id': datarequest_id}
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user, 'auth_user_obj': c.userobj}
+
+        try:
+            tk.check_access(constants.DATAREQUEST_SHOW, context, data_dict)
+            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+            
+            try:
+                c.datarequest['user'] = tk.get_action('user_show')(context, {'id': c.datarequest['user_id']})
+                if c.datarequest['organization_id']:
+                    organization_show = tk.get_action('organization_show')
+                    c.datarequest['organization'] = organization_show(context, {'id': c.datarequest['organization_id']})
+            except tk.ObjectNotFound:
+                pass
+
+            return tk.render('datarequests/show.html')
+        except tk.ObjectNotFound:
+            tk.abort(401, tk._('Data Request %s not found') % datarequest_id)
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('You are not authorized to view the Data Request %s'
+                               % datarequest_id))

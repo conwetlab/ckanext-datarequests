@@ -1,0 +1,49 @@
+{% extends "datarequests/base.html" %}
+
+{% block title %}Data Request {{c.datarequest.get('title', '')}}{% endblock %}
+
+{% block secondary_content %}
+
+  <section class="module module-narrow module-shallow">
+    <h2 class="module-heading"><i class="icon-info-sign"></i>{% trans %}Data Request{% endtrans %}</h2>
+    <div class="module-content">
+      <p>
+        Data Requests allow users to ask for data that is not published in the platform yet. 
+      </p>
+    </div>
+  </section>
+
+  {% block package_social %}
+    {% snippet "snippets/social.html" %}
+  {% endblock %}
+
+{% endblock %}
+
+{% block primary_content_inner %}
+    {% if c.datarequest.closed %}
+      <span class="uppercase label label-closed pull-right">
+        <i class="icon-lock"></i>
+        {{ _('Closed') }}
+      </span>
+    {% else %}
+      <span class="uppercase label label-open pull-right">
+        <i class="icon-unlock"></i>
+        {{ _('Open') }}
+      </span>
+    {% endif %}
+
+  <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ c.datarequest.get('title') }}{% endblock %}</h1>
+
+  {% block datarequest_description %}
+    {% if c.datarequest.get('description') %}
+      <div class="notes embedded-content">
+        {{ h.render_markdown(c.datarequest.get('description')) }}
+      </div>
+    {% endif %}
+  {% endblock %}
+
+  {% block datarequest_additional_info %}
+    {% snippet "datarequests/snippets/additional_info.html", datarequest=c.datarequest %}
+  {% endblock %}
+
+{% endblock %}

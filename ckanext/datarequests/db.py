@@ -56,7 +56,7 @@ def init_db(model):
             sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
             sa.Column('title', sa.types.UnicodeText, primary_key=True, default=u''),
             sa.Column('description', sa.types.UnicodeText, primary_key=False, default=u''),
-            sa.Column('organization', sa.types.UnicodeText, primary_key=False, default=None),
+            sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
             sa.Column('accepted_dataset', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
