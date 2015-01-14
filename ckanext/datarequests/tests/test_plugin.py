@@ -39,6 +39,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         # plg = plugin
         self.plg_instance = plugin.DataRequestsPlugin()
         self.datarequest_create = constants.DATAREQUEST_CREATE
+        self.datarequest_show = constants.DATAREQUEST_SHOW
 
     def tearDown(self):
         plugin.actions = self._actions
@@ -47,13 +48,15 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_get_actions(self):
         actions = self.plg_instance.get_actions()
-        self.assertEquals(1, len(actions))
+        self.assertEquals(2, len(actions))
         self.assertEquals(plugin.actions.datarequest_create, actions[self.datarequest_create])
+        self.assertEquals(plugin.actions.datarequest_show, actions[self.datarequest_show])
 
     def test_get_auth_functions(self):
         auth_functions = self.plg_instance.get_auth_functions()
-        self.assertEquals(1, len(auth_functions))
+        self.assertEquals(2, len(auth_functions))
         self.assertEquals(plugin.auth.datarequest_create, auth_functions[self.datarequest_create])
+        self.assertEquals(plugin.auth.datarequest_show, auth_functions[self.datarequest_show])
 
     def test_update_config(self):
         config = MagicMock()
@@ -65,7 +68,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         dr_basic_path = '/datarequest'
         self.plg_instance.before_map(mapa)
 
-        self.assertEquals(2, mapa.connect.call_count)
+        self.assertEquals(3, mapa.connect.call_count)
         mapa.connect.assert_any_call('datarequests_index', dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index', conditions=dict(method=['GET']))
@@ -73,3 +76,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         mapa.connect.assert_any_call('%s/new' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='new', conditions=dict(method=['GET', 'POST']))
+
+        mapa.connect.assert_any_call('%s/{datarequest_id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='show', conditions=dict(method=['GET']))

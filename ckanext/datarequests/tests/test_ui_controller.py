@@ -98,21 +98,25 @@ class UIControllerTest(unittest.TestCase):
         (True,  True)
     ])
     def test_new_post_content(self, authorized, validation_error):
+        datarequest_id = 'this-represents-an-uuidv4()'
+
         # Raise exception if the user is not authorized to create a new data request
         if not authorized:
             controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
 
         # Raise exception when the user input is not valid
+        action = controller.tk.get_action.return_value
         if validation_error:
-            action = controller.tk.get_action.return_value
             action.side_effect = controller.tk.ValidationError({'Title': ['error1', 'error2'],
                                                                 'Description': ['error3, error4']})
+        else:
+            action.return_value = {'id': datarequest_id}
 
         # Create the request
         request_data = controller.request.POST = {
             'title': 'Example Title',
             'description': 'Example Description',
-            'organization': 'organization uuid4'
+            'organization_id': 'organization uuid4'
         }
         result = self.controller_instance.new()
 
@@ -135,6 +139,9 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals(None, controller.c.errors)
                 self.assertEquals(None, controller.c.errors_summary)
                 self.assertEquals(None, controller.c.datarequest)
+                self.assertEquals(302, controller.tk.response.status_int)
+                self.assertEquals('%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
+                                  controller.tk.response.location)
         else:
             controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)

@@ -33,7 +33,7 @@ context = {
 request_data = {
     'title': 'title',
     'description': 'description',
-    'organization': 'organization'
+    'organization_id': 'organization'
 }
 
 
@@ -119,5 +119,5 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(context['auth_user_obj'].id, datarequest.user_id)
         self.assertEquals(request_data['title'], datarequest.title)
         self.assertEquals(request_data['description'], datarequest.description)
-        self.assertEquals(request_data['organization'], datarequest.organization)
+        self.assertEquals(request_data['organization_id'], datarequest.organization_id)
         self.assertEquals(current_time, datarequest.open_time)

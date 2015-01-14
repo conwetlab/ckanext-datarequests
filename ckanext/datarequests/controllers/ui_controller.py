@@ -57,14 +57,15 @@ class DataRequestsUI(base.BaseController):
                 try:
                     result = tk.get_action(constants.DATAREQUEST_CREATE)(context, data_dict)
                     tk.response.status_int = 302
-                    tk.response.location = '/datarequest/%s' % result['id']
+                    tk.response.location = '%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
+                                                      result['id'])
 
                 except tk.ValidationError as e:
                     # Fill the fields that will display some information in the page
                     c.datarequest = {
                         'title': data_dict['title'],
                         'description': data_dict['description'],
-                        'organization': data_dict['organization_id']
+                        'organization_id': data_dict['organization_id']
                     }
                     c.errors = e.error_dict
                     c.errors_summary = {}
