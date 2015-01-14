@@ -90,15 +90,19 @@ class DataRequestsUI(base.BaseController):
             
             try:
                 c.datarequest['user'] = tk.get_action('user_show')(context, {'id': c.datarequest['user_id']})
-                if c.datarequest['organization_id']:
-                    organization_show = tk.get_action('organization_show')
-                    c.datarequest['organization'] = organization_show(context, {'id': c.datarequest['organization_id']})
             except tk.ObjectNotFound:
                 pass
 
+            if c.datarequest['organization_id']:
+                try:
+                    organization_show = tk.get_action('organization_show')
+                    c.datarequest['organization'] = organization_show(context, {'id': c.datarequest['organization_id']})
+                except tk.ObjectNotFound:
+                    pass
+
             return tk.render('datarequests/show.html')
         except tk.ObjectNotFound:
-            tk.abort(401, tk._('Data Request %s not found') % datarequest_id)
+            tk.abort(404, tk._('Data Request %s not found') % datarequest_id)
         except tk.NotAuthorized:
             tk.abort(401, tk._('You are not authorized to view the Data Request %s'
                                % datarequest_id))

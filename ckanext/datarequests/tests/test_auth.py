@@ -35,17 +35,21 @@ context = {
 request_data = {
     'title': 'title',
     'description': 'description',
-    'organization': 'organization'
+    'organization_id': 'organization'
 }
 
 
 class AuthTest(unittest.TestCase):
 
     @parameterized.expand([
-        (None,    None),
-        (context, None),
-        (None,    request_data),
-        (context, request_data)
+        (auth.datarequest_create, None,    None),
+        (auth.datarequest_create, context, None),
+        (auth.datarequest_create, None,    request_data),
+        (auth.datarequest_create, context, request_data),
+        (auth.datarequest_show,   None,    None),
+        (auth.datarequest_show,   context, None),
+        (auth.datarequest_show,   None,    request_data),
+        (auth.datarequest_show,   context, request_data),
     ])
-    def test_datarequest_create_is_true(self, context, request_data):
-        self.assertTrue(auth.datarequest_create(context, request_data))
+    def test_datarequest_create_is_true(self, function, context, request_data):
+        self.assertTrue(function(context, request_data))

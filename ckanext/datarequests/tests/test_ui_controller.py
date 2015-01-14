@@ -36,6 +36,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk._ = self._tk._
         controller.tk.ValidationError = self._tk.ValidationError
         controller.tk.NotAuthorized = self._tk.NotAuthorized
+        controller.tk.ObjectNotFound = self._tk.ObjectNotFound
 
         self._c = controller.c
         controller.c = MagicMock()
@@ -145,3 +146,82 @@ class UIControllerTest(unittest.TestCase):
         else:
             controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
+
+    def test_show_not_authorized(self):
+        datarequest_id = 'example_uuidv4'
+        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
+
+        # Call the function
+        result = self.controller_instance.show(datarequest_id)
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(401, 'You are not authorized to view the Data Request %s' % datarequest_id)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
+    def test_show_not_found(self):
+        datarequest_id = 'example_uuidv4'
+        controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Data set not found')
+
+        # Call the function
+        result = self.controller_instance.show(datarequest_id)
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
+    @parameterized.expand({
+        (False, False),
+        (False, True),
+        (True,  False),
+        (True,  True)
+    })
+    def test_show_found(self, user_show_exception, organization_show_exception):
+        datarequest_id = 'example_uuidv4'
+        datarequest_show = MagicMock(return_value={
+            'id': 'example_uuidv4',
+            'user_id': 'example_uuidv4_user',
+            'organization_id': 'example_uuidv4_organization'
+        })
+
+        default_user = {'display_name': 'User Display Name'}
+        default_organization = {'display_name': 'Organization Name'}
+
+        def _user_show(context, data_request):
+            if user_show_exception:
+                raise controller.tk.ObjectNotFound('User not Found')
+            else:
+                return default_user
+
+        def _organization_show(context, data_request):
+            if organization_show_exception:
+                raise controller.tk.ObjectNotFound('Organization not Found')
+            else:
+                return default_organization
+
+        user_show = MagicMock(side_effect=_user_show)
+        organization_show = MagicMock(side_effect=_organization_show)
+
+        def _get_action(action):
+            if action == 'datarequest_show':
+                return datarequest_show
+            elif action == 'user_show':
+                return user_show
+            elif action == 'organization_show':
+                return organization_show
+
+        controller.tk.get_action.side_effect = _get_action
+
+        # Call the function
+        result = self.controller_instance.show(datarequest_id)
+
+        # Assertions
+        expected_datarequest = datarequest_show.return_value.copy()
+        if not user_show_exception:
+            expected_datarequest['user'] = default_user
+        if not organization_show_exception:
+            expected_datarequest['organization'] = default_organization
+        self.assertEquals(expected_datarequest, controller.c.datarequest)
+        controller.tk.render.assert_called_once_with('datarequests/show.html')
+        self.assertEquals(controller.tk.render.return_value, result)
