@@ -70,26 +70,27 @@ class ValidatorTest(unittest.TestCase):
 
     ])
     def test_validate_name_description(self, field, value, title_exists, excepction_msg):
-        context = MagicMock()
+        context = {}
         # request_data fields are always in lowercase
         self.request_data[field.lower()] = value
         validator.db.DataRequest.datarequest_exists.return_value = title_exists
 
-        with self.assertRaises(self._tk.ValidationError) as context:
+        with self.assertRaises(self._tk.ValidationError) as c:
             validator.validate_datarequest(context, self.request_data)
 
         self.assertEquals({field: [excepction_msg]},
-                          context.exception.error_dict)
+                          c.exception.error_dict)
 
     def test_invalid_org(self):
+        context = {}
         org_validator = validator.tk.get_validator.return_value
         org_validator.side_effect = self._tk.ValidationError({'Organization': 'Invalid ORG'})
 
-        with self.assertRaises(self._tk.ValidationError) as context:
+        with self.assertRaises(self._tk.ValidationError) as c:
             validator.validate_datarequest(context, self.request_data)
 
         self.assertEquals({'Organization': ['Organization is not valid']},
-                          context.exception.error_dict)
+                          c.exception.error_dict)
 
     def test_missing_org(self):
         self.request_data['organization_id'] = ''

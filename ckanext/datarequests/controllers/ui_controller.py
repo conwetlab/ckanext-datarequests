@@ -56,7 +56,7 @@ class DataRequestsUI(base.BaseController):
                     'id': data_dict.get('id', ''),
                     'title': data_dict.get('title', ''),
                     'description': data_dict.get('description', ''),
-                    'organization_id': data_dict.get('organization', '')
+                    'organization_id': data_dict.get('organization_id', '')
                 }
                 c.errors = e.error_dict
                 c.errors_summary = {}

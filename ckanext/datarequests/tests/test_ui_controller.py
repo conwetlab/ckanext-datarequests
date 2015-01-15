@@ -91,7 +91,7 @@ class UIControllerTest(unittest.TestCase):
 
         self.assertEquals(None, controller.c.errors)
         self.assertEquals(None, controller.c.errors_summary)
-        self.assertEquals(None, controller.c.datarequest)
+        self.assertEquals({}, controller.c.datarequest)
 
     @parameterized.expand([
         (False, False),
@@ -134,12 +134,14 @@ class UIControllerTest(unittest.TestCase):
                     errors_summary[key] = ', '.join(error)
 
                 self.assertEquals(action.side_effect.error_dict, controller.c.errors)
-                self.assertEquals(request_data, controller.c.datarequest)
+                expected_request_data = request_data.copy()
+                expected_request_data['id'] = ''
+                self.assertEquals(expected_request_data, controller.c.datarequest)
                 self.assertEquals(errors_summary, controller.c.errors_summary)
             else:
                 self.assertEquals(None, controller.c.errors)
                 self.assertEquals(None, controller.c.errors_summary)
-                self.assertEquals(None, controller.c.datarequest)
+                self.assertEquals({}, controller.c.datarequest)
                 self.assertEquals(302, controller.tk.response.status_int)
                 self.assertEquals('%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
                                   controller.tk.response.location)
