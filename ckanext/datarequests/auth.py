@@ -17,15 +17,24 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
+import constants
+from ckan.plugins import toolkit as tk
+
 
 def datarequest_create(context, data_dict):
     return {'success': True}
 
 
+@tk.auth_allow_anonymous_access
 def datarequest_show(context, data_dict):
     return {'success': True}
 
 
 def datarequest_update(context, data_dict):
-    # TODO: Only the owner or the organzation admin can change it...
-    return {'sucess': True}
+    
+    # Sometimes data_dict only contains the 'id'
+    if 'user_id' not in data_dict:
+        datareq_show = tk.get_action(constants.DATAREQUEST_SHOW)
+        data_dict = datareq_show({'ignore_auth': True}, {'id': data_dict.get('id')})
+
+    return {'success': data_dict['user_id'] == context.get('auth_user_obj').id}
