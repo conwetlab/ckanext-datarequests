@@ -2,6 +2,23 @@
 
 {% block title %}Data Request {{c.datarequest.get('title', '')}}{% endblock %}
 
+{% set datarequest_id = c.datarequest.get('id') %}
+
+{% block breadcrumb_content %}
+  <li>{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
+  <li class="active"><a href="">{{ c.datarequest.get('title') }}</a></li>
+{% endblock %}
+
+{% block content_action %}
+  {% if h.check_access('datarequest_update', {'id':datarequest_id }) %}
+    {% link_for _('Manage'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='update', id=datarequest_id, class_='btn', icon='wrench' %}
+  {% endif %}
+{% endblock %}
+
+{% block content_primary_nav %}
+  {{ h.build_nav_icon('datarequest_show', _('Data Request'), id=datarequest_id) }}
+{% endblock %}
+
 {% block secondary_content %}
 
   <section class="module module-narrow module-shallow">

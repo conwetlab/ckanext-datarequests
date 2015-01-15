@@ -24,3 +24,8 @@ def datarequest_create(context, data_dict):
 
 def datarequest_show(context, data_dict):
     return {'success': True}
+
+
+def datarequest_update(context, data_dict):
+    # TODO: Only the owner or the organzation admin can change it...
+    return {'sucess': True}

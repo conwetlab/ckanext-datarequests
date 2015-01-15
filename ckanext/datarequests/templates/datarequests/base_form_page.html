@@ -24,3 +24,5 @@
   <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ _('Data Request Form') }}{% endblock %}</h1>
   {% snippet "datarequests/snippets/datarequest_form.html", data=c.datarequest, errors=c.errors, errors_summary=c.errors_summary, offering=c.offering %}
 {% endblock %}
+
+{% block page_header %}{% endblock %}

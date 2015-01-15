@@ -34,7 +34,9 @@ def validate_datarequest(context, request_data):
         errors['Title'] = [tk._('Title cannot be empty')]
 
     # Title is only checked in the database when it's correct
-    if 'Title' not in errors:
+    avoid_existing_title_check = context['avoid_existing_title_check'] if 'avoid_existing_title_check' in context else False
+
+    if 'Title' not in errors and not avoid_existing_title_check:
         if db.DataRequest.datarequest_exists(request_data['title']):
             errors['Title'] = ['That title is already in use']
 

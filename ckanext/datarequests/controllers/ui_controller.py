@@ -33,45 +33,51 @@ class DataRequestsUI(base.BaseController):
     def index(self):
         return tk.render('datarequests/index.html')
 
+    def _process_post(self, action, context):
+        # If the user has submitted the form, the data request must be created
+        if request.POST:
+            data_dict = {}
+            data_dict['title'] = request.POST.get('title', '')
+            data_dict['description'] = request.POST.get('description', '')
+            data_dict['organization_id'] = request.POST.get('organization_id', '')
+
+            if action == constants.DATAREQUEST_UPDATE:
+                data_dict['id'] = request.POST.get('id', '')
+
+            try:
+                result = tk.get_action(action)(context, data_dict)
+                tk.response.status_int = 302
+                tk.response.location = '%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
+                                                  result['id'])
+
+            except tk.ValidationError as e:
+                # Fill the fields that will display some information in the page
+                c.datarequest = {
+                    'id': data_dict.get('id', ''),
+                    'title': data_dict.get('title', ''),
+                    'description': data_dict.get('description', ''),
+                    'organization_id': data_dict.get('organization', '')
+                }
+                c.errors = e.error_dict
+                c.errors_summary = {}
+
+                for key, error in c.errors.items():
+                    c.errors_summary[key] = ', '.join(error)
+
     def new(self):
 
         context = {'model': model, 'session': model.Session,
                    'user': c.user, 'auth_user_obj': c.userobj}
 
         # Basic intialization
-        c.datarequest = None
+        c.datarequest = {}
         c.errors = None
         c.errors_summary = None
 
         # Check access
         try:
             tk.check_access(constants.DATAREQUEST_CREATE, context, None)
-
-            # If the user has submitted the form, the data request must be created
-            if request.POST:
-                data_dict = {}
-                data_dict['title'] = request.POST.get('title', '')
-                data_dict['description'] = request.POST.get('description', '')
-                data_dict['organization_id'] = request.POST.get('organization_id', '')
-
-                try:
-                    result = tk.get_action(constants.DATAREQUEST_CREATE)(context, data_dict)
-                    tk.response.status_int = 302
-                    tk.response.location = '%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
-                                                      result['id'])
-
-                except tk.ValidationError as e:
-                    # Fill the fields that will display some information in the page
-                    c.datarequest = {
-                        'title': data_dict['title'],
-                        'description': data_dict['description'],
-                        'organization_id': data_dict['organization_id']
-                    }
-                    c.errors = e.error_dict
-                    c.errors_summary = {}
-
-                    for key, error in c.errors.items():
-                        c.errors_summary[key] = ', '.join(error)
+            self._process_post(constants.DATAREQUEST_CREATE, context)
 
             # The form is always rendered
             return tk.render('datarequests/new.html')
@@ -79,8 +85,8 @@ class DataRequestsUI(base.BaseController):
         except tk.NotAuthorized:
             tk.abort(401, tk._('Unauthorized to create a Data Request'))
 
-    def show(self, datarequest_id):
-        data_dict = {'id': datarequest_id}
+    def show(self, id):
+        data_dict = {'id': id}
         context = {'model': model, 'session': model.Session,
                    'user': c.user, 'auth_user_obj': c.userobj}
 
@@ -102,7 +108,24 @@ class DataRequestsUI(base.BaseController):
 
             return tk.render('datarequests/show.html')
         except tk.ObjectNotFound:
-            tk.abort(404, tk._('Data Request %s not found') % datarequest_id)
+            tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized:
             tk.abort(401, tk._('You are not authorized to view the Data Request %s'
-                               % datarequest_id))
+                               % id))
+
+    def update(self, id):
+        data_dict = {'id': id}
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user, 'auth_user_obj': c.userobj}
+
+        try:
+            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+            c.original_title = c.datarequest.get('title')
+            self._process_post(constants.DATAREQUEST_UPDATE, context)
+            return tk.render('datarequests/edit.html')
+        except tk.ObjectNotFound:
+            tk.abort(404, tk._('Data Request %s not found') % id)
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('You are not authorized to update the Data Request %s'
+                               % id))

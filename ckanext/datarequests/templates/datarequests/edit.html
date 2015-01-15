@@ -1,0 +1,11 @@
+{% extends "datarequests/base_form_page.html" %}
+
+{% block subtitle %}{{ _('Edit Data Request') }}{% endblock %}
+
+{% block breadcrumb_content %}
+  <li>{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
+  <li>{% link_for c.original_title|truncate(30), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=c.datarequest.get('id') %}</li>
+  <li class="active"><a href="">{{ _('Edit Data Request') }}</a></li>
+{% endblock %}
+
+{% block page_heading %}{{ _('Edit Data Request') }}{% endblock %}

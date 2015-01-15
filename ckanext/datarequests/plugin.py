@@ -38,7 +38,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
     def get_actions(self):
         return {
             constants.DATAREQUEST_CREATE: actions.datarequest_create,
-            constants.DATAREQUEST_SHOW: actions.datarequest_show
+            constants.DATAREQUEST_SHOW: actions.datarequest_show,
+            constants.DATAREQUEST_UPDATE: actions.datarequest_update
         }
 
     ######################################################################
@@ -48,7 +49,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
     def get_auth_functions(self):
         return {
             constants.DATAREQUEST_CREATE: auth.datarequest_create,
-            constants.DATAREQUEST_SHOW: auth.datarequest_show
+            constants.DATAREQUEST_SHOW: auth.datarequest_show,
+            constants.DATAREQUEST_UPDATE: auth.datarequest_update
         }
 
     ######################################################################
@@ -79,8 +81,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
             action='new', conditions=dict(method=['GET', 'POST']))
 
         # Show Data Request
-        m.connect('%s/{datarequest_id}' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('datarequest_show', '%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']))
+            action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
+
+        # Update Data Request
+        m.connect('%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='update', conditions=dict(method=['GET', 'POST']))
 
         return m

@@ -52,6 +52,13 @@ def _dictize_datarequest(datarequest):
     return datarequest
 
 
+def _undictize_datarequest_basic(data_request, data_dict):
+    data_request.title = data_dict['title']
+    data_request.description = data_dict['description']
+    organization = data_dict['organization_id']
+    data_request.organization_id = organization if organization else None
+
+
 def datarequest_create(context, data_dict):
 
     model = context['model']
@@ -68,11 +75,8 @@ def datarequest_create(context, data_dict):
 
     # Store the data
     data_req = db.DataRequest()
+    _undictize_datarequest_basic(data_req, data_dict)
     data_req.user_id = context['auth_user_obj'].id
-    data_req.title = data_dict['title']
-    data_req.description = data_dict['description']
-    organization = data_dict['organization_id']
-    data_req.organization_id = organization if organization else None
     data_req.open_time = datetime.datetime.now()
 
     session.add(data_req)
@@ -98,4 +102,41 @@ def datarequest_show(context, data_dict):
         raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
 
     data_req = result[0]
+    return _dictize_datarequest(data_req)
+
+
+def datarequest_update(context, data_dict):
+
+    print data_dict
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict['id']
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+
+    # Get the initial data
+    result = db.DataRequest.get(id=datarequest_id)
+    if not result:
+        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+
+    data_req = result[0]
+
+    # Avoid the validator to return an error when the user does not change the title
+    context['avoid_existing_title_check'] = data_req.title == data_dict['title']
+    print context['avoid_existing_title_check']
+
+    # Validate data
+    validator.validate_datarequest(context, data_dict)
+
+    # Set the data provided by the user in the data_red
+    _undictize_datarequest_basic(data_req, data_dict)
+
+    session.add(data_req)
+    session.commit()
+
     return _dictize_datarequest(data_req)
