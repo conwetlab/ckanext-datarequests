@@ -53,12 +53,21 @@ class ValidatorTest(unittest.TestCase):
     def tearDown(self):
         validator.tk = self._tk
 
-    def test_validate_valid_data_request(self):
-        context = MagicMock()
+    @parameterized.expand([
+        (True,),
+        (False,)
+    ])
+    def test_validate_valid_data_request(self, avoid_existing_title_check):
+        context = {'avoid_existing_title_check': avoid_existing_title_check}
         self.assertIsNone(validator.validate_datarequest(context, self.request_data))
         validator.tk.get_validator.assert_called_once_with('group_id_exists')
         group_validator = validator.tk.get_validator.return_value
         group_validator.assert_called_once_with(self.request_data['organization_id'], context)
+
+        if avoid_existing_title_check:
+            self.assertEquals(0, validator.db.DataRequest.datarequest_exists.call_count)
+        else:
+            validator.db.DataRequest.datarequest_exists.assert_called_once_with(self.request_data['title'])
 
     @parameterized.expand([
         ('Title', generate_string(validator.constants.NAME_MAX_LENGTH + 1), False,

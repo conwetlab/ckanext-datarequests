@@ -23,13 +23,8 @@ import datetime
 import unittest
 
 from mock import MagicMock
+from nose_parameterized import parameterized
 
-context = {
-    'user': 'example_usr',
-    'auth_user_obj': MagicMock(),
-    'model': MagicMock(),
-    'session': MagicMock()
-}
 
 create_request_data = {
     'title': 'title',
@@ -39,6 +34,13 @@ create_request_data = {
 
 show_request_data = {
     'id': 'example_uuidv4'
+}
+
+update_request_data = {
+    'id': 'example_uuidv4',
+    'title': 'title',
+    'description': 'description',
+    'organization_id': 'organization'
 }
 
 
@@ -74,6 +76,13 @@ class ActionsTest(unittest.TestCase):
         self._datetime = actions.datetime
         actions.datetime = MagicMock()
 
+        self.context = {
+            'user': 'example_usr',
+            'auth_user_obj': MagicMock(),
+            'model': MagicMock(),
+            'session': MagicMock()
+        }
+
     def tearDown(self):
         # Unmock
         actions.tk = self._tk
@@ -82,23 +91,31 @@ class ActionsTest(unittest.TestCase):
         actions.validator = self._validator
         actions.datetime = self._datetime
 
+    def _check_basic_response(self, datarequest, response):
+        self.assertEquals(datarequest.id, response['id'])
+        self.assertEquals(datarequest.user_id, response['user_id'])
+        self.assertEquals(datarequest.title, response['title'])
+        self.assertEquals(datarequest.description, response['description'])
+        self.assertEquals(datarequest.organization_id, response['organization_id'])
+        self.assertEquals(str(datarequest.open_time), response['open_time'])
+
     def test_datarequest_create_no_access(self):
         # Configure the mock
         actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
 
         # Call the function
         try:
-            actions.datarequest_create(context, create_request_data)
+            actions.datarequest_create(self.context, create_request_data)
         except self._tk.NotAuthorized:
             pass
 
         # Assertions
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, context, create_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, self.context, create_request_data)
         self.assertEquals(0, actions.validator.validate_datarequest.call_count)
         self.assertEquals(0, actions.db.DataRequest.call_count)
-        self.assertEquals(0, context['session'].add.call_count)
-        self.assertEquals(0, context['session'].commit.call_count)
+        self.assertEquals(0, self.context['session'].add.call_count)
+        self.assertEquals(0, self.context['session'].commit.call_count)
 
     def test_datarequest_create_invalid(self):
         # Configure the mock
@@ -106,17 +123,17 @@ class ActionsTest(unittest.TestCase):
 
         # Call the function
         try:
-            actions.datarequest_create(context, create_request_data)
+            actions.datarequest_create(self.context, create_request_data)
         except self._tk.ValidationError:
             pass
 
         # Assertions
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, context, create_request_data)
-        actions.validator.validate_datarequest.assert_called_once_with(context, create_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, self.context, create_request_data)
+        actions.validator.validate_datarequest.assert_called_once_with(self.context, create_request_data)
         self.assertEquals(0, actions.db.DataRequest.call_count)
-        self.assertEquals(0, context['session'].add.call_count)
-        self.assertEquals(0, context['session'].commit.call_count)
+        self.assertEquals(0, self.context['session'].add.call_count)
+        self.assertEquals(0, self.context['session'].commit.call_count)
 
     def test_datarequest_create_valid(self):
         # Configure the mocks
@@ -124,24 +141,26 @@ class ActionsTest(unittest.TestCase):
         actions.datetime.datetime.now = MagicMock(return_value=current_time)
 
         # Call the function
-        actions.datarequest_create(context, create_request_data)
+        result = actions.datarequest_create(self.context, create_request_data)
         
         # Assertions
         datarequest = actions.db.DataRequest.return_value
 
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, context, create_request_data)
-        actions.validator.validate_datarequest.assert_called_once_with(context, create_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, self.context, create_request_data)
+        actions.validator.validate_datarequest.assert_called_once_with(self.context, create_request_data)
         actions.db.DataRequest.assert_called_once()
 
-        context['session'].add.assert_called_once_with(datarequest)
-        context['session'].commit.assert_called_once()
+        self.context['session'].add.assert_called_once_with(datarequest)
+        self.context['session'].commit.assert_called_once()
 
-        self.assertEquals(context['auth_user_obj'].id, datarequest.user_id)
+        self.assertEquals(self.context['auth_user_obj'].id, datarequest.user_id)
         self.assertEquals(create_request_data['title'], datarequest.title)
         self.assertEquals(create_request_data['description'], datarequest.description)
         self.assertEquals(create_request_data['organization_id'], datarequest.organization_id)
         self.assertEquals(current_time, datarequest.open_time)
+
+        self._check_basic_response(datarequest, result)
 
     def test_datarequest_show_not_authorized(self):
         # Configure the mock
@@ -149,13 +168,13 @@ class ActionsTest(unittest.TestCase):
 
         # Call the function
         try:
-            actions.datarequest_show(context, show_request_data)
+            actions.datarequest_show(self.context, show_request_data)
         except self._tk.NotAuthorized:
             pass
 
         # Assertions
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, context, show_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.context, show_request_data)
         self.assertEquals(0, actions.db.DataRequest.get.call_count)
 
     def test_datarequest_not_found(self):
@@ -164,13 +183,13 @@ class ActionsTest(unittest.TestCase):
 
         # Call the function
         try:
-            actions.datarequest_show(context, show_request_data)
+            actions.datarequest_show(self.context, show_request_data)
         except self._tk.ObjectNotFound:
             pass
 
         # Assertions
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, context, show_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.context, show_request_data)
         actions.db.DataRequest.get.assert_called_once_with(id=show_request_data['id'])
 
     def _test_datarequest_found(self, datarequest):
@@ -178,19 +197,14 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequest.get.return_value = [datarequest]
 
         # Call the function
-        result = actions.datarequest_show(context, show_request_data)
+        result = actions.datarequest_show(self.context, show_request_data)
 
         # Assertions
-        actions.db.init_db.assert_called_once_with(context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, context, show_request_data)
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.context, show_request_data)
         actions.db.DataRequest.get.assert_called_once_with(id=show_request_data['id'])
 
-        self.assertEquals(datarequest.id, result['id'])
-        self.assertEquals(datarequest.user_id, result['user_id'])
-        self.assertEquals(datarequest.title, result['title'])
-        self.assertEquals(datarequest.description, result['description'])
-        self.assertEquals(datarequest.organization_id, result['organization_id'])
-        self.assertEquals(str(datarequest.open_time), result['open_time'])
+        self._check_basic_response(datarequest, result)
         self.assertEquals(datarequest.accepted_dataset, result['accepted_dataset'])
         expected_close_time = str(datarequest.close_time) if datarequest.close_time else None
         self.assertEquals(expected_close_time, result['close_time'])
@@ -211,3 +225,69 @@ class ActionsTest(unittest.TestCase):
         datarequest.closed = True
 
         self._test_datarequest_found(datarequest)
+
+    def test_datarequest_update_not_authorized(self):
+        # Configure the mock
+        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
+
+        # Call the action
+        with self.assertRaises(self._tk.NotAuthorized):
+            actions.datarequest_update(self.context, update_request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.context, update_request_data)
+        self.assertEquals(0, actions.db.DataRequest.get.call_count)
+        self.assertEquals(0, actions.validator.validate_datarequest.call_count)
+        self.assertEquals(0, self.context['session'].add.call_count)
+        self.assertEquals(0, self.context['session'].commit.call_count)
+
+    def test_datarequest_update_not_found(self):
+        # Configure the mock
+        actions.db.DataRequest.get.return_value = []
+
+        # Call the action
+        with self.assertRaises(self._tk.ObjectNotFound):
+            actions.datarequest_update(self.context, update_request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.context, update_request_data)
+        actions.db.DataRequest.get.assert_called_once_with(id=update_request_data['id'])
+        self.assertEquals(0, actions.validator.validate_datarequest.call_count)
+        self.assertEquals(0, self.context['session'].add.call_count)
+        self.assertEquals(0, self.context['session'].commit.call_count)
+
+    @parameterized.expand([
+        (True,),
+        (False,)
+    ])
+    def test_datarequest_update(self, title_checked):
+        # Configure the mock
+        datarequest = _generate_basic_datarequest()
+        # Title should not be checked when it does not change
+        datarequest.title = create_request_data['title'] + 'a' if title_checked else create_request_data['title']
+        actions.db.DataRequest.get.return_value = [datarequest]
+
+        # Call the action
+        result = actions.datarequest_update(self.context, update_request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.context, update_request_data)
+        actions.db.DataRequest.get.assert_called_once_with(id=update_request_data['id'])
+        expected_context = self.context.copy()
+        expected_context['avoid_existing_title_check'] = not title_checked
+        actions.validator.validate_datarequest.assert_called_once_with(expected_context, update_request_data)
+
+        self.context['session'].add.assert_called_once_with(datarequest)
+        self.context['session'].commit.assert_called_once()
+
+        self.assertEquals(datarequest.user_id, datarequest.user_id)
+        self.assertEquals(update_request_data['title'], datarequest.title)
+        self.assertEquals(update_request_data['description'], datarequest.description)
+        self.assertEquals(update_request_data['organization_id'], datarequest.organization_id)
+
+        # Check the result
+        self._check_basic_response(datarequest, result)
+
