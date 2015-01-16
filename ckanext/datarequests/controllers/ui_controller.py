@@ -71,8 +71,8 @@ class DataRequestsUI(base.BaseController):
 
         # Basic intialization
         c.datarequest = {}
-        c.errors = None
-        c.errors_summary = None
+        c.errors = {}
+        c.errors_summary = {}
 
         # Check access
         try:
@@ -117,6 +117,11 @@ class DataRequestsUI(base.BaseController):
         data_dict = {'id': id}
         context = {'model': model, 'session': model.Session,
                    'user': c.user, 'auth_user_obj': c.userobj}
+
+        # Basic intialization
+        c.datarequest = {}
+        c.errors = {}
+        c.errors_summary = {}
 
         try:
             tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
