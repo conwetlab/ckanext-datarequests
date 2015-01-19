@@ -48,6 +48,12 @@ def init_db(model):
                 query = model.Session.query(cls).autoflush(False)
                 return query.filter(func.lower(cls.title) == func.lower(title)).first() is not None
 
+            @classmethod
+            def get_ordered_by_date(cls, **kw):
+                '''Personalized query'''
+                query = model.Session.query(cls).autoflush(False)
+                return query.filter_by(**kw).order_by(cls.open_time.desc()).all()
+
         DataRequest = _DataRequest
 
         # FIXME: References to the other tables...

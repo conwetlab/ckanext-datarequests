@@ -1,5 +1,7 @@
 {% extends "datarequests/base.html" %}
 
+{% set title= _('No Data Requests found') if c.datarequest_count == 0 else '%s datarequest found' % c.datarequest_count %}
+
 {% block primary_content %}
   <section class="module">
     <div class="module-content">
@@ -9,7 +11,35 @@
             {% link_for _('Add Data Request'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='new', class_='btn btn-primary', icon='plus-sign-alt' %}
           </div>
         {% endif %}
+        <!--<h2>{{ title }}</h2>-->
+        {% block datarequest_search_results_list %}
+          {% if c.datarequests %}
+          <ul class="dataset-list unstyled">
+            {% for datarequest in c.datarequests %}
+              {{ h.snippet('datarequests/snippets/datarequest_item.html', datarequest=datarequest) }}
+            {% endfor %}
+          </ul>
+          {% else %}
+            <p class="empty">
+              {{ _('There are currently no Data Requests for this site') }}.
+              {% if h.check_access('datarequest_create') %}
+                {% link_for _('How about creating one?'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='new' %}</a>.
+              {% endif %}
+            </p>
+          {% endif %}
+        {% endblock %}
+
+        {% block page_pagination %}
+          {{ c.page.pager(q='') }}
+        {% endblock %}
       {% endblock %}
     </div>
   </section>
+{% endblock %}
+
+{% block secondary_content %}
+  {{ super() }}
+  {% for facet in c.facet_titles %}
+    {{ h.snippet('snippets/facet_list.html', title=c.facet_titles[facet], name=facet) }}
+  {% endfor %}
 {% endblock %}

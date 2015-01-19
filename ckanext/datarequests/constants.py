@@ -21,5 +21,7 @@ DATAREQUESTS_MAIN_PATH = '/datarequest'
 DATAREQUEST_CREATE = 'datarequest_create'
 DATAREQUEST_SHOW = 'datarequest_show'
 DATAREQUEST_UPDATE = 'datarequest_update'
+DATAREQUEST_INDEX = 'datarequest_index'
 NAME_MAX_LENGTH = 100
 DESCRIPTION_MAX_LENGTH = 1000
+DATAREQUESTS_PER_PAGE = 10

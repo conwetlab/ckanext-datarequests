@@ -20,18 +20,70 @@
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.plugins as plugins
+import ckan.lib.helpers as helpers
 import ckanext.datarequests.constants as constants
 
 from ckan.common import request
+from urllib import urlencode
 
 tk = plugins.toolkit
 c = tk.c
 
 
+def _encode_params(params):
+    return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
+            for k, v in params]
+
+
+def url_with_params(url, params):
+    params = _encode_params(params)
+    return url + u'?' + urlencode(params)
+
+
+def search_url(params, package_type=None):
+    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index')
+    return url_with_params(url, params)
+
+
 class DataRequestsUI(base.BaseController):
 
     def index(self):
-        return tk.render('datarequests/index.html')
+
+        def pager_url(q=None, page=None):
+            params = list()
+            params.append(('page', page))
+            return search_url(params)
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user, 'auth_user_obj': c.userobj}
+        page = int(request.GET.get('page', 1))
+        limit = constants.DATAREQUESTS_PER_PAGE
+        offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
+        data_dict = {'offset': offset, 'limit': limit}
+
+        organization_id = request.GET.get('organization', '')
+        if organization_id:
+            data_dict['organization_id'] = organization_id
+
+        try:
+            tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
+            datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
+            c.datarequest_count = datarequests_list['count']
+            c.datarequests = datarequests_list['result']
+            c.search_facets = datarequests_list['facets']
+            c.page = helpers.Page(
+                collection=datarequests_list['result'],
+                page=page,
+                url=pager_url,
+                item_count=datarequests_list['count'],
+                items_per_page=limit
+            )
+            c.facet_titles = {
+                'organization': tk._('Organizations')
+            }
+            return tk.render('datarequests/index.html')
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('Unauthorized to list Data Requests'))
 
     def _process_post(self, action, context):
         # If the user has submitted the form, the data request must be created

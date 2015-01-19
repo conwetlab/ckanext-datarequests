@@ -1,4 +1,4 @@
-    # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 # Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
 
@@ -137,3 +137,65 @@ def datarequest_update(context, data_dict):
     session.commit()
 
     return _dictize_datarequest(data_req)
+
+
+def datarequest_index(context, data_dict):
+
+    model = context['model']
+    organization_show = tk.get_action('organization_show')
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
+
+    # Get the organization
+    organization_id = data_dict.get('organization_id', None)
+    if organization_id:
+        # Get organization ID
+        organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
+
+        # Call the function filtering by organization
+        db_datarequests = db.DataRequest.get_ordered_by_date(
+            organization_id=organization_id)
+    else:
+        # Call the function without filtering by organization
+        db_datarequests = db.DataRequest.get_ordered_by_date()
+
+    # Dictize the results
+    offset = data_dict.get('offset', 0)
+    limit = data_dict.get('limit', constants.DATAREQUESTS_PER_PAGE)
+    datarequests = []
+    for data_req in db_datarequests[offset:offset + limit]:
+        datarequests.append(_dictize_datarequest(data_req))
+
+    # Facets
+    no_processed_organization_facet = {}
+    for data_req in db_datarequests:
+        if data_req.organization_id:
+            # Facets
+            if data_req.organization_id in no_processed_organization_facet:
+                no_processed_organization_facet[data_req.organization_id] += 1
+            else:
+                no_processed_organization_facet[data_req.organization_id] = 1
+
+    # Format facets
+    organization_facet = []
+    for organization_id in no_processed_organization_facet:
+        organization = organization_show({'ignore_auth': True}, {'id': organization_id})
+        organization_facet.append({
+            'name': organization.get('name'),
+            'display_name': organization.get('display_name'),
+            'count': no_processed_organization_facet[organization_id]
+        })
+
+    return {
+        'count': len(db_datarequests),
+        'facets': {
+            'organization': {
+                'items': organization_facet
+            }
+        },
+        'result': datarequests
+    }

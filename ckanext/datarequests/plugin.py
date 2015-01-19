@@ -39,7 +39,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
         return {
             constants.DATAREQUEST_CREATE: actions.datarequest_create,
             constants.DATAREQUEST_SHOW: actions.datarequest_show,
-            constants.DATAREQUEST_UPDATE: actions.datarequest_update
+            constants.DATAREQUEST_UPDATE: actions.datarequest_update,
+            constants.DATAREQUEST_INDEX: actions.datarequest_index
         }
 
     ######################################################################
@@ -50,7 +51,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
         return {
             constants.DATAREQUEST_CREATE: auth.datarequest_create,
             constants.DATAREQUEST_SHOW: auth.datarequest_show,
-            constants.DATAREQUEST_UPDATE: auth.datarequest_update
+            constants.DATAREQUEST_UPDATE: auth.datarequest_update,
+            constants.DATAREQUEST_INDEX: auth.datarequest_index
         }
 
     ######################################################################
@@ -77,17 +79,17 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         # Create Data Request
         m.connect('%s/new' % constants.DATAREQUESTS_MAIN_PATH,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='new', conditions=dict(method=['GET', 'POST']))
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='new', conditions=dict(method=['GET', 'POST']))
 
         # Show Data Request
         m.connect('datarequest_show', '%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
 
         # Update Data Request
         m.connect('%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='update', conditions=dict(method=['GET', 'POST']))
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='update', conditions=dict(method=['GET', 'POST']))
 
         return m

@@ -20,15 +20,7 @@
 {% endblock %}
 
 {% block secondary_content %}
-
-  <section class="module module-narrow module-shallow">
-    <h2 class="module-heading"><i class="icon-info-sign"></i>{% trans %}Data Request{% endtrans %}</h2>
-    <div class="module-content">
-      <p>
-        Data Requests allow users to ask for data that is not published in the platform yet. 
-      </p>
-    </div>
-  </section>
+  {{ super() }}
 
   {% block package_social %}
     {% snippet "snippets/social.html" %}
