@@ -41,6 +41,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         self.datarequest_create = constants.DATAREQUEST_CREATE
         self.datarequest_show = constants.DATAREQUEST_SHOW
         self.datarequest_update = constants.DATAREQUEST_UPDATE
+        self.datarequest_index = constants.DATAREQUEST_INDEX
 
     def tearDown(self):
         plugin.actions = self._actions
@@ -49,17 +50,19 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_get_actions(self):
         actions = self.plg_instance.get_actions()
-        self.assertEquals(3, len(actions))
+        self.assertEquals(4, len(actions))
         self.assertEquals(plugin.actions.datarequest_create, actions[self.datarequest_create])
         self.assertEquals(plugin.actions.datarequest_show, actions[self.datarequest_show])
         self.assertEquals(plugin.actions.datarequest_update, actions[self.datarequest_update])
+        self.assertEquals(plugin.actions.datarequest_index, actions[self.datarequest_index])
 
     def test_get_auth_functions(self):
         auth_functions = self.plg_instance.get_auth_functions()
-        self.assertEquals(3, len(auth_functions))
+        self.assertEquals(4, len(auth_functions))
         self.assertEquals(plugin.auth.datarequest_create, auth_functions[self.datarequest_create])
         self.assertEquals(plugin.auth.datarequest_show, auth_functions[self.datarequest_show])
         self.assertEquals(plugin.auth.datarequest_update, auth_functions[self.datarequest_update])
+        self.assertEquals(plugin.auth.datarequest_index, auth_functions[self.datarequest_index])
 
     def test_update_config(self):
         config = MagicMock()
