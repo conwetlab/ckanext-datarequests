@@ -58,6 +58,11 @@ class AuthTest(unittest.TestCase):
         (auth.datarequest_show,   context, None),
         (auth.datarequest_show,   None,    request_data),
         (auth.datarequest_show,   context, request_data),
+        (auth.datarequest_index,  None,    None),
+        (auth.datarequest_index,  context, None),
+        (auth.datarequest_index,  None,    request_data),
+        (auth.datarequest_index,  context, request_data),
+
     ])
     def test_everyone_can_create_and_show(self, function, context, request_data):
         self.assertTrue(function(context, request_data).get('success', False))

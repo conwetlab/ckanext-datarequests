@@ -61,7 +61,7 @@ class DBTest(unittest.TestCase):
 
         # Assert that table method has been called
         self.assertEquals(0, db.sa.Table.call_count)
-        self.assertEquals(0, model.meta.mapper.call_count)
+        self.assertEquals(0, model.meta.mapper.call_count)        
 
     @parameterized.expand([
         (None, False),
@@ -111,3 +111,71 @@ class DBTest(unittest.TestCase):
         # to return the same result in the two calls and the
         # equalization of these results must be True
         final_query.filter.assert_called_once_with(expected_result)
+
+    def test_datarequest_get(self):
+        db_response = [MagicMock(), MagicMock(), MagicMock()]
+
+        query_result = MagicMock()
+        query_result.all.return_value = db_response
+
+        final_query = MagicMock()
+        final_query.filter_by.return_value = query_result
+
+        query = MagicMock()
+        query.autoflush = MagicMock(return_value=final_query)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        params = {
+            'title': 'Default Title',
+            'organization_id': 'example_uuid_v4'
+        }
+        result = db.DataRequest.get(**params)
+
+        # Assertions
+        self.assertEquals(db_response, result)
+        final_query.filter_by.assert_called_once_with(**params)
+
+    def test_datarequest_get_ordered_by_date(self):
+        db_response = [MagicMock(), MagicMock(), MagicMock()]
+
+        query_result = MagicMock()
+        query_result.all.return_value = db_response
+
+        no_ordered = MagicMock()
+        no_ordered.order_by.return_value = query_result
+
+        final_query = MagicMock()
+        final_query.filter_by.return_value = no_ordered
+
+        query = MagicMock()
+        query.autoflush = MagicMock(return_value=final_query)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+        # Mapping
+        db.DataRequest.open_time = MagicMock()
+
+        # Call the method
+        params = {
+            'title': 'Default Title',
+            'organization_id': 'example_uuid_v4'
+        }
+        result = db.DataRequest.get_ordered_by_date(**params)
+
+        # Assertions
+        self.assertEquals(db_response, result)
+        no_ordered.order_by.assert_called_once_with(db.DataRequest.open_time.desc())
+        final_query.filter_by.assert_called_once_with(**params)
+
+

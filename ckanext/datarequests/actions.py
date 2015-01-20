@@ -152,16 +152,16 @@ def datarequest_index(context, data_dict):
 
     # Get the organization
     organization_id = data_dict.get('organization_id', None)
+    params = {}
     if organization_id:
         # Get organization ID
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
 
-        # Call the function filtering by organization
-        db_datarequests = db.DataRequest.get_ordered_by_date(
-            organization_id=organization_id)
-    else:
-        # Call the function without filtering by organization
-        db_datarequests = db.DataRequest.get_ordered_by_date()
+        # Include the organization into the parameters to filter the database query
+        params['organization_id'] = organization_id
+
+    # Call the function
+    db_datarequests = db.DataRequest.get_ordered_by_date(**params)
 
     # Dictize the results
     offset = data_dict.get('offset', 0)
