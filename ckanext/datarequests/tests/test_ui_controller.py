@@ -47,6 +47,14 @@ class UIControllerTest(unittest.TestCase):
         self._model = controller.model
         controller.model = MagicMock()
 
+        self._request = controller.request
+        controller.request = MagicMock()
+
+        self._helpers = controller.helpers
+        controller.helpers = MagicMock()
+
+        self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
+
         self.expected_context = {
             'model': controller.model,
             'session': controller.model.Session,
@@ -62,6 +70,9 @@ class UIControllerTest(unittest.TestCase):
         controller.c = self._c
         controller.request = self._request
         controller.model = self._model
+        controller.request = self._request
+        controller.helpers = self._helpers
+        controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
     def test_index(self):
         result = self.controller_instance.index()
@@ -230,13 +241,14 @@ class UIControllerTest(unittest.TestCase):
 
     def test_update_not_authorized(self):
         datarequest_id = 'example_uuidv4'
-        controller.tk.get_action.return_value.side_effect = controller.tk.NotAuthorized('User is not authorized')
+        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
 
         # Call the function
         result = self.controller_instance.update(datarequest_id)
 
         # Assertions
         controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)
+        self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
@@ -345,3 +357,75 @@ class UIControllerTest(unittest.TestCase):
         else:
             controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
+
+    def test_index_not_authorized(self):
+        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
+
+        # Call the function
+        result = self.controller_instance.index()
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(401, 'Unauthorized to list Data Requests')
+        self.assertEquals(0, controller.tk.get_action.call_count)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
+    def test_index_invalid_page(self):
+        controller.request.GET = controller.request.params = {'page': '2a'}
+
+        # Call the function
+        result = self.controller_instance.index()
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(400, '"page" parameter must be an integer')
+        self.assertEquals(0, controller.tk.check_access.call_count)
+        self.assertEquals(0, controller.tk.get_action.call_count)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
+    @parameterized.expand([
+        ('1', 'conwet', 0, 10),
+        ('2', 'conwet', 10, 10),
+        ('7', 'conwet', 60, 10),
+        ('1', 'conwet', 0, 25, 25),
+        ('2', 'conwet', 25, 25, 25),
+        ('7', 'conwet', 150, 25, 25),
+    ])
+    def test_index(self, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
+        # Expected data_dict
+        expected_data_dict = {
+            'offset': expected_offset,
+            'limit': expected_limit
+        }
+
+        # Set datarequests_per_page
+        constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
+
+        # Get parameters
+        controller.request.GET = controller.request.params = {}
+
+        if page:
+            controller.request.GET['page'] = page
+
+        if organization:
+            controller.request.GET['organization'] = organization
+            expected_data_dict['organization_id'] = organization
+
+        # Call the function
+        result = self.controller_instance.index()
+
+        # Assertions
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
+        controller.tk.get_action.assert_called_once_with(constants.DATAREQUEST_INDEX)
+        datarequest_index = controller.tk.get_action.return_value
+        datarequest_index.assert_called_once_with(self.expected_context, expected_data_dict)
+
+        expected_response = datarequest_index.return_value
+        self.assertEquals(expected_response['count'], controller.c.datarequest_count)
+        self.assertEquals(expected_response['result'], controller.c.datarequests)
+        self.assertEquals(expected_response['facets'], controller.c.search_facets)
+        self.assertEquals(controller.helpers.Page.return_value, controller.c.page)
+        self.assertEquals({'organization': controller.tk._('Organizations')}, controller.c.facet_titles)
+
+        self.assertEquals(controller.tk.render.return_value, result)
+        controller.tk.render.assert_called_once_with('datarequests/index.html')

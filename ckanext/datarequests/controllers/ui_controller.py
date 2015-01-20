@@ -54,18 +54,18 @@ class DataRequestsUI(base.BaseController):
             params.append(('page', page))
             return search_url(params)
 
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'auth_user_obj': c.userobj}
-        page = int(request.GET.get('page', 1))
-        limit = constants.DATAREQUESTS_PER_PAGE
-        offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
-        data_dict = {'offset': offset, 'limit': limit}
-
-        organization_id = request.GET.get('organization', '')
-        if organization_id:
-            data_dict['organization_id'] = organization_id
-
         try:
+            context = {'model': model, 'session': model.Session,
+                       'user': c.user, 'auth_user_obj': c.userobj}
+            page = int(request.GET.get('page', 1))
+            limit = constants.DATAREQUESTS_PER_PAGE
+            offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
+            data_dict = {'offset': offset, 'limit': limit}
+
+            organization_id = request.GET.get('organization', '')
+            if organization_id:
+                data_dict['organization_id'] = organization_id
+
             tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
             datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
             c.datarequest_count = datarequests_list['count']
@@ -82,6 +82,9 @@ class DataRequestsUI(base.BaseController):
                 'organization': tk._('Organizations')
             }
             return tk.render('datarequests/index.html')
+        except ValueError:
+            # This exception should only occur if the page value is not valid
+            tk.abort(400, tk._('"page" parameter must be an integer'))
         except tk.NotAuthorized:
             tk.abort(401, tk._('Unauthorized to list Data Requests'))
 
