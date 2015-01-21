@@ -41,12 +41,12 @@ def url_with_params(url, params):
     return url + u'?' + urlencode(params)
 
 
-def search_url(params, package_type=None):
+def search_url(params):
     url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                           action='index')
     return url_with_params(url, params)
 
-def org_datarequest_url(params, id, package_type=None):
+def org_datarequest_url(params, id):
     url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                           action='organization_datarequests', id=id)
     return url_with_params(url, params)
@@ -209,5 +209,5 @@ class DataRequestsUI(base.BaseController):
     def organization_datarequests(self, id):
         context = self._get_context()
         c.group_dict = tk.get_action('organization_show')(context, {'id': id})
-        url_func = functools.partial(org_datarequest_url, id)
+        url_func = functools.partial(org_datarequest_url, id=id)
         return self._show_index(id, False, url_func, 'organization/datarequests.html')

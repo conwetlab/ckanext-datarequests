@@ -74,11 +74,6 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
-    def test_index(self):
-        result = self.controller_instance.index()
-        self.assertEquals(controller.tk.render.return_value, result)
-        controller.tk.render.assert_called_once_with('datarequests/index.html')
-
     @parameterized.expand([
         (True,),
         (False,)
@@ -384,14 +379,25 @@ class UIControllerTest(unittest.TestCase):
         self.assertIsNone(result)
 
     @parameterized.expand([
-        ('1', 'conwet', 0, 10),
-        ('2', 'conwet', 10, 10),
-        ('7', 'conwet', 60, 10),
-        ('1', 'conwet', 0, 25, 25),
-        ('2', 'conwet', 25, 25, 25),
-        ('7', 'conwet', 150, 25, 25),
+        ('index', '1', 'conwet', 0,    10),
+        ('index', '2', 'conwet', 10,   10),
+        ('index', '7', 'conwet', 60,   10),
+        ('index', '1', 'conwet', 0,    25, 25),
+        ('index', '2', 'conwet', 25,   25, 25),
+        ('index', '7', 'conwet', 150,  25, 25),
+        ('index', '5', None,     40,   10),
+        ('organization_datarequests', '1', 'conwet', 0,    10),
+        ('organization_datarequests', '2', 'conwet', 10,   10),
+        ('organization_datarequests', '7', 'conwet', 60,   10),
+        ('organization_datarequests', '1', 'conwet', 0,    25, 25),
+        ('organization_datarequests', '2', 'conwet', 25,   25, 25),
+        ('organization_datarequests', '7', 'conwet', 150,  25, 25),
     ])
-    def test_index(self, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
+    def test_index(self, func, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
+        params = {}
+        organization_show_action = 'organization_show'
+        base_url = 'http://someurl.com/somepath/otherpath'
+
         # Expected data_dict
         expected_data_dict = {
             'offset': expected_offset,
@@ -404,32 +410,87 @@ class UIControllerTest(unittest.TestCase):
         # Get parameters
         controller.request.GET = controller.request.params = {}
 
+        # Set page
         if page:
             controller.request.GET['page'] = page
 
-        if organization:
-            controller.request.GET['organization'] = organization
+        # Set the organization in the correct place depending on the function
+        if func == 'index':
+            if organization:
+                controller.request.GET['organization'] = organization
+                expected_data_dict['organization_id'] = organization
+        else:
+            # organization_datarequests
+            params['id'] = organization
             expected_data_dict['organization_id'] = organization
 
+        # Mocking
+        organization_show = MagicMock()
+        datarequest_index = MagicMock()
+        def _get_action(action):
+            if action == organization_show_action:
+                return organization_show
+            else:
+                return datarequest_index
+
+        controller.tk.get_action.side_effect = _get_action
+        controller.helpers.url_for.return_value = base_url
+
         # Call the function
-        result = self.controller_instance.index()
+        function = getattr(self.controller_instance, func)
+        result = function(**params)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
-        controller.tk.get_action.assert_called_once_with(constants.DATAREQUEST_INDEX)
-        datarequest_index = controller.tk.get_action.return_value
-        datarequest_index.assert_called_once_with(self.expected_context, expected_data_dict)
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)        
 
+        # Specific assertions depending on the function called
+        if func == 'index':
+            controller.tk.get_action.assert_called_once_with(constants.DATAREQUEST_INDEX)
+            self.assertEquals(0, organization_show.call_count)
+            expected_render_page = 'datarequests/index.html'
+        else:
+            self.assertEquals(2, controller.tk.get_action.call_count)
+            controller.tk.get_action.assert_any_call(constants.DATAREQUEST_INDEX)
+            controller.tk.get_action.assert_any_call(organization_show_action)
+            self.assertEquals(organization_show.return_value, controller.c.group_dict)
+            organization_show.assert_called_once_with(self.expected_context, {'id': organization})
+            expected_render_page = 'organization/datarequests.html'
+
+        # Check the values put in c
+        datarequest_index.assert_called_once_with(self.expected_context, expected_data_dict)
         expected_response = datarequest_index.return_value
         self.assertEquals(expected_response['count'], controller.c.datarequest_count)
         self.assertEquals(expected_response['result'], controller.c.datarequests)
         self.assertEquals(expected_response['facets'], controller.c.search_facets)
         self.assertEquals(controller.helpers.Page.return_value, controller.c.page)
-        expected_facet_titles = {
-            'organization': controller.tk._('Organizations'),
-            'state': controller.tk._('State')
-        }
+
+        # Check the pager
+        page_arguments = controller.helpers.Page.call_args[1]
+        self.assertEquals(datarequests_per_page, page_arguments['items_per_page'])
+        self.assertEquals(int(page), page_arguments['page'])
+        self.assertEquals(expected_response['count'], page_arguments['item_count'])
+        self.assertEquals(expected_response['result'], page_arguments['collection'])
+        silly_page = 72
+        self.assertEquals("%s?page=%d" % (base_url, silly_page), page_arguments['url'](page=silly_page))
+
+        # When URL function is called, helpers.url_for is called to get the final URL
+        if func == 'index':
+            controller.helpers.url_for.assert_called_once_with(
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                action='index')
+        else:
+            controller.helpers.url_for.assert_called_once_with(
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                action='organization_datarequests', id=organization)
+
+        # Check the facets
+        expected_facet_titles = {}
+        expected_facet_titles['state'] = controller.tk._('State')
+        if func == 'index':
+            expected_facet_titles['organization'] = controller.tk._('Organizations')
+
         self.assertEquals(expected_facet_titles, controller.c.facet_titles)
 
+        # Check that the render functions has been called with the suitable parameters
         self.assertEquals(controller.tk.render.return_value, result)
-        controller.tk.render.assert_called_once_with('datarequests/index.html')
+        controller.tk.render.assert_called_once_with(expected_render_page)
