@@ -71,22 +71,28 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_before_map(self):
         mapa = MagicMock()
-        dr_basic_path = '/datarequest'
+        dr_basic_path = 'datarequest'
         self.plg_instance.before_map(mapa)
 
-        self.assertEquals(4, mapa.connect.call_count)
-        mapa.connect.assert_any_call('datarequests_index', dr_basic_path,
+        self.assertEquals(5, mapa.connect.call_count)
+        mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index', conditions=dict(method=['GET']))
 
-        mapa.connect.assert_any_call('%s/new' % dr_basic_path,
+        mapa.connect.assert_any_call('/%s/new' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='new', conditions=dict(method=['GET', 'POST']))
 
-        mapa.connect.assert_any_call('datarequest_show', '%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        mapa.connect.assert_any_call('datarequest_show', '/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
 
-        mapa.connect.assert_any_call('%s/edit/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='update', conditions=dict(method=['GET', 'POST']))
+
+        mapa.connect.assert_any_call('organization_datarequests', 
+            '/organization/%s/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='organization_datarequests', conditions=dict(method=['GET']), 
+            ckan_icon='question-sign')

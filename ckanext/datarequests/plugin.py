@@ -73,27 +73,27 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def before_map(self, m):
         # Data Requests index
-        m.connect('datarequests_index', constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('datarequests_index', "/%s" % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='index', conditions=dict(method=['GET']))
 
         # Create Data Request
-        m.connect('%s/new' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('/%s/new' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='new', conditions=dict(method=['GET', 'POST']))
 
         # Show Data Request
-        m.connect('datarequest_show', '%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('datarequest_show', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
 
         # Update Data Request
-        m.connect('%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('/%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='update', conditions=dict(method=['GET', 'POST']))
 
         # Data Request that belongs to an organization
-        m.connect('organization_datarequests', '/organization%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='organization_datarequests', conditions=dict(method=['GET']), 
                   ckan_icon='question-sign')

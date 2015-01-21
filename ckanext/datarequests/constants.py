@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-DATAREQUESTS_MAIN_PATH = '/datarequest'
+DATAREQUESTS_MAIN_PATH = 'datarequest'
 DATAREQUEST_CREATE = 'datarequest_create'
 DATAREQUEST_SHOW = 'datarequest_show'
 DATAREQUEST_UPDATE = 'datarequest_update'

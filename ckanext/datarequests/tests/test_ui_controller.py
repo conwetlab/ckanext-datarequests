@@ -425,7 +425,11 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_response['result'], controller.c.datarequests)
         self.assertEquals(expected_response['facets'], controller.c.search_facets)
         self.assertEquals(controller.helpers.Page.return_value, controller.c.page)
-        self.assertEquals({'organization': controller.tk._('Organizations')}, controller.c.facet_titles)
+        expected_facet_titles = {
+            'organization': controller.tk._('Organizations'),
+            'state': controller.tk._('State')
+        }
+        self.assertEquals(expected_facet_titles, controller.c.facet_titles)
 
         self.assertEquals(controller.tk.render.return_value, result)
         controller.tk.render.assert_called_once_with('datarequests/index.html')
