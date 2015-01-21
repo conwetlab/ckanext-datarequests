@@ -291,3 +291,19 @@ class ActionsTest(unittest.TestCase):
         # Check the result
         self._check_basic_response(datarequest, result)
 
+    def test_datarequest_index_not_authorized(self):
+        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
+        default_content = {}
+
+        # Call the action
+        with self.assertRaises(self._tk.NotAuthorized):
+            result = actions.datarequest_index(self.context, default_content)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.context, default_content)
+        self.assertEquals(0, actions.db.DataRequest.get_ordered_by_date.call_count)
+
+    # def test_datarequest_index(self, content):
+
+

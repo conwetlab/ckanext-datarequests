@@ -92,4 +92,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='update', conditions=dict(method=['GET', 'POST']))
 
+        # Data Request that belongs to an organization
+        m.connect('organization_datarequests', '/organization%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='organization_datarequests', conditions=dict(method=['GET']), 
+                  ckan_icon='question-sign')
+
         return m

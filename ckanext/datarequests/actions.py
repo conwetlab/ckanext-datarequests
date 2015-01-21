@@ -160,6 +160,11 @@ def datarequest_index(context, data_dict):
         # Include the organization into the parameters to filter the database query
         params['organization_id'] = organization_id
 
+    # Filter by state
+    closed = data_dict.get('closed', None)
+    if closed is not None:
+        params['closed'] = closed
+
     # Call the function
     db_datarequests = db.DataRequest.get_ordered_by_date(**params)
 
@@ -172,6 +177,9 @@ def datarequest_index(context, data_dict):
 
     # Facets
     no_processed_organization_facet = {}
+    CLOSED = 'Closed'
+    OPEN = 'Open'
+    no_processed_state_facet = {CLOSED:0 , OPEN: 0}
     for data_req in db_datarequests:
         if data_req.organization_id:
             # Facets
@@ -180,21 +188,38 @@ def datarequest_index(context, data_dict):
             else:
                 no_processed_organization_facet[data_req.organization_id] = 1
 
+        no_processed_state_facet[CLOSED if data_req.closed else OPEN] +=1
+
     # Format facets
     organization_facet = []
     for organization_id in no_processed_organization_facet:
-        organization = organization_show({'ignore_auth': True}, {'id': organization_id})
-        organization_facet.append({
-            'name': organization.get('name'),
-            'display_name': organization.get('display_name'),
-            'count': no_processed_organization_facet[organization_id]
-        })
+        try:
+            organization = organization_show({'ignore_auth': True}, {'id': organization_id})
+            organization_facet.append({
+                'name': organization.get('name'),
+                'display_name': organization.get('display_name'),
+                'count': no_processed_organization_facet[organization_id]
+            })
+        except:
+            pass
+
+    state_facet = []
+    for state in no_processed_state_facet:
+        if no_processed_state_facet[state]:
+            state_facet.append({
+                'name': state.lower(),
+                'display_name': state,
+                'count': no_processed_state_facet[state]
+            })
 
     return {
         'count': len(db_datarequests),
         'facets': {
             'organization': {
                 'items': organization_facet
+            },
+            'state': {
+                'items': state_facet
             }
         },
         'result': datarequests

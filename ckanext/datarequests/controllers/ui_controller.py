@@ -22,6 +22,7 @@ import ckan.model as model
 import ckan.plugins as plugins
 import ckan.lib.helpers as helpers
 import ckanext.datarequests.constants as constants
+import functools
 
 from ckan.common import request
 from urllib import urlencode
@@ -41,28 +42,39 @@ def url_with_params(url, params):
 
 
 def search_url(params, package_type=None):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index')
+    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                          action='index')
     return url_with_params(url, params)
 
+def org_datarequest_url(params, id, package_type=None):
+    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                          action='organization_datarequests', id=id)
+    return url_with_params(url, params)
 
 class DataRequestsUI(base.BaseController):
 
-    def index(self):
+    def _get_context(self):
+        return {'model': model, 'session': model.Session,
+                'user': c.user, 'auth_user_obj': c.userobj}
+
+    def _show_index(self, organization_id, include_organization_facet, url_func, file_to_render):
 
         def pager_url(q=None, page=None):
             params = list()
             params.append(('page', page))
-            return search_url(params)
+            return url_func(params)
 
         try:
-            context = {'model': model, 'session': model.Session,
-                       'user': c.user, 'auth_user_obj': c.userobj}
+            context = self._get_context()
             page = int(request.GET.get('page', 1))
             limit = constants.DATAREQUESTS_PER_PAGE
             offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
             data_dict = {'offset': offset, 'limit': limit}
 
-            organization_id = request.GET.get('organization', '')
+            state = request.GET.get('state', None)
+            if state:
+                data_dict['closed'] = True if state == 'closed' else False
+
             if organization_id:
                 data_dict['organization_id'] = organization_id
 
@@ -79,14 +91,22 @@ class DataRequestsUI(base.BaseController):
                 items_per_page=limit
             )
             c.facet_titles = {
-                'organization': tk._('Organizations')
+                'state': tk._('State'),
             }
-            return tk.render('datarequests/index.html')
+
+            # Organization facet cannot be shown when the user is viewing an org
+            if include_organization_facet is True:
+                c.facet_titles['organization'] = tk._('Organizations')
+
+            return tk.render(file_to_render)
         except ValueError:
             # This exception should only occur if the page value is not valid
             tk.abort(400, tk._('"page" parameter must be an integer'))
         except tk.NotAuthorized:
             tk.abort(401, tk._('Unauthorized to list Data Requests'))
+
+    def index(self):
+        return self._show_index(request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
 
     def _process_post(self, action, context):
         # If the user has submitted the form, the data request must be created
@@ -120,9 +140,7 @@ class DataRequestsUI(base.BaseController):
                     c.errors_summary[key] = ', '.join(error)
 
     def new(self):
-
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'auth_user_obj': c.userobj}
+        context = self._get_context()
 
         # Basic intialization
         c.datarequest = {}
@@ -142,13 +160,12 @@ class DataRequestsUI(base.BaseController):
 
     def show(self, id):
         data_dict = {'id': id}
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'auth_user_obj': c.userobj}
+        context = self._get_context()
 
         try:
             tk.check_access(constants.DATAREQUEST_SHOW, context, data_dict)
             c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
-            
+
             try:
                 c.datarequest['user'] = tk.get_action('user_show')(context, {'id': c.datarequest['user_id']})
             except tk.ObjectNotFound:
@@ -170,8 +187,7 @@ class DataRequestsUI(base.BaseController):
 
     def update(self, id):
         data_dict = {'id': id}
-        context = {'model': model, 'session': model.Session,
-                   'user': c.user, 'auth_user_obj': c.userobj}
+        context = self._get_context()
 
         # Basic intialization
         c.datarequest = {}
@@ -189,3 +205,9 @@ class DataRequestsUI(base.BaseController):
         except tk.NotAuthorized:
             tk.abort(401, tk._('You are not authorized to update the Data Request %s'
                                % id))
+
+    def organization_datarequests(self, id):
+        context = self._get_context()
+        c.group_dict = tk.get_action('organization_show')(context, {'id': id})
+        url_func = functools.partial(org_datarequest_url, id)
+        return self._show_index(id, False, url_func, 'organization/datarequests.html')
