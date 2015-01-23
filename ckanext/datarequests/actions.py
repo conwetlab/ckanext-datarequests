@@ -60,6 +60,29 @@ def _undictize_datarequest_basic(data_request, data_dict):
 
 
 def datarequest_create(context, data_dict):
+    '''
+    Action to create a new dara request. The function check the access rights
+    of the user before creating the data request. If the user is not allowed
+    a NotAuthorized exception will be risen
+
+    In addition, you should note that the parameters will be checked and an
+    exception (ValidationError) will be risen if some of these parameters are
+    not valid
+
+    :param title: The title of the data request
+    :type title: string
+
+    :param description: A brief description for your data request
+    :type description: string
+
+    :param organiztion_id: If you want to create the data request in a specific
+        organization.
+    :type organization_id: string
+
+    :returns: A dict with the data request (id, user_id, title, description, 
+        organization_id, open_time, accepted_dataset, close_time, closed)
+    :rtype: dict
+    '''
 
     model = context['model']
     session = context['session']
@@ -86,6 +109,21 @@ def datarequest_create(context, data_dict):
 
 
 def datarequest_show(context, data_dict):
+    '''
+    Action to retrieve the information of a data request. The only required
+    parameter is the id of the data request. A NotFound exception will be
+    risen if the id is not found. 
+
+    Access rights will be checked before returning the information and an
+    exception will be risen (NotAuthorized) if the user is not authorized
+
+    :param id: The id of the data request to be shown
+    :type id: string
+
+    :returns: A dict with the data request (id, user_id, title, description, 
+        organization_id, open_time, accepted_dataset, close_time, closed)
+    :rtype: dict
+    '''
 
     model = context['model']
     datarequest_id = data_dict['id']
@@ -106,6 +144,32 @@ def datarequest_show(context, data_dict):
 
 
 def datarequest_update(context, data_dict):
+    '''
+    Action to update a new dara request. The function check the access rights
+    of the user before updating the data request. If the user is not allowed
+    a NotAuthorized exception will be risen
+
+    In addition, you should note that the parameters will be checked and an
+    exception (ValidationError) will be risen if some of these parameters are
+    not valid
+
+    :param id: The id of the data request to be updated
+    :type id: string
+
+    :param title: The title of the data request
+    :type title: string
+
+    :param description: A brief description for your data request
+    :type description: string
+
+    :param organiztion_id: If you want to create the data request in a specific
+        organization.
+    :type organization_id: string
+
+    :returns: A dict with the data request (id, user_id, title, description, 
+        organization_id, open_time, accepted_dataset, close_time, closed)
+    :rtype: dict
+    '''
 
     model = context['model']
     session = context['session']
@@ -140,6 +204,30 @@ def datarequest_update(context, data_dict):
 
 
 def datarequest_index(context, data_dict):
+    '''
+    Returns a list with the existing data requests. Rights access will be checked
+    before returning the results. If the user is not allowed, a NotAuthorized 
+    exception will be risen
+
+    :parameter organization_id: This parameter is optional and allows users
+        to filter the results by organization
+    :type organization_id: string
+
+    :parameter closed: This parameter is optional and allos users to filter
+        the result by the data request status (open or closed)
+    :type closed: bool
+
+    :parameter offset: The first element to be returned (0 by default)
+    :type offset: int
+
+    :parameter limit: The max number of data requests to be returned (10 by default)
+    :type limit: init
+
+    :returns: A dict with three fields: result (a list of data requests),
+        facets (a list of the facets that can be used) and count (the total 
+        number of existing data requests)
+    :rtype: dict
+    '''
 
     model = context['model']
     organization_show = tk.get_action('organization_show')
