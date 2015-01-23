@@ -393,7 +393,7 @@ class UIControllerTest(unittest.TestCase):
         ('organization_datarequests', '2', 'conwet', 25,   25, 25),
         ('organization_datarequests', '7', 'conwet', 150,  25, 25),
     ])
-    def test_index(self, func, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
+    def test_index_organization_dr(self, func, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
         params = {}
         organization_show_action = 'organization_show'
         base_url = 'http://someurl.com/somepath/otherpath'

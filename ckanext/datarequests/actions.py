@@ -154,7 +154,7 @@ def datarequest_index(context, data_dict):
     organization_id = data_dict.get('organization_id', None)
     params = {}
     if organization_id:
-        # Get organization ID
+        # Get organization ID (in some cases, user give the system the organization name)
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
 
         # Include the organization into the parameters to filter the database query
@@ -212,15 +212,17 @@ def datarequest_index(context, data_dict):
                 'count': no_processed_state_facet[state]
             })
 
-    return {
+    result = {
         'count': len(db_datarequests),
-        'facets': {
-            'organization': {
-                'items': organization_facet
-            },
-            'state': {
-                'items': state_facet
-            }
-        },
+        'facets': {},
         'result': datarequests
     }
+
+    # Facets can only be included if they contain something
+    if organization_facet:
+        result['facets']['organization'] = {'items': organization_facet}
+
+    if state_facet:
+        result['facets']['state'] = {'items': state_facet}
+
+    return result
