@@ -40,7 +40,7 @@ def auth_if_creator(context, data_dict):
 
 
 def datarequest_update(context, data_dict):
-	auth_if_creator(context, data_dict)
+	return auth_if_creator(context, data_dict)
 
 
 @tk.auth_allow_anonymous_access
@@ -49,4 +49,4 @@ def datarequest_index(context, data_dict):
 
 
 def datarequest_delete(context, data_dict):
-	auth_if_creator(context, data_dict)
+	return auth_if_creator(context, data_dict)

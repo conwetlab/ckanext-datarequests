@@ -149,7 +149,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
                 self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
+                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
                                   controller.tk.response.location)
         else:
             controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
@@ -347,7 +347,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
                 self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
+                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
                                   controller.tk.response.location)
         else:
             controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)

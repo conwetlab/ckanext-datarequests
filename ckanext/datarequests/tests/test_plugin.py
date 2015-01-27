@@ -42,6 +42,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         self.datarequest_show = constants.DATAREQUEST_SHOW
         self.datarequest_update = constants.DATAREQUEST_UPDATE
         self.datarequest_index = constants.DATAREQUEST_INDEX
+        self.datarequest_delete = constants.DATAREQUEST_DELETE
 
     def tearDown(self):
         plugin.actions = self._actions
@@ -50,19 +51,21 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_get_actions(self):
         actions = self.plg_instance.get_actions()
-        self.assertEquals(4, len(actions))
+        self.assertEquals(5, len(actions))
         self.assertEquals(plugin.actions.datarequest_create, actions[self.datarequest_create])
         self.assertEquals(plugin.actions.datarequest_show, actions[self.datarequest_show])
         self.assertEquals(plugin.actions.datarequest_update, actions[self.datarequest_update])
         self.assertEquals(plugin.actions.datarequest_index, actions[self.datarequest_index])
+        self.assertEquals(plugin.actions.datarequest_delete, actions[self.datarequest_delete])
 
     def test_get_auth_functions(self):
         auth_functions = self.plg_instance.get_auth_functions()
-        self.assertEquals(4, len(auth_functions))
+        self.assertEquals(5, len(auth_functions))
         self.assertEquals(plugin.auth.datarequest_create, auth_functions[self.datarequest_create])
         self.assertEquals(plugin.auth.datarequest_show, auth_functions[self.datarequest_show])
         self.assertEquals(plugin.auth.datarequest_update, auth_functions[self.datarequest_update])
         self.assertEquals(plugin.auth.datarequest_index, auth_functions[self.datarequest_index])
+        self.assertEquals(plugin.auth.datarequest_delete, auth_functions[self.datarequest_delete])
 
     def test_update_config(self):
         config = MagicMock()
@@ -74,7 +77,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         dr_basic_path = 'datarequest'
         self.plg_instance.before_map(mapa)
 
-        self.assertEquals(5, mapa.connect.call_count)
+        self.assertEquals(6, mapa.connect.call_count)
         mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index', conditions=dict(method=['GET']))
@@ -90,6 +93,10 @@ class DataRequestPlutinTest(unittest.TestCase):
         mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='update', conditions=dict(method=['GET', 'POST']))
+
+        mapa.connect.assert_any_call('/%s/delete/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='delete', conditions=dict(method=['POST']))
 
         mapa.connect.assert_any_call('organization_datarequests', 
             '/organization/%s/{id}' % dr_basic_path,
