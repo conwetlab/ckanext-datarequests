@@ -34,6 +34,7 @@ class ActionsTest(unittest.TestCase):
         self._tk = actions.tk
         actions.tk = MagicMock()
         actions.tk.ObjectNotFound = self._tk.ObjectNotFound
+        actions.tk.ValidationError = self._tk.ValidationError
 
         self._c = actions.c
         actions.c = MagicMock()
@@ -70,15 +71,49 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(datarequest.organization_id, response['organization_id'])
         self.assertEquals(str(datarequest.open_time), response['open_time'])
 
+    def _test_not_authorized(self, function, action, request_data):
+        # Configure the mock
+        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
+
+        # Call the function
+        with self.assertRaises(self._tk.NotAuthorized):
+            function(self.context, request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(action, self.context, request_data)
+        self.assertEquals(0, actions.db.DataRequest.get.call_count)
+
+    def _test_not_found(self, function, action, request_data):
+        # Configure the mock
+        actions.db.DataRequest.get.return_value = []
+
+        # Call the function
+        with self.assertRaises(self._tk.ObjectNotFound):
+            function(self.context, request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(action, self.context, request_data)
+        actions.db.DataRequest.get.assert_called_once_with(id=test_data.show_request_data['id'])
+
+    def _test_no_id(self, function):
+        # Call the function
+        with self.assertRaises(self._tk.ValidationError):
+            function(self.context, {})
+
+        # Assertions
+        self.assertEquals(0, actions.db.init_db.call_count)
+        self.assertEquals(0, actions.tk.check_access.call_count)
+        self.assertEquals(0, actions.db.DataRequest.get.call_count)
+
     def test_datarequest_create_no_access(self):
         # Configure the mock
         actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
 
         # Call the function
-        try:
+        with self.assertRaises(self._tk.NotAuthorized):
             actions.datarequest_create(self.context, test_data.create_request_data)
-        except self._tk.NotAuthorized:
-            pass
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
@@ -93,10 +128,8 @@ class ActionsTest(unittest.TestCase):
         actions.validator.validate_datarequest = MagicMock(side_effect=self._tk.ValidationError({'error': 'MSG ERROR'}))
 
         # Call the function
-        try:
+        with self.assertRaises(self._tk.ValidationError):
             actions.datarequest_create(self.context, test_data.create_request_data)
-        except self._tk.ValidationError:
-            pass
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
@@ -134,34 +167,13 @@ class ActionsTest(unittest.TestCase):
         self._check_basic_response(datarequest, result)
 
     def test_datarequest_show_not_authorized(self):
-        # Configure the mock
-        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
-
-        # Call the function
-        try:
-            actions.datarequest_show(self.context, test_data.show_request_data)
-        except self._tk.NotAuthorized:
-            pass
-
-        # Assertions
-        actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.context, test_data.show_request_data)
-        self.assertEquals(0, actions.db.DataRequest.get.call_count)
+        self._test_not_authorized(actions.datarequest_show, constants.DATAREQUEST_SHOW, test_data.show_request_data)
 
     def test_datarequest_show_not_found(self):
-        # Configure the mock
-        actions.db.DataRequest.get.return_value = []
+        self._test_not_found(actions.datarequest_show, constants.DATAREQUEST_SHOW, test_data.show_request_data)
 
-        # Call the function
-        try:
-            actions.datarequest_show(self.context, test_data.show_request_data)
-        except self._tk.ObjectNotFound:
-            pass
-
-        # Assertions
-        actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.context, test_data.show_request_data)
-        actions.db.DataRequest.get.assert_called_once_with(id=test_data.show_request_data['id'])
+    def test_datarequest_show_no_id(self):
+        self._test_no_id(actions.datarequest_show)
 
     def _test_datarequest_show_found(self, datarequest):
         # Configure mock
@@ -198,33 +210,16 @@ class ActionsTest(unittest.TestCase):
         self._test_datarequest_show_found(datarequest)
 
     def test_datarequest_update_not_authorized(self):
-        # Configure the mock
-        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
-
-        # Call the action
-        with self.assertRaises(self._tk.NotAuthorized):
-            actions.datarequest_update(self.context, test_data.update_request_data)
-
-        # Assertions
-        actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.context, test_data.update_request_data)
-        self.assertEquals(0, actions.db.DataRequest.get.call_count)
+        self._test_not_authorized(actions.datarequest_update, constants.DATAREQUEST_UPDATE, test_data.update_request_data)
         self.assertEquals(0, actions.validator.validate_datarequest.call_count)
         self.assertEquals(0, self.context['session'].add.call_count)
         self.assertEquals(0, self.context['session'].commit.call_count)
 
+    def test_datarequest_update_no_id(self):
+        self._test_no_id(actions.datarequest_update)
+
     def test_datarequest_update_not_found(self):
-        # Configure the mock
-        actions.db.DataRequest.get.return_value = []
-
-        # Call the action
-        with self.assertRaises(self._tk.ObjectNotFound):
-            actions.datarequest_update(self.context, test_data.update_request_data)
-
-        # Assertions
-        actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.context, test_data.update_request_data)
-        actions.db.DataRequest.get.assert_called_once_with(id=test_data.update_request_data['id'])
+        self._test_not_found(actions.datarequest_update, constants.DATAREQUEST_UPDATE, test_data.update_request_data)
         self.assertEquals(0, actions.validator.validate_datarequest.call_count)
         self.assertEquals(0, self.context['session'].add.call_count)
         self.assertEquals(0, self.context['session'].commit.call_count)
@@ -263,17 +258,7 @@ class ActionsTest(unittest.TestCase):
         self._check_basic_response(datarequest, result)
 
     def test_datarequest_index_not_authorized(self):
-        actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
-        default_content = {}
-
-        # Call the action
-        with self.assertRaises(self._tk.NotAuthorized):
-            actions.datarequest_index(self.context, default_content)
-
-        # Assertions
-        actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.context, default_content)
-        self.assertEquals(0, actions.db.DataRequest.get_ordered_by_date.call_count)
+        self._test_not_authorized(actions.datarequest_index, constants.DATAREQUEST_INDEX, {})
 
     @parameterized.expand([
         (test_data.datarequest_index_test_case_1,),
@@ -291,7 +276,6 @@ class ActionsTest(unittest.TestCase):
     ])
     def test_datarequest_index(self, test_case):
 
-        
         content = test_case['content']
         expected_ddbb_params = test_case['expected_ddbb_params']
         ddbb_response = test_case['ddbb_response']
@@ -344,3 +328,30 @@ class ActionsTest(unittest.TestCase):
             # The items are the same ones
             for item in items:
                 self.assertIn(item, response['facets'][facet]['items'])
+
+    def test_datarequest_delete_not_authorized(self):
+        self._test_not_authorized(actions.datarequest_delete, constants.DATAREQUEST_DELETE, test_data.delete_request_data)
+
+    def test_datarequest_delete_not_found(self):
+        self._test_not_found(actions.datarequest_delete, constants.DATAREQUEST_DELETE, test_data.delete_request_data)
+
+    def test_datarequest_delete_no_id(self):
+        self._test_no_id(actions.datarequest_delete)
+
+    def test_datarequest_delete(self):
+        # Configure the mock
+        datarequest = test_data._generate_basic_datarequest()
+        actions.db.DataRequest.get.return_value = [datarequest]
+
+        # Call the function
+        data_dict = {'id': 'example_uuidv4'}
+        expected_data_dict = data_dict.copy()
+        result = actions.datarequest_delete(self.context, data_dict)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_DELETE, self.context, expected_data_dict)
+        self.context['session'].delete.assert_called_once_with(datarequest)
+        self.context['session'].commit.assert_called_once_with()
+
+        self._check_basic_response(datarequest, result)

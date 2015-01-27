@@ -126,7 +126,10 @@ def datarequest_show(context, data_dict):
     '''
 
     model = context['model']
-    datarequest_id = data_dict['id']
+    datarequest_id = data_dict.get('id', '')
+
+    if not datarequest_id:
+        raise tk.ValidationError('Data Request ID has not been included')
 
     # Init the data base
     db.init_db(model)
@@ -173,7 +176,10 @@ def datarequest_update(context, data_dict):
 
     model = context['model']
     session = context['session']
-    datarequest_id = data_dict['id']
+    datarequest_id = data_dict.get('id', '')
+
+    if not datarequest_id:
+        raise tk.ValidationError('Data Request ID has not been included')
 
     # Init the data base
     db.init_db(model)
@@ -331,7 +337,11 @@ def datarequest_delete(context, data_dict):
 
     model = context['model']
     session = context['session']
-    datarequest_id = data_dict['id']
+    datarequest_id = data_dict.get('id', '')
+
+    # Check id
+    if not datarequest_id:
+        raise tk.ValidationError('Data Request ID has not been included')
 
     # Init the data base
     db.init_db(model)

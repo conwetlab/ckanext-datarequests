@@ -111,7 +111,11 @@ update_request_data = {
     'title': 'title',
     'description': 'description',
     'organization_id': 'organization'
-} 
+}
+
+delete_request_data = {
+    'id': 'example_uuidv4'
+}
 
 
 ######################################################################

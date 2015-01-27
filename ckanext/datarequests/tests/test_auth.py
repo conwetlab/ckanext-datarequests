@@ -68,13 +68,16 @@ class AuthTest(unittest.TestCase):
         self.assertTrue(function(context, request_data).get('success', False))
 
     @parameterized.expand([
-        ('user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        ('user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        ('user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        ('user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
-
+        (auth.datarequest_update, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.datarequest_update, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.datarequest_update, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.datarequest_update, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.datarequest_delete, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.datarequest_delete, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.datarequest_delete, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.datarequest_delete, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
     ])
-    def test_datarequest_update(self, user_id, request_data, action_called, expected_result):
+    def test_datarequest_update_delete(self, function, user_id, request_data, action_called, expected_result):
 
         user_obj = MagicMock()
         user_obj.id = user_id
@@ -88,7 +91,7 @@ class AuthTest(unittest.TestCase):
         else:
             initial_request_data = request_data
 
-        result = auth.datarequest_update(context, initial_request_data).get('success')
+        result = function(context, initial_request_data).get('success')
         self.assertEquals(expected_result, result)
 
         if action_called:

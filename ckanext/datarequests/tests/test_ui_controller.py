@@ -74,6 +74,30 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
+    def _test_not_authorized(self, function, action):
+        datarequest_id = 'example_uuidv4'
+        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
+
+        # Call the function
+        result = function(datarequest_id)
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(401, 'You are not authorized to %s the Data Request %s' % (action, datarequest_id))
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
+    def _test_not_found(self, function):
+        datarequest_id = 'example_uuidv4'
+        controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Data set not found')
+
+        # Call the function
+        result = function(datarequest_id)
+
+        # Assertions
+        controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
     @parameterized.expand([
         (True,),
         (False,)
@@ -156,28 +180,10 @@ class UIControllerTest(unittest.TestCase):
             self.assertEquals(0, controller.tk.render.call_count)
 
     def test_show_not_authorized(self):
-        datarequest_id = 'example_uuidv4'
-        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
-
-        # Call the function
-        result = self.controller_instance.show(datarequest_id)
-
-        # Assertions
-        controller.tk.abort.assert_called_once_with(401, 'You are not authorized to view the Data Request %s' % datarequest_id)
-        self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self._test_not_authorized(self.controller_instance.show, 'view')
 
     def test_show_not_found(self):
-        datarequest_id = 'example_uuidv4'
-        controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Data set not found')
-
-        # Call the function
-        result = self.controller_instance.show(datarequest_id)
-
-        # Assertions
-        controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
-        self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self._test_not_found(self.controller_instance.show)
 
     @parameterized.expand({
         (False, False),
@@ -235,29 +241,10 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(controller.tk.render.return_value, result)
 
     def test_update_not_authorized(self):
-        datarequest_id = 'example_uuidv4'
-        controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
-
-        # Call the function
-        result = self.controller_instance.update(datarequest_id)
-
-        # Assertions
-        controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)
-        self.assertEquals(0, controller.tk.get_action.call_count)
-        self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self._test_not_authorized(self.controller_instance.update, 'update')
 
     def test_update_not_found(self):
-        datarequest_id = 'example_uuidv4'
-        controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Not found')
-
-        # Call the function
-        result = self.controller_instance.update(datarequest_id)
-
-        # Assertions
-        controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
-        self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self._test_not_found(self.controller_instance.update)
 
     def test_update_no_post_content(self):
         datarequest_id = 'example_uuidv4'
@@ -494,3 +481,38 @@ class UIControllerTest(unittest.TestCase):
         # Check that the render functions has been called with the suitable parameters
         self.assertEquals(controller.tk.render.return_value, result)
         controller.tk.render.assert_called_once_with(expected_render_page)
+
+    def test_delete_not_authorized(self):
+        self._test_not_authorized(self.controller_instance.delete, 'delete')
+
+    def test_delete_not_found(self):
+        self._test_not_found(self.controller_instance.delete)
+
+    def test_delete(self):
+        datarequest_id = 'example_uuidv4'
+        datarequest = {
+            'id': datarequest_id,
+            'title': 'DR Title',
+            'organization_id': 'example_uuidv4_organization'
+        }
+
+        datarequest_delete = controller.tk.get_action.return_value
+        datarequest_delete.return_value = datarequest
+
+        # Call the function
+        result = self.controller_instance.delete(datarequest_id)
+
+        # Assertions
+        # The result
+        self.assertIsNone(result)
+
+        # Functions has been called
+        expected_data_dict = {'id': datarequest_id}
+        controller.tk.check_access(constants.DATAREQUEST_DELETE, expected_data_dict)
+        datarequest_delete.assert_called_once_with(self.expected_context, expected_data_dict)
+        controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
+            'Data Request %s deleted correctly' % datarequest.get('title')))
+
+        # Redirection
+        self.assertEquals(302, controller.tk.response.status_int)
+        self.assertEquals('/%s' % constants.DATAREQUESTS_MAIN_PATH, controller.tk.response.location)
