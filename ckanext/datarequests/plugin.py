@@ -40,7 +40,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_CREATE: actions.datarequest_create,
             constants.DATAREQUEST_SHOW: actions.datarequest_show,
             constants.DATAREQUEST_UPDATE: actions.datarequest_update,
-            constants.DATAREQUEST_INDEX: actions.datarequest_index
+            constants.DATAREQUEST_INDEX: actions.datarequest_index,
+            constants.DATAREQUEST_DELETE: actions.datarequest_delete
         }
 
     ######################################################################
@@ -52,7 +53,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_CREATE: auth.datarequest_create,
             constants.DATAREQUEST_SHOW: auth.datarequest_show,
             constants.DATAREQUEST_UPDATE: auth.datarequest_update,
-            constants.DATAREQUEST_INDEX: auth.datarequest_index
+            constants.DATAREQUEST_INDEX: auth.datarequest_index,
+            constants.DATAREQUEST_DELETE: auth.datarequest_delete
         }
 
     ######################################################################
@@ -91,6 +93,11 @@ class DataRequestsPlugin(p.SingletonPlugin):
         m.connect('/%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='update', conditions=dict(method=['GET', 'POST']))
+
+        # Delete Data Request
+        m.connect('/%s/delete/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='delete', conditions=dict(method=['POST']))
 
         # Data Request that belongs to an organization
         m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,

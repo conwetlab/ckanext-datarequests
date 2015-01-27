@@ -314,3 +314,38 @@ def datarequest_index(context, data_dict):
         result['facets']['state'] = {'items': state_facet}
 
     return result
+
+def datarequest_delete(context, data_dict): 
+    '''
+    Action to delete a new dara request. The function check the access rights
+    of the user before deleting the data request. If the user is not allowed
+    a NotAuthorized exception will be risen
+
+    :param id: The id of the data request to be updated
+    :type id: string
+
+    :returns: A dict with the data request (id, user_id, title, description, 
+        organization_id, open_time, accepted_dataset, close_time, closed)
+    :rtype: dict
+    '''
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict['id']
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
+
+    # Get the data request
+    result = db.DataRequest.get(id=datarequest_id)
+    if not result:
+        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+
+    data_req = result[0]
+    session.delete(data_req)
+    session.commit()
+
+    return _dictize_datarequest(data_req)

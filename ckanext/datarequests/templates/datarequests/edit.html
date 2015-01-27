@@ -1,4 +1,4 @@
-{% extends "datarequests/base_form_page.html" %}
+{% extends "datarequests/base.html" %}
 
 {% block subtitle %}{{ _('Edit Data Request') }}{% endblock %}
 
@@ -8,4 +8,9 @@
   <li class="active"><a href="">{{ _('Edit Data Request') }}</a></li>
 {% endblock %}
 
-{% block page_heading %}{{ _('Edit Data Request') }}{% endblock %}
+{% block primary_content_inner %}
+  <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ _('Edit Data Request') }}{% endblock %}</h1>
+  {% snippet "datarequests/snippets/edit_datarequest_form.html", data=c.datarequest, errors=c.errors, errors_summary=c.errors_summary, offering=c.offering %}
+{% endblock %}
+
+{% block page_header %}{% endblock %}

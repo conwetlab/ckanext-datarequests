@@ -122,7 +122,7 @@ class DataRequestsUI(base.BaseController):
             try:
                 result = tk.get_action(action)(context, data_dict)
                 tk.response.status_int = 302
-                tk.response.location = '%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
+                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
                                                   result['id'])
 
             except tk.ValidationError as e:
@@ -204,6 +204,22 @@ class DataRequestsUI(base.BaseController):
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized:
             tk.abort(401, tk._('You are not authorized to update the Data Request %s'
+                               % id))
+
+    def delete(self, id):
+    	data_dict = {'id': id}
+    	context = self._get_context()
+
+    	try:
+            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+            datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
+            tk.response.status_int = 302
+            tk.response.location = '/%s' % constants.DATAREQUESTS_MAIN_PATH
+            helpers.flash_notice(tk._('Data Request %s deleted correctly') % datarequest.get('title', ''))
+        except tk.ObjectNotFound:
+            tk.abort(404, tk._('Data Request %s not found') % id)
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
     def organization_datarequests(self, id):
