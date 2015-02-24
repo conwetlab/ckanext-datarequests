@@ -10,9 +10,15 @@
 {% endblock %}
 
 {% block content_action %}
+
   {% if h.check_access('datarequest_update', {'id':datarequest_id }) %}
     {% link_for _('Manage'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='update', id=datarequest_id, class_='btn', icon='wrench' %}
   {% endif %}
+
+  {% if h.check_access('datarequest_close', {'id':datarequest_id }) and not c.datarequest.closed %}
+    {% link_for _('Close'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='close', id=datarequest_id, class_='btn btn-danger', icon='lock' %}
+  {% endif %}
+
 {% endblock %}
 
 {% block content_primary_nav %}

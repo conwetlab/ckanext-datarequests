@@ -61,7 +61,7 @@ def _undictize_datarequest_basic(data_request, data_dict):
 
 def datarequest_create(context, data_dict):
     '''
-    Action to create a new dara request. The function check the access rights
+    Action to create a new dara request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
     a NotAuthorized exception will be risen
 
@@ -148,7 +148,7 @@ def datarequest_show(context, data_dict):
 
 def datarequest_update(context, data_dict):
     '''
-    Action to update a new dara request. The function check the access rights
+    Action to update a new dara request. The function checks the access rights
     of the user before updating the data request. If the user is not allowed
     a NotAuthorized exception will be risen
 
@@ -323,7 +323,7 @@ def datarequest_index(context, data_dict):
 
 def datarequest_delete(context, data_dict): 
     '''
-    Action to delete a new dara request. The function check the access rights
+    Action to delete a new dara request. The function checks the access rights
     of the user before deleting the data request. If the user is not allowed
     a NotAuthorized exception will be risen
 
@@ -359,3 +359,46 @@ def datarequest_delete(context, data_dict):
     session.commit()
 
     return _dictize_datarequest(data_req)
+
+def datarequest_close(context, data_dict):
+    '''
+    Action to close a data request. Access rights will be checked before closing the
+    data request. If the user is not allowed, a NotAuthorized exception will be risen
+
+    :param id: The id of the data request to be closed
+    :type id: string
+
+    :parameter accepted_dataset: The ID of the dataset accepted as solution for this
+        data request
+    :type accepted_dataset: string
+    '''
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict.get('id', '')
+
+    # Check id
+    if not datarequest_id:
+        raise tk.ValidationError('Data Request ID has not been included')
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_CLOSE, context, data_dict)
+
+    # Get the data request
+    result = db.DataRequest.get(id=datarequest_id)
+    if not result:
+        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+
+    # Validate data
+    validator.validate_datarequest_closing(context, data_dict)
+
+    data_req = result[0]
+    data_req.closed = True
+    data_req.accepted_dataset = data_dict.get('accepted_dataset', '')
+    data_req.close_time = datetime.datetime.now()
+
+    session.add(data_req)
+    session.commit()

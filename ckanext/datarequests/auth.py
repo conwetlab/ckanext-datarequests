@@ -50,3 +50,7 @@ def datarequest_index(context, data_dict):
 
 def datarequest_delete(context, data_dict):
 	return auth_if_creator(context, data_dict)
+
+
+def datarequest_close(context, data_dict):
+    return auth_if_creator(context, data_dict)

@@ -23,6 +23,7 @@ DATAREQUEST_SHOW = 'datarequest_show'
 DATAREQUEST_UPDATE = 'datarequest_update'
 DATAREQUEST_INDEX = 'datarequest_index'
 DATAREQUEST_DELETE = 'datarequest_delete'
+DATAREQUEST_CLOSE = 'datarequest_close'
 NAME_MAX_LENGTH = 100
 DESCRIPTION_MAX_LENGTH = 1000
 DATAREQUESTS_PER_PAGE = 10

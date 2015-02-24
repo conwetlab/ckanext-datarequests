@@ -166,6 +166,7 @@ class DataRequestsUI(base.BaseController):
             tk.check_access(constants.DATAREQUEST_SHOW, context, data_dict)
             c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
 
+            # Very slow request. It takes two seconds
             try:
                 c.datarequest['user'] = tk.get_action('user_show')(context, {'id': c.datarequest['user_id']})
             except tk.ObjectNotFound:
@@ -175,6 +176,13 @@ class DataRequestsUI(base.BaseController):
                 try:
                     organization_show = tk.get_action('organization_show')
                     c.datarequest['organization'] = organization_show(context, {'id': c.datarequest['organization_id']})
+                except tk.ObjectNotFound:
+                    pass
+
+            if c.datarequest['accepted_dataset']:
+                try:
+                    package_show = tk.get_action('package_show')
+                    c.datarequest['accepted_dataset'] = package_show(context, {'id': c.datarequest['accepted_dataset']})
                 except tk.ObjectNotFound:
                     pass
 
@@ -227,3 +235,54 @@ class DataRequestsUI(base.BaseController):
         c.group_dict = tk.get_action('organization_show')(context, {'id': id})
         url_func = functools.partial(org_datarequest_url, id=id)
         return self._show_index(id, False, url_func, 'organization/datarequests.html')
+
+    def close(self, id):
+        data_dict = {'id': id}
+        context = self._get_context()
+
+        # Basic intialization
+        c.datarequest = {}
+
+        def _return_page(errors=[], errors_summary={}):
+            # Get datasets (if the data req belongs to an organization, only the one that
+            # belongs to the organization are shown)
+            organization_id = c.datarequest.get('organization_id', '')
+            if organization_id:
+                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id})['packages']
+            else:
+                base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 10000})['results']
+
+            c.datasets = []
+            c.errors = errors
+            c.errors_summary = errors_summary
+            for dataset in base_datasets:
+                c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
+
+            return tk.render('datarequests/close.html')
+
+        try:
+            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+
+            if request.POST:
+                data_dict = {}
+                data_dict['accepted_dataset'] = request.POST.get('accepted_dataset', None)
+                data_dict['id'] = request.POST.get('id', '')
+
+                tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
+                tk.response.status_int = 302
+                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, data_dict['id'])
+            else: # GET
+                return _return_page()
+
+        except tk.ValidationError as e:     # Accepted Dataset is not valid
+            errors_summary = {}
+            for key, error in e.error_dict.items():
+                errors_summary[key] = ', '.join(error)
+
+            return _return_page(e.error_dict, errors_summary)
+        except tk.ObjectNotFound:
+            tk.abort(404, tk._('Data Request %s not found') % id)
+        except tk.NotAuthorized:
+            tk.abort(401, tk._('You are not authorized to close the Data Request %s'
+                               % id))
