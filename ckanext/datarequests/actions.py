@@ -397,8 +397,10 @@ def datarequest_close(context, data_dict):
 
     data_req = result[0]
     data_req.closed = True
-    data_req.accepted_dataset = data_dict.get('accepted_dataset', '')
+    data_req.accepted_dataset = data_dict.get('accepted_dataset', None)
     data_req.close_time = datetime.datetime.now()
 
     session.add(data_req)
     session.commit()
+
+    return _dictize_datarequest(data_req)

@@ -51,7 +51,7 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_get_actions(self):
         actions = self.plg_instance.get_actions()
-        self.assertEquals(5, len(actions))
+        self.assertEquals(6, len(actions))
         self.assertEquals(plugin.actions.datarequest_create, actions[self.datarequest_create])
         self.assertEquals(plugin.actions.datarequest_show, actions[self.datarequest_show])
         self.assertEquals(plugin.actions.datarequest_update, actions[self.datarequest_update])
@@ -60,7 +60,7 @@ class DataRequestPlutinTest(unittest.TestCase):
 
     def test_get_auth_functions(self):
         auth_functions = self.plg_instance.get_auth_functions()
-        self.assertEquals(5, len(auth_functions))
+        self.assertEquals(6, len(auth_functions))
         self.assertEquals(plugin.auth.datarequest_create, auth_functions[self.datarequest_create])
         self.assertEquals(plugin.auth.datarequest_show, auth_functions[self.datarequest_show])
         self.assertEquals(plugin.auth.datarequest_update, auth_functions[self.datarequest_update])
@@ -77,7 +77,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         dr_basic_path = 'datarequest'
         self.plg_instance.before_map(mapa)
 
-        self.assertEquals(6, mapa.connect.call_count)
+        self.assertEquals(7, mapa.connect.call_count)
         mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index', conditions=dict(method=['GET']))
@@ -97,6 +97,10 @@ class DataRequestPlutinTest(unittest.TestCase):
         mapa.connect.assert_any_call('/%s/delete/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='delete', conditions=dict(method=['POST']))
+
+        mapa.connect.assert_any_call('/%s/close/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='close', conditions=dict(method=['GET', 'POST']))
 
         mapa.connect.assert_any_call('organization_datarequests', 
             '/organization/%s/{id}' % dr_basic_path,

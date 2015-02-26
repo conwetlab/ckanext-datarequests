@@ -35,7 +35,7 @@ def dictice_ddbb_response(datarequest):
         'organization_id': datarequest.organization_id,
         'open_time': str(datarequest.open_time),
         'accepted_dataset': datarequest.accepted_dataset,
-        'close_time': str(datarequest.close_time),
+        'close_time': str(datarequest.close_time) if datarequest.close_time else datarequest.close_time,
         'closed': datarequest.closed
     }
 
@@ -88,6 +88,8 @@ def _generate_basic_datarequest(id='example_uuidv4', user_id='example_uuidv4_use
     datarequest.organization_id = organization_id
     datarequest.open_time = datetime.datetime.now()
     datarequest.closed = closed
+    datarequest.close_time = None
+    datarequest.accepted_dataset = None
 
     return datarequest
 
@@ -115,6 +117,15 @@ update_request_data = {
 
 delete_request_data = {
     'id': 'example_uuidv4'
+}
+
+close_request_data = {
+    'id': 'example_uuidv4'
+}
+
+close_request_data_accepted_ds = {
+    'id': 'example_uuidv4',
+    'accepted_dataset': 'uuid_v4_ds'
 }
 
 

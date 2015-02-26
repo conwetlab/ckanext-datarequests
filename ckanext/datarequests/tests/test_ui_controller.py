@@ -74,6 +74,11 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
+
+    ######################################################################
+    ################################# AUX ################################
+    ######################################################################
+
     def _test_not_authorized(self, function, action):
         datarequest_id = 'example_uuidv4'
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
@@ -98,11 +103,19 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
+    ######################################################################
+    ################################# NEW ################################
+    ######################################################################
+
     @parameterized.expand([
         (True,),
         (False,)
     ])
     def test_new_no_post(self, authorized):
+        controller.tk.response.location = None
+        controller.tk.response.status_int = 200
+        controller.request.POST = {}
+
         # Raise exception if the user is not authorized to create a new data request
         if not authorized:
             controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
@@ -119,6 +132,8 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
+        self.assertIsNone(controller.tk.response.location)
+        self.assertEquals(200, controller.tk.response.status_int)
         self.assertEquals({}, controller.c.errors)
         self.assertEquals({}, controller.c.errors_summary)
         self.assertEquals({}, controller.c.datarequest)
@@ -151,6 +166,10 @@ class UIControllerTest(unittest.TestCase):
         }
         result = self.controller_instance.new()
 
+        # Authorize function has been called
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CREATE, 
+                                                           self.expected_context, None)
+
         if authorized:
             self.assertEquals(0, controller.tk.abort.call_count)
             self.assertEquals(controller.tk.render.return_value, result)
@@ -179,6 +198,11 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
+    
+    ######################################################################
+    ################################ SHOW ################################
+    ######################################################################
+
     def test_show_not_authorized(self):
         self._test_not_authorized(self.controller_instance.show, 'view')
 
@@ -186,21 +210,31 @@ class UIControllerTest(unittest.TestCase):
         self._test_not_found(self.controller_instance.show)
 
     @parameterized.expand({
-        (False, False),
-        (False, True),
-        (True,  False),
-        (True,  True)
+        (False, False, None),
+        (False, True,  None),
+        (True,  False, None),
+        (True,  True,  None),
+        (False, False, 'uudiv4', False),
+        (False, True,  'uudiv4', False),
+        (True,  False, 'uudiv4', False),
+        (True,  True,  'uudiv4', False),
+        (False, False, 'uudiv4', True),
+        (False, True,  'uudiv4', True),
+        (True,  False, 'uudiv4', True),
+        (True,  True,  'uudiv4', True)
     })
-    def test_show_found(self, user_show_exception, organization_show_exception):
+    def test_show_found(self, user_show_exception, organization_show_exception, accepted_dataset, package_show_exception=False):
         datarequest_id = 'example_uuidv4'
         datarequest_show = MagicMock(return_value={
             'id': 'example_uuidv4',
             'user_id': 'example_uuidv4_user',
-            'organization_id': 'example_uuidv4_organization'
+            'organization_id': 'example_uuidv4_organization',
+            'accepted_dataset': accepted_dataset
         })
 
         default_user = {'display_name': 'User Display Name'}
         default_organization = {'display_name': 'Organization Name'}
+        default_package = {'title': 'Package'}
 
         def _user_show(context, data_request):
             if user_show_exception:
@@ -214,8 +248,15 @@ class UIControllerTest(unittest.TestCase):
             else:
                 return default_organization
 
+        def _package_show(context, data_request):
+            if package_show_exception:
+                raise controller.tk.ObjectNotFound('Package nof Found')
+            else:
+                return default_package
+
         user_show = MagicMock(side_effect=_user_show)
         organization_show = MagicMock(side_effect=_organization_show)
+        package_show = MagicMock(side_effect=_package_show)
 
         def _get_action(action):
             if action == 'datarequest_show':
@@ -224,11 +265,17 @@ class UIControllerTest(unittest.TestCase):
                 return user_show
             elif action == 'organization_show':
                 return organization_show
+            elif action == 'package_show':
+                return package_show
 
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
         result = self.controller_instance.show(datarequest_id)
+
+        # Authorize function has been called
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_SHOW, self.expected_context,
+                                                           {'id': datarequest_id})
 
         # Assertions
         expected_datarequest = datarequest_show.return_value.copy()
@@ -236,9 +283,16 @@ class UIControllerTest(unittest.TestCase):
             expected_datarequest['user'] = default_user
         if not organization_show_exception:
             expected_datarequest['organization'] = default_organization
+        if not package_show_exception and accepted_dataset:
+            expected_datarequest['accepted_dataset'] = default_package
         self.assertEquals(expected_datarequest, controller.c.datarequest)
         controller.tk.render.assert_called_once_with('datarequests/show.html')
         self.assertEquals(controller.tk.render.return_value, result)
+
+
+    ######################################################################
+    ############################### UPDATE ###############################
+    ######################################################################
 
     def test_update_not_authorized(self):
         self._test_not_authorized(self.controller_instance.update, 'update')
@@ -247,6 +301,10 @@ class UIControllerTest(unittest.TestCase):
         self._test_not_found(self.controller_instance.update)
 
     def test_update_no_post_content(self):
+        controller.tk.response.location = None
+        controller.tk.response.status_int = 200
+        controller.request.POST = {}
+
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
         datarequest_show = controller.tk.get_action.return_value
@@ -255,10 +313,15 @@ class UIControllerTest(unittest.TestCase):
         # Call the function
         result = self.controller_instance.update(datarequest_id)
 
+        # Authorize function has been called
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.expected_context, {'id': datarequest_id})
+
         # Assertions
         controller.tk.render.assert_called_once_with('datarequests/edit.html')
         self.assertEquals(result, controller.tk.render.return_value)
 
+        self.assertIsNone(controller.tk.response.location)
+        self.assertEquals(200, controller.tk.response.status_int)
         self.assertEquals({}, controller.c.errors)
         self.assertEquals({}, controller.c.errors_summary)
         self.assertEquals(datarequest, controller.c.datarequest)
@@ -310,6 +373,9 @@ class UIControllerTest(unittest.TestCase):
         }
         result = self.controller_instance.update(datarequest_id)
 
+        # Authorize function has been called
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_UPDATE, self.expected_context, {'id': datarequest_id})
+
         if authorized:
             self.assertEquals(0, controller.tk.abort.call_count)
             self.assertEquals(controller.tk.render.return_value, result)
@@ -339,6 +405,11 @@ class UIControllerTest(unittest.TestCase):
         else:
             controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
+
+
+    ######################################################################
+    ################################ INDEX ###############################
+    ######################################################################
 
     def test_index_not_authorized(self):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
@@ -482,6 +553,11 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(controller.tk.render.return_value, result)
         controller.tk.render.assert_called_once_with(expected_render_page)
 
+
+    ######################################################################
+    ############################### DELETE ###############################
+    ######################################################################
+
     def test_delete_not_authorized(self):
         self._test_not_authorized(self.controller_instance.delete, 'delete')
 
@@ -508,7 +584,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Functions has been called
         expected_data_dict = {'id': datarequest_id}
-        controller.tk.check_access(constants.DATAREQUEST_DELETE, expected_data_dict)
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_DELETE, self.expected_context, expected_data_dict)
         datarequest_delete.assert_called_once_with(self.expected_context, expected_data_dict)
         controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
             'Data Request %s deleted correctly' % datarequest.get('title')))
@@ -516,3 +592,112 @@ class UIControllerTest(unittest.TestCase):
         # Redirection
         self.assertEquals(302, controller.tk.response.status_int)
         self.assertEquals('/%s' % constants.DATAREQUESTS_MAIN_PATH, controller.tk.response.location)
+
+
+    ######################################################################
+    ################################ CLOSE ###############################
+    ######################################################################
+
+    def test_close_not_authorized(self):
+        self._test_not_authorized(self.controller_instance.close, 'close')
+
+    def test_close_not_found(self):
+        self._test_not_found(self.controller_instance.close)
+
+    @parameterized.expand([
+        (None,),
+        ('organization_uuidv4',)
+    ])
+    def test_close(self, organization, post_content={}, errors={}, errors_summary={}, datarequest_close=MagicMock()):
+        controller.tk.response.location = None
+        controller.tk.response.status_int = 200
+        controller.request.POST = post_content
+
+        datarequest_id = 'example_uuidv4'
+        datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
+        if organization:
+            datarequest['organization_id'] = organization
+
+        datarequest_show = MagicMock(return_value=datarequest)
+        packages_org = [{'name': 'packo1', 'title': 'packo1'}, {'name': 'packo2', 'title': 'packo2'}]
+        organization_show = MagicMock(return_value={'packages': packages_org})
+        packages_no_org = [{'name': 'pack1', 'title': 'pack1'}, {'name': 'pack2', 'title': 'pack2'}]
+        package_search = MagicMock(return_value={'results': packages_no_org})
+
+        def _get_action(action):
+            if action == 'organization_show':
+                return organization_show
+            elif action == 'package_search':
+                return package_search
+            elif action == constants.DATAREQUEST_SHOW:
+                return datarequest_show
+            elif action == constants.DATAREQUEST_CLOSE:
+                return datarequest_close
+
+        controller.tk.get_action.side_effect = _get_action
+
+        # Call the function
+        result = self.controller_instance.close(datarequest_id)
+
+        # Check that the methods has been called
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CLOSE, self.expected_context, {'id': datarequest_id})
+        datarequest_show.assert_called_once_with(self.expected_context, {'id': datarequest_id})
+
+        if organization:
+            organization_show.assert_called_once_with({'ignore_auth': True}, {'id': organization})
+        else:
+            package_search.assert_called_once_with({'ignore_auth': True}, {'rows': 500})
+
+        # Assertions
+        controller.tk.render.assert_called_once_with('datarequests/close.html')
+        self.assertEquals(result, controller.tk.render.return_value)
+
+        self.assertIsNone(controller.tk.response.location)
+        self.assertEquals(200, controller.tk.response.status_int)
+        self.assertEquals(errors, controller.c.errors)
+        self.assertEquals(errors_summary, controller.c.errors_summary)
+        self.assertEquals(datarequest, controller.c.datarequest)
+
+        expected_datasets = packages_org if organization else packages_no_org
+        self.assertEquals(expected_datasets, controller.c.datasets)
+
+    def test_close_post_no_error(self):
+        controller.request.POST = {'accepted_dataset': 'example_ds'}
+
+        datarequest_id = 'example_uuidv4'
+        datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
+        datarequest_show = MagicMock(return_value=datarequest)
+        datarequest_close = MagicMock(return_value=datarequest)
+
+        def _get_action(action):
+            if action == constants.DATAREQUEST_SHOW:
+                return datarequest_show
+            elif action == constants.DATAREQUEST_CLOSE:
+                return datarequest_close
+
+        controller.tk.get_action.side_effect = _get_action
+
+        # Call the function
+        result = self.controller_instance.close(datarequest_id)
+
+        # Checks
+        self.assertEquals(302, controller.tk.response.status_int)
+        print controller.tk.response.location
+        self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
+                          controller.tk.response.location)
+        self.assertIsNone(result)
+
+    @parameterized.expand([
+        (None,),
+        ('organization_uuidv4', )
+    ])
+    def test_close_post_errors(self, organization):
+        post_content = {'accepted_dataset': 'example_ds'}
+        exception = controller.tk.ValidationError({'Accepted Dataset': ['error1', 'error2']})
+        datarequest_close = MagicMock(side_effect=exception)
+        
+        # Execute the test
+        self.test_close(organization, post_content, exception.error_dict, 
+                        {'Accepted Dataset': 'error1, error2'}, datarequest_close)
+
+

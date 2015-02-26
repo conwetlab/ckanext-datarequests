@@ -70,6 +70,13 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(datarequest.description, response['description'])
         self.assertEquals(datarequest.organization_id, response['organization_id'])
         self.assertEquals(str(datarequest.open_time), response['open_time'])
+        self.assertEquals(datarequest.closed, response['closed'])
+        self.assertEquals(datarequest.accepted_dataset, response['accepted_dataset'])
+
+        if datarequest.close_time:
+            self.assertEquals(str(datarequest.close_time), response['close_time'])
+        else:
+            self.assertIsNone(response['close_time'])
 
     def _test_not_authorized(self, function, action, request_data):
         # Configure the mock
@@ -195,10 +202,6 @@ class ActionsTest(unittest.TestCase):
 
     def test_datarequest_show_found_open(self):
         datarequest = test_data._generate_basic_datarequest()
-        datarequest.accepted_dataset = None
-        datarequest.close_time = None
-        datarequest.closed = False
-
         self._test_datarequest_show_found(datarequest)
 
     def test_datarequest_show_found_closed(self):
@@ -344,14 +347,58 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequest.get.return_value = [datarequest]
 
         # Call the function
-        data_dict = {'id': 'example_uuidv4'}
-        expected_data_dict = data_dict.copy()
-        result = actions.datarequest_delete(self.context, data_dict)
+        expected_data_dict = test_data.delete_request_data.copy()
+        result = actions.datarequest_delete(self.context, test_data.delete_request_data)
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
         actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_DELETE, self.context, expected_data_dict)
         self.context['session'].delete.assert_called_once_with(datarequest)
         self.context['session'].commit.assert_called_once_with()
+
+        self._check_basic_response(datarequest, result)
+
+    def test_datarequest_close_not_authorized_no_accepted_ds(self):
+        self._test_not_authorized(actions.datarequest_close, constants.DATAREQUEST_CLOSE, test_data.close_request_data)
+
+    def test_datarequest_close_not_authorized_accepted_ds(self):
+        self._test_not_authorized(actions.datarequest_close, constants.DATAREQUEST_CLOSE, test_data.close_request_data_accepted_ds)
+
+    def test_datarequest_close_no_id(self):
+        self._test_no_id(actions.datarequest_close)
+
+    def test_datarequest_close_not_found_no_accepted_ds(self):
+        self._test_not_found(actions.datarequest_close, constants.DATAREQUEST_CLOSE, test_data.close_request_data)
+
+    def test_datarequest_close_not_found_accepted_ds(self):
+        self._test_not_found(actions.datarequest_close, constants.DATAREQUEST_CLOSE, test_data.close_request_data_accepted_ds)
+
+    @parameterized.expand([
+        (test_data.close_request_data, False),
+        (test_data.close_request_data_accepted_ds, True)
+    ])
+    def test_datarequest_close(self, data, expected_accepted_ds):
+        # Configure the mock
+        current_time = self._datetime.datetime.now()
+        actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        datarequest = test_data._generate_basic_datarequest()
+        actions.db.DataRequest.get.return_value = [datarequest]
+
+        # Call the function
+        expected_data_dict = data.copy()
+        result = actions.datarequest_close(self.context, data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.DATAREQUEST_CLOSE, self.context, expected_data_dict)
+        self.context['session'].add.assert_called_once_with(datarequest)
+        self.context['session'].commit.assert_called_once_with()
+        # The data object returned by the database has been modified appropriately
+        self.assertTrue(datarequest.closed)
+        self.assertEquals(datarequest.close_time, current_time)
+        if expected_accepted_ds:
+            self.assertEquals(datarequest.accepted_dataset, data['accepted_dataset'])
+        else:
+            self.assertIsNone(datarequest.accepted_dataset)
 
         self._check_basic_response(datarequest, result)

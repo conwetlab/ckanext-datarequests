@@ -219,7 +219,7 @@ class DataRequestsUI(base.BaseController):
     	context = self._get_context()
 
     	try:
-            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+            tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
             datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
             tk.response.status_int = 302
             tk.response.location = '/%s' % constants.DATAREQUESTS_MAIN_PATH
@@ -243,14 +243,17 @@ class DataRequestsUI(base.BaseController):
         # Basic intialization
         c.datarequest = {}
 
-        def _return_page(errors=[], errors_summary={}):
+        def _return_page(errors={}, errors_summary={}):
             # Get datasets (if the data req belongs to an organization, only the one that
             # belongs to the organization are shown)
             organization_id = c.datarequest.get('organization_id', '')
             if organization_id:
                 base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id})['packages']
             else:
-                base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 10000})['results']
+                # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
+                # We assume that a user will close their data request with a recently added or modified dataset
+                # In the future, we should fix this with an autocomplete form...
+                base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 500})['results']
 
             c.datasets = []
             c.errors = errors
@@ -261,13 +264,13 @@ class DataRequestsUI(base.BaseController):
             return tk.render('datarequests/close.html')
 
         try:
-            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+            tk.check_access(constants.DATAREQUEST_CLOSE, context, data_dict)
             c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
 
             if request.POST:
                 data_dict = {}
                 data_dict['accepted_dataset'] = request.POST.get('accepted_dataset', None)
-                data_dict['id'] = request.POST.get('id', '')
+                data_dict['id'] = id
 
                 tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
                 tk.response.status_int = 302

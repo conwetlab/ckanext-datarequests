@@ -106,3 +106,27 @@ class ValidatorTest(unittest.TestCase):
         context = MagicMock()
         self.assertIsNone(validator.validate_datarequest(context, self.request_data))
         self.assertEquals(0, validator.tk.get_validator.call_count)
+
+    def test_close_invalid_accepted_dataset(self):
+        context = {}
+        accepted_ds_id = 'accepted_ds_uuidv4'
+        package_validator = validator.tk.get_validator.return_value
+        package_validator.side_effect = self._tk.ValidationError({'Dataset': 'Invalid Dataset'})
+
+        with self.assertRaises(self._tk.ValidationError) as c:
+            validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+
+        package_validator.assert_called_once_with(accepted_ds_id, context)
+        self.assertEquals({'Accepted Dataset': ['Dataset not found']}, 
+                          c.exception.error_dict)
+
+    def test_close_valid(self):
+        context = {}
+        accepted_ds_id = 'accepted_ds_uuidv4'
+        package_validator = validator.tk.get_validator.return_value
+
+        # Call the function
+        validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+
+        # Check that the package existence has been checked
+        package_validator.assert_called_once_with(accepted_ds_id, context)
