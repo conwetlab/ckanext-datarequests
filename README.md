@@ -24,7 +24,7 @@ On the other hand, you can also use the API. To access this API, you should POST
 
 ``http[s]://[CKAN_HOST]:[CKAN_PORT]/api/action/[ACTION_NAME]``
 
-Here you have a brief description of it:
+Here you have a brief description of all the implemented actions:
 
 #### `datarequest_create(context, data_dict)`
 Action to create a new dara request. The function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
