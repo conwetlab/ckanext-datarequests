@@ -20,14 +20,18 @@ Once that you have created your data request, you can view it by clicking on the
 * **Deleting the data request** if you do not want it to be available any more
 
 ### API
-On the other hand, you can also use the API. Here you have a brief description of it:
+On the other hand, you can also use the API. To access this API, you should POST the following URL (as you do for other actions):
+
+``http[s]://[CKAN_HOST]:[CKAN_PORT]/api/action/[ACTION_NAME]``
+
+Here you have a brief description of it:
 
 #### `datarequest_create(context, data_dict)`
 Action to create a new dara request. The function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
 
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`title`** (string): the title of the data request
 * **`description`** (string): a brief description for your data request
 * **`organization_id`** (string): the ID of the organization in case you want to assing the data request to an organization.
@@ -41,7 +45,7 @@ Action to retrieve the information of a data request. The only required paramete
 
 Access rights will be checked before returning the information and an exception will be risen (`NotAuthorized`) if the user is not authorized.
 
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be displayed
 
 ##### Returns:
@@ -53,7 +57,7 @@ Action to update a dara request. The function checks the access rights of the us
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
 
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be updated
 * **`title`** (string): the title of the data request
 * **`description`** (string): a brief description for your data request
@@ -66,7 +70,7 @@ A dict with the data request (`id`, `user_id`, `title`, `description`,`organizat
 #### `datarequest_index(context, data_dict)`
 Returns a list with the existing data requests. Rights access will be checked before returning the results. If the user is not allowed, a `NotAuthorized` exception will be risen
     
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`organization_id`** (string) (optional): to filter the result by organization
 * **`closed`** (string) (optional): to filter the result by state (`True`: Closed, `False`: Open)
 * **`offset`** (int) (optional) (default `0`): the first element to be returned
@@ -79,7 +83,7 @@ A dict with three fields: `result` (a list of data requests), `facets` (a list o
 #### `datarequest_delete(context, data_dict)`
 Action to delete a new dara request. The function checks the access rights of the user before deleting the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be deleted
 
 ##### Returns:
@@ -89,7 +93,7 @@ A dict with the data request (`id`, `user_id`, `title`, `description`,`organizat
 #### `datarequest_close(context, data_dict)`
 Action to close a data request. Access rights will be checked before closing the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
 
-##### Parameters:
+##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be closed
 * **`accepted_dataset`** (string): The ID of the dataset accepted as solution for the data request
 
