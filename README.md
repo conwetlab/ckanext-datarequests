@@ -3,6 +3,99 @@ CKAN Data Requests [![Build Status](https://build.conwet.fi.upm.es/jenkins/build
 
 CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance. In this way we can set up a Data Market, not only with data supplies but also with data demands.
 
+How it works
+------------
+You have two ways for creating, updating, deleting, viewing and closing a datarequest: you can use the graphical interface or the programatic API.
+
+### User Interface
+If you prefer to use the graphical interface, you should click on the "Data Requests" section that will appear in the header of your CKAN instance. In this section you'll be able to view the current data requests. In addition, there will be a button that will allow you to create a new data request. In the form that will appear, you will have to introduce the following information:
+
+* **Title**: a title for your data request
+* **Description**: a long description for your data request. You should include as much details as you can in order to allow others to understand you needs and upload a dataset that fulfil your requeriments.
+* **Organization**: in some cases, you want to ask specific data to an specific organization. If you are in such situation, you should complete this field. 
+
+Once that you have created your data request, you can view it by clicking on the link provided when you created it. When you are the owner of a data request, you will also be able of:
+* **Closing the data request** if you consider that there is a new dataset that fulfil your needs
+* **Updating the data request** if you can to add/remove some information
+* **Deleting the data request** if you do not want it to be available any more
+
+### API
+On the other hand, you can also use the API. Here you have a brief description of it:
+
+#### `datarequest_create(context, data_dict)`
+Action to create a new dara request. The function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
+
+In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
+
+##### Parameters:
+* **`title`** (string): the title of the data request
+* **`description`** (string): a brief description for your data request
+* **`organization_id`** (string): the ID of the organization in case you want to assing the data request to an organization.
+
+##### Returns:
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+
+
+#### `datarequest_show(context, data_dict)`
+Action to retrieve the information of a data request. The only required parameter is the `id` of the data request. A `NotFound` exception will be risen if the `id` is not found. 
+
+Access rights will be checked before returning the information and an exception will be risen (`NotAuthorized`) if the user is not authorized.
+
+##### Parameters:
+* **`id`** (string): the ID of the datarequest to be displayed
+
+##### Returns:
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+
+
+#### `datarequest_update(context, data_dict)`
+Action to update a dara request. The function checks the access rights of the user before updating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
+
+In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
+
+##### Parameters:
+* **`id`** (string): the ID of the datarequest to be updated
+* **`title`** (string): the title of the data request
+* **`description`** (string): a brief description for your data request
+* **`organization_id`** (string): the ID of the organization in case you want to assing the data request to an organization.
+
+##### Returns:
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+
+
+#### `datarequest_index(context, data_dict)`
+Returns a list with the existing data requests. Rights access will be checked before returning the results. If the user is not allowed, a `NotAuthorized` exception will be risen
+    
+##### Parameters:
+* **`organization_id`** (string) (optional): to filter the result by organization
+* **`closed`** (string) (optional): to filter the result by state (`True`: Closed, `False`: Open)
+* **`offset`** (int) (optional) (default `0`): the first element to be returned
+* **`limit`** (int) (optional) (default `10`): The max number of data requests to be returned
+
+##### Returns:
+A dict with three fields: `result` (a list of data requests), `facets` (a list of the facets that can be used) and `count` (the total number of existing data requests)
+
+
+#### `datarequest_delete(context, data_dict)`
+Action to delete a new dara request. The function checks the access rights of the user before deleting the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
+
+##### Parameters:
+* **`id`** (string): the ID of the datarequest to be deleted
+
+##### Returns:
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+
+
+#### `datarequest_close(context, data_dict)`
+Action to close a data request. Access rights will be checked before closing the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
+
+##### Parameters:
+* **`id`** (string): the ID of the datarequest to be closed
+* **`accepted_dataset`** (string): The ID of the dataset accepted as solution for the data request
+
+##### Returns:
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+
 
 Installation
 ------------
