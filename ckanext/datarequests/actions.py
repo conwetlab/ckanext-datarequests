@@ -63,11 +63,11 @@ def datarequest_create(context, data_dict):
     '''
     Action to create a new dara request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
-    a NotAuthorized exception will be risen
+    a NotAuthorized exception will be risen.
 
     In addition, you should note that the parameters will be checked and an
     exception (ValidationError) will be risen if some of these parameters are
-    not valid
+    not valid.
 
     :param title: The title of the data request
     :type title: string
@@ -115,7 +115,7 @@ def datarequest_show(context, data_dict):
     risen if the id is not found. 
 
     Access rights will be checked before returning the information and an
-    exception will be risen (NotAuthorized) if the user is not authorized
+    exception will be risen (NotAuthorized) if the user is not authorized.
 
     :param id: The id of the data request to be shown
     :type id: string
@@ -148,13 +148,13 @@ def datarequest_show(context, data_dict):
 
 def datarequest_update(context, data_dict):
     '''
-    Action to update a new dara request. The function checks the access rights
-    of the user before updating the data request. If the user is not allowed
-    a NotAuthorized exception will be risen
+    Action to update a dara request. The function checks the access rights of
+    the user before updating the data request. If the user is not allowed
+    a NotAuthorized exception will be risen.
 
     In addition, you should note that the parameters will be checked and an
     exception (ValidationError) will be risen if some of these parameters are
-    not valid
+    not valid.
 
     :param id: The id of the data request to be updated
     :type id: string
@@ -213,7 +213,7 @@ def datarequest_index(context, data_dict):
     '''
     Returns a list with the existing data requests. Rights access will be checked
     before returning the results. If the user is not allowed, a NotAuthorized 
-    exception will be risen
+    exception will be risen.
 
     :parameter organization_id: This parameter is optional and allows users
         to filter the results by organization
@@ -325,7 +325,7 @@ def datarequest_delete(context, data_dict):
     '''
     Action to delete a new dara request. The function checks the access rights
     of the user before deleting the data request. If the user is not allowed
-    a NotAuthorized exception will be risen
+    a NotAuthorized exception will be risen.
 
     :param id: The id of the data request to be updated
     :type id: string
@@ -363,7 +363,7 @@ def datarequest_delete(context, data_dict):
 def datarequest_close(context, data_dict):
     '''
     Action to close a data request. Access rights will be checked before closing the
-    data request. If the user is not allowed, a NotAuthorized exception will be risen
+    data request. If the user is not allowed, a NotAuthorized exception will be risen.
 
     :param id: The id of the data request to be closed
     :type id: string

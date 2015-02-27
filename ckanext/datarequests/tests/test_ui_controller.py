@@ -103,6 +103,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
+
     ######################################################################
     ################################# NEW ################################
     ######################################################################

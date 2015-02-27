@@ -78,6 +78,11 @@ class ActionsTest(unittest.TestCase):
         else:
             self.assertIsNone(response['close_time'])
 
+
+    ######################################################################
+    ################################# AUX ################################
+    ######################################################################
+
     def _test_not_authorized(self, function, action, request_data):
         # Configure the mock
         actions.tk.check_access = MagicMock(side_effect=self._tk.NotAuthorized)
@@ -113,6 +118,11 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(0, actions.db.init_db.call_count)
         self.assertEquals(0, actions.tk.check_access.call_count)
         self.assertEquals(0, actions.db.DataRequest.get.call_count)
+
+
+    ######################################################################
+    ################################# NEW ################################
+    ######################################################################
 
     def test_datarequest_create_no_access(self):
         # Configure the mock
@@ -173,6 +183,11 @@ class ActionsTest(unittest.TestCase):
 
         self._check_basic_response(datarequest, result)
 
+
+    ######################################################################
+    ################################ SHOW ################################
+    ######################################################################
+
     def test_datarequest_show_not_authorized(self):
         self._test_not_authorized(actions.datarequest_show, constants.DATAREQUEST_SHOW, test_data.show_request_data)
 
@@ -211,6 +226,11 @@ class ActionsTest(unittest.TestCase):
         datarequest.closed = True
 
         self._test_datarequest_show_found(datarequest)
+
+
+    ######################################################################
+    ############################### UPDATE ###############################
+    ######################################################################
 
     def test_datarequest_update_not_authorized(self):
         self._test_not_authorized(actions.datarequest_update, constants.DATAREQUEST_UPDATE, test_data.update_request_data)
@@ -259,6 +279,11 @@ class ActionsTest(unittest.TestCase):
 
         # Check the result
         self._check_basic_response(datarequest, result)
+
+
+    ######################################################################
+    ################################ INDEX ###############################
+    ######################################################################
 
     def test_datarequest_index_not_authorized(self):
         self._test_not_authorized(actions.datarequest_index, constants.DATAREQUEST_INDEX, {})
@@ -332,6 +357,11 @@ class ActionsTest(unittest.TestCase):
             for item in items:
                 self.assertIn(item, response['facets'][facet]['items'])
 
+
+    ######################################################################
+    ############################### DELETE ###############################
+    ######################################################################
+
     def test_datarequest_delete_not_authorized(self):
         self._test_not_authorized(actions.datarequest_delete, constants.DATAREQUEST_DELETE, test_data.delete_request_data)
 
@@ -357,6 +387,11 @@ class ActionsTest(unittest.TestCase):
         self.context['session'].commit.assert_called_once_with()
 
         self._check_basic_response(datarequest, result)
+
+
+    ######################################################################
+    ################################ CLOSE ###############################
+    ######################################################################
 
     def test_datarequest_close_not_authorized_no_accepted_ds(self):
         self._test_not_authorized(actions.datarequest_close, constants.DATAREQUEST_CLOSE, test_data.close_request_data)
