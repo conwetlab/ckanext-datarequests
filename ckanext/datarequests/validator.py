@@ -62,3 +62,9 @@ def validate_datarequest_closing(context, request_data):
             tk.get_validator('package_name_exists')(request_data['accepted_dataset'], context)
         except Exception:
             raise tk.ValidationError({'Accepted Dataset': ['Dataset not found']})
+
+
+def validate_comment(context, request_data):
+    comment = request_data.get('comment', '')
+    if not comment or len(comment) <= 0 or len(comment) > constants.COMMENT_MAX_LENGTH:
+        raise tk.ValidationError({'Comment': ['Comments must be a maximum of %d characters long' % constants.COMMENT_MAX_LENGTH]})

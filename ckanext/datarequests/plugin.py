@@ -42,7 +42,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_UPDATE: actions.datarequest_update,
             constants.DATAREQUEST_INDEX: actions.datarequest_index,
             constants.DATAREQUEST_DELETE: actions.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: actions.datarequest_close
+            constants.DATAREQUEST_CLOSE: actions.datarequest_close,
+            constants.DATAREQUEST_COMMENT: actions.datarequest_comment,
+            constants.DATAREQUEST_GET_COMMENTS: actions.datarequest_get_comments
+
         }
 
     ######################################################################
@@ -56,7 +59,9 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_UPDATE: auth.datarequest_update,
             constants.DATAREQUEST_INDEX: auth.datarequest_index,
             constants.DATAREQUEST_DELETE: auth.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: auth.datarequest_close
+            constants.DATAREQUEST_CLOSE: auth.datarequest_close,
+            constants.DATAREQUEST_COMMENT: auth.datarequest_comment,
+            constants.DATAREQUEST_GET_COMMENTS: auth.datarequest_get_comments
         }
 
     ######################################################################
@@ -81,27 +86,27 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='index', conditions=dict(method=['GET']))
 
-        # Create Data Request
+        # Create a Data Request
         m.connect('/%s/new' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='new', conditions=dict(method=['GET', 'POST']))
 
-        # Show Data Request
+        # Show a Data Request
         m.connect('datarequest_show', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
 
-        # Update Data Request
+        # Update a Data Request
         m.connect('/%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='update', conditions=dict(method=['GET', 'POST']))
 
-        # Delete Data Request
+        # Delete a Data Request
         m.connect('/%s/delete/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='delete', conditions=dict(method=['POST']))
 
-        # Close Data Request
+        # Close a Data Request
         m.connect('/%s/close/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='close', conditions=dict(method=['GET', 'POST']))
@@ -112,4 +117,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   action='organization_datarequests', conditions=dict(method=['GET']), 
                   ckan_icon='question-sign')
 
+        # Comment (and view comments of) a Data Request
+        m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
         return m

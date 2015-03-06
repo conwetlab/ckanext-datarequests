@@ -5,7 +5,7 @@
       {% block package_additional_info %}
           <tr>
           <th scope="row" class="dataset-label">{{ _('Creator') }}</th>
-          <td class="dataset-details">{{ datarequest.user['display_name'] }}</td>
+          <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else None }}</td>
         </tr>
         <tr>
           <th scope="row" class="dataset-label">{{ _('Organization') }}</th>

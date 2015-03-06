@@ -54,3 +54,12 @@ def datarequest_delete(context, data_dict):
 
 def datarequest_close(context, data_dict):
     return auth_if_creator(context, data_dict)
+
+
+@tk.auth_allow_anonymous_access
+def datarequest_get_comments(context, data_dict):
+    return datarequest_show(context, data_dict)
+
+
+def datarequest_comment(context, data_dict):
+    return {'success': True}

@@ -1,0 +1,7 @@
+<li class="item comment">
+  <i class="icon icon-comment"></i>
+  <p>
+    <span class="actor">{{ h.gravatar(comment.user.get('email_hash'), 30) }} <a href="{{ h.url_for(controller='user', action='read', id=comment.user.get('name')) }}">{{ comment.user.get('display_name') }}</a></span> {{ comment.comment }}</span>
+    <span class="date" title="{{ comment.time }}">{{ h.time_ago_from_timestamp(comment.time) }}</span>
+  </p>
+</li>
