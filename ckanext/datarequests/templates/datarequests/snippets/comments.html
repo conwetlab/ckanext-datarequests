@@ -4,10 +4,10 @@
   {% endblock %}
 </h2>
 
-{% if commnets %}
+{% if comments %}
   <ul class="activity" data-module="activity-stream" data-module-more="False" data-module-context="user" data-module-id="" data-module-offset="0">
     {% for comment in comments %}
-      {% snippet "datarequests/snippets/comment_item.html", comment=comment %}
+      {% snippet "datarequests/snippets/comment_item.html", comment=comment, datarequest=datarequest %}
     {% endfor %}
   </ul>
 {% else %}

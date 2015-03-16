@@ -44,7 +44,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_DELETE: actions.datarequest_delete,
             constants.DATAREQUEST_CLOSE: actions.datarequest_close,
             constants.DATAREQUEST_COMMENT: actions.datarequest_comment,
-            constants.DATAREQUEST_GET_COMMENTS: actions.datarequest_get_comments
+            constants.DATAREQUEST_COMMENT_LIST: actions.datarequest_comment_list,
+            constants.DATAREQUEST_COMMENT_SHOW: actions.datarequest_comment_show,
+            constants.DATAREQUEST_COMMENT_UPDATE: actions.datarequest_comment_update,
+            constants.DATAREQUEST_COMMENT_DELETE: actions.datarequest_comment_delete
 
         }
 
@@ -61,7 +64,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_DELETE: auth.datarequest_delete,
             constants.DATAREQUEST_CLOSE: auth.datarequest_close,
             constants.DATAREQUEST_COMMENT: auth.datarequest_comment,
-            constants.DATAREQUEST_GET_COMMENTS: auth.datarequest_get_comments
+            constants.DATAREQUEST_COMMENT_LIST: auth.datarequest_comment_list,
+            constants.DATAREQUEST_COMMENT_SHOW: auth.datarequest_comment_show,
+            constants.DATAREQUEST_COMMENT_UPDATE: auth.datarequest_comment_update,
+            constants.DATAREQUEST_COMMENT_DELETE: auth.datarequest_comment_delete
         }
 
     ######################################################################
@@ -75,6 +81,9 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         # Register this plugin's fanstatic directory with CKAN.
         tk.add_public_directory(config, 'public')
+
+        # Register this plugin's fanstatic directory with CKAN.
+        tk.add_resource('fanstatic', 'datarequest')
 
     ######################################################################
     ############################## IROUTES ###############################
@@ -114,11 +123,17 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Data Request that belongs to an organization
         m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                  action='organization_datarequests', conditions=dict(method=['GET']), 
+                  action='organization_datarequests', conditions=dict(method=['GET']),
                   ckan_icon='question-sign')
 
-        # Comment (and view comments of) a Data Request
+        # Comment, update and view comments (of) a Data Request
         m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
+
+        # Delete data request
+        m.connect('/%s/comment/{datarequest_id}/delete/{comment_id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='delete_comment', conditions=dict(method=['GET', 'POST']))
+
         return m

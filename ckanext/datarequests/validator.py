@@ -57,9 +57,10 @@ def validate_datarequest(context, request_data):
 
 def validate_datarequest_closing(context, request_data):
 
-    if request_data['accepted_dataset']:
+    accepted_dataset_id = request_data.get('accepted_dataset_id', '')
+    if accepted_dataset_id:
         try:
-            tk.get_validator('package_name_exists')(request_data['accepted_dataset'], context)
+            tk.get_validator('package_name_exists')(accepted_dataset_id, context)
         except Exception:
             raise tk.ValidationError({'Accepted Dataset': ['Dataset not found']})
 

@@ -30,17 +30,17 @@ def datarequest_show(context, data_dict):
     return {'success': True}
 
 
-def auth_if_creator(context, data_dict):
+def auth_if_creator(context, data_dict, show_function):
     # Sometimes data_dict only contains the 'id'
     if 'user_id' not in data_dict:
-        datareq_show = tk.get_action(constants.DATAREQUEST_SHOW)
-        data_dict = datareq_show({'ignore_auth': True}, {'id': data_dict.get('id')})
+        function = tk.get_action(show_function)
+        data_dict = function({'ignore_auth': True}, {'id': data_dict.get('id')})
 
     return {'success': data_dict['user_id'] == context.get('auth_user_obj').id}
 
 
 def datarequest_update(context, data_dict):
-	return auth_if_creator(context, data_dict)
+    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
 
 
 @tk.auth_allow_anonymous_access
@@ -49,17 +49,31 @@ def datarequest_index(context, data_dict):
 
 
 def datarequest_delete(context, data_dict):
-	return auth_if_creator(context, data_dict)
+    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
 
 
 def datarequest_close(context, data_dict):
-    return auth_if_creator(context, data_dict)
-
-
-@tk.auth_allow_anonymous_access
-def datarequest_get_comments(context, data_dict):
-    return datarequest_show(context, data_dict)
+    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
 
 
 def datarequest_comment(context, data_dict):
     return {'success': True}
+
+
+@tk.auth_allow_anonymous_access
+def datarequest_comment_list(context, data_dict):
+    new_data_dict = {'id': data_dict['datarequest_id']}
+    return datarequest_show(context, new_data_dict)
+
+
+@tk.auth_allow_anonymous_access
+def datarequest_comment_show(context, data_dict):
+    return {'success': True}
+
+
+def datarequest_comment_update(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.DATAREQUEST_COMMENT_SHOW)
+
+
+def datarequest_comment_delete(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.DATAREQUEST_COMMENT_SHOW)

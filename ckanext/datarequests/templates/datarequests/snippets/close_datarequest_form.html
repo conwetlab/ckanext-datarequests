@@ -8,9 +8,9 @@
 
   {% block package_basic_fields_tags %}
     <div class="control-group control-full">
-      <label class="control-label" for="field-accepted_dataset">{{ _("Accep. Dataset") }}</label>
+      <label class="control-label" for="field-accepted_dataset_id">{{ _("Accep. Dataset") }}</label>
       <div class="controls">
-        <select id="field-accepted_dataset" name="accepted_dataset" data-module="autocomplete">
+        <select id="field-accepted_dataset_id" name="accepted_dataset_id" data-module="autocomplete">
     	  <option value="" selected="selected">No Dataset</option>
           {% for dataset in datasets  %}
             <option value="{{ dataset.get('name') }}">{{ dataset.get('title') }}</option>

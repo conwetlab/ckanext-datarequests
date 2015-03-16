@@ -68,7 +68,7 @@ def init_db(model):
             sa.Column('description', sa.types.UnicodeText(constants.DESCRIPTION_MAX_LENGTH), primary_key=False, default=u''),
             sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
-            sa.Column('accepted_dataset', sa.types.UnicodeText, primary_key=False, default=None),
+            sa.Column('accepted_dataset_id', sa.types.UnicodeText, primary_key=False, default=None),
             sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
             sa.Column('closed', sa.types.Boolean, primary_key=False, default=False)
         )
@@ -78,7 +78,7 @@ def init_db(model):
 
         model.meta.mapper(DataRequest, datarequests_table,)
 
-    
+
     if Comment is None:
         class _Comment(model.DomainObject):
 

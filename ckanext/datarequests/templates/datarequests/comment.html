@@ -3,8 +3,8 @@
 {% block primary_content_inner %}
 
   {% if h.check_access('datarequest_comment', {'id':c.datarequest.id }) %}
-  	{% snippet "datarequests/snippets/comment_datarequest_form.html", datarequest=c.datarequest, comment=c.comment, errors=c.errors, errors_summary=c.errors_summary, offering=c.offering %}
+    {% snippet "datarequests/snippets/comment_form.html", datarequest=c.datarequest, comment=c.comment, errors=c.errors, errors_summary=c.errors_summary, offering=c.offering %}
   {% endif %}
 
-  {% snippet "datarequests/snippets/comments.html", comments=c.comments %}
+  {% snippet "datarequests/snippets/comments.html", comments=c.comments, datarequest=c.datarequest %}
 {% endblock %}
