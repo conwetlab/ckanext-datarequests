@@ -320,7 +320,7 @@ class DataRequestsUI(base.BaseController):
             comment = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
 
-            if comment:
+            if request.POST:
                 try:
                     comment_data_dict = {'datarequest_id': id, 'comment': comment, 'id': comment_id}
                     action = constants.DATAREQUEST_COMMENT if not comment_id else constants.DATAREQUEST_COMMENT_UPDATE

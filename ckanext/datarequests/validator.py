@@ -67,5 +67,9 @@ def validate_datarequest_closing(context, request_data):
 
 def validate_comment(context, request_data):
     comment = request_data.get('comment', '')
-    if not comment or len(comment) <= 0 or len(comment) > constants.COMMENT_MAX_LENGTH:
-        raise tk.ValidationError({'Comment': ['Comments must be a maximum of %d characters long' % constants.COMMENT_MAX_LENGTH]})
+
+    if not comment or len(comment) <= 0:
+        raise tk.ValidationError({'Comment': [tk._('Comments must be a minimum of 1 character long')]})
+
+    if len(comment) > constants.COMMENT_MAX_LENGTH:
+        raise tk.ValidationError({'Comment': [tk._('Comments must be a maximum of %d characters long') % constants.COMMENT_MAX_LENGTH]})
