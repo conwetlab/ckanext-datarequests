@@ -133,7 +133,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(400, tk._('"page" parameter must be an integer'))
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('Unauthorized to list Data Requests'))
+            tk.abort(403, tk._('Unauthorized to list Data Requests'))
 
     def index(self):
         return self._show_index(request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
@@ -185,7 +185,7 @@ class DataRequestsUI(base.BaseController):
 
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('Unauthorized to create a Data Request'))
+            tk.abort(403, tk._('Unauthorized to create a Data Request'))
 
     def show(self, id):
         data_dict = {'id': id}
@@ -203,7 +203,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('You are not authorized to view the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to view the Data Request %s'
                                % id))
 
     def update(self, id):
@@ -226,7 +226,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('You are not authorized to update the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to update the Data Request %s'
                                % id))
 
     def delete(self, id):
@@ -244,7 +244,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('You are not authorized to delete the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
     def organization_datarequests(self, id):
@@ -306,7 +306,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('You are not authorized to close the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to close the Data Request %s'
                                % id))
 
     def comment(self, id):
@@ -351,7 +351,7 @@ class DataRequestsUI(base.BaseController):
 
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(401, tk._('You are not authorized to comment the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to comment the Data Request %s'
                                % id))
 
         return tk.render('datarequests/comment.html')
