@@ -181,6 +181,10 @@ comment_update_request_data = {
     'comment': 'This is a basic comment'
 }
 
+comment_delete_request_data = {
+    'id': COMMENT_ID,
+}
+
 
 ######################################################################
 ########################### DATAREQUEST_INDEX ########################
