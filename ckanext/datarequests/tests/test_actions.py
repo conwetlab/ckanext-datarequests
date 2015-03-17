@@ -674,7 +674,7 @@ class ActionsTest(unittest.TestCase):
         for i in range(0, 5):
             comments.append(test_data._generate_basic_comment())
 
-        actions.db.Comment.get.return_value = comments
+        actions.db.Comment.get_ordered_by_date.return_value = comments
 
         # User
         default_user = {'user': 'value'}
@@ -747,13 +747,13 @@ class ActionsTest(unittest.TestCase):
     ######################################################################
 
     def test_comment_delete_not_authorized(self):
-        self._test_not_authorized(actions.datarequest_comment_update, constants.DATAREQUEST_COMMENT_UPDATE, test_data.comment_update_request_data)
+        self._test_not_authorized(actions.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_DELETE, test_data.comment_delete_request_data)
 
     def test_comment_delete_no_id(self):
-        self._test_no_id(actions.datarequest_comment_update)
+        self._test_no_id(actions.datarequest_comment_delete)
 
     def test_comment_delete_not_found(self):
-        self._test_comment_not_found(actions.datarequest_comment_update, constants.DATAREQUEST_COMMENT_UPDATE, test_data.comment_update_request_data)
+        self._test_comment_not_found(actions.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_DELETE, test_data.comment_delete_request_data)
 
     def test_comment_delete(self):
         # Configure the mock
@@ -764,8 +764,8 @@ class ActionsTest(unittest.TestCase):
         test_data._initialize_basic_actions(actions, default_user, None, None)
 
         # Call the function
-        expected_data_dict = test_data.comment_update_request_data.copy()
-        result = actions.datarequest_comment_delete(self.context, test_data.comment_update_request_data)
+        expected_data_dict = test_data.comment_delete_request_data.copy()
+        result = actions.datarequest_comment_delete(self.context, test_data.comment_delete_request_data)
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
