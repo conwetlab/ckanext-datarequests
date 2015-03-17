@@ -34,7 +34,7 @@ def dictice_ddbb_response(datarequest):
         'description': datarequest.description,
         'organization_id': datarequest.organization_id,
         'open_time': str(datarequest.open_time),
-        'accepted_dataset': datarequest.accepted_dataset,
+        'accepted_dataset_id': datarequest.accepted_dataset_id,
         'close_time': str(datarequest.close_time) if datarequest.close_time else datarequest.close_time,
         'closed': datarequest.closed
     }
@@ -42,7 +42,7 @@ def dictice_ddbb_response(datarequest):
 
 def _organization_show(context, data_dict):
     return {
-    	'id': organization_default_id,
+        'id': organization_default_id,
         'display_name': data_dict['id'].title(),
         'name': data_dict['id']
     }
@@ -89,9 +89,27 @@ def _generate_basic_datarequest(id='example_uuidv4', user_id='example_uuidv4_use
     datarequest.open_time = datetime.datetime.now()
     datarequest.closed = closed
     datarequest.close_time = None
-    datarequest.accepted_dataset = None
+    datarequest.accepted_dataset_id = None
+    datarequest.accepted_dataset = {'test': 'test1', 'test2': 'test3'}
 
     return datarequest
+
+
+def _initialize_basic_actions(actions, default_user, default_org, default_pkg):
+    _package_show = MagicMock(return_value=default_pkg)
+    _organization_show = MagicMock(return_value=default_org)
+    _user_show = MagicMock(return_value=default_user)
+
+    def _get_action(action):
+        if action == 'package_show':
+            return _package_show
+        elif action == 'organization_show':
+            return _organization_show
+        elif action == 'user_show':
+            return _user_show
+
+    # Mock actions
+    actions.tk.get_action.side_effect = _get_action
 
 
 ######################################################################
@@ -125,7 +143,7 @@ close_request_data = {
 
 close_request_data_accepted_ds = {
     'id': 'example_uuidv4',
-    'accepted_dataset': 'uuid_v4_ds'
+    'accepted_dataset_id': 'uuid_v4_ds'
 }
 
 
@@ -142,6 +160,7 @@ default_limit = 3
 
 # First database result
 ddbb_response_1 = [_generate_basic_datarequest(organization_id=None)]
+
 expected_result_1 = {
     'count': 1,
     'result': [
@@ -171,7 +190,7 @@ ddbb_response_2 = [
     _generate_basic_datarequest(organization_id=org1, closed=False),
     _generate_basic_datarequest(organization_id=None, closed=True),
     _generate_basic_datarequest(organization_id=None, closed=True),
-   
+
 ]
 
 expected_result_2 = {
@@ -231,97 +250,97 @@ expected_result_3['result'] = expected_result_3['result'][default_offset:default
 
 # TEST CASES
 datarequest_index_test_case_1 = {
-	'organization_show_func': _organization_show,
-	'content': {},
-	'expected_ddbb_params': {},
-	'ddbb_response': ddbb_response_1,
-	'expected_response': expected_result_1
+    'organization_show_func': _organization_show,
+    'content': {},
+    'expected_ddbb_params': {},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
 }
 
 datarequest_index_test_case_2 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware'},
-	'expected_ddbb_params': {'organization_id': organization_default_id},
-	'ddbb_response': ddbb_response_1,
-	'expected_response': expected_result_1
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware'},
+    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
 }
 
 datarequest_index_test_case_3 = {
-	'organization_show_func': _organization_show,
-	'content': {'closed': True},
-	'expected_ddbb_params': {'closed': True},
-	'ddbb_response': ddbb_response_1,
-	'expected_response': expected_result_1
+    'organization_show_func': _organization_show,
+    'content': {'closed': True},
+    'expected_ddbb_params': {'closed': True},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
 }
 
 datarequest_index_test_case_4 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware', 'closed': True},
-	'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
-	'ddbb_response': ddbb_response_1,
-	'expected_response': expected_result_1
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware', 'closed': True},
+    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
 }
 
 datarequest_index_test_case_5 = {
-	'organization_show_func': _organization_show,
-	'content': {},
-	'expected_ddbb_params': {},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_2
+    'organization_show_func': _organization_show,
+    'content': {},
+    'expected_ddbb_params': {},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_2
 }
 
 datarequest_index_test_case_6 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware'},
-	'expected_ddbb_params': {'organization_id': organization_default_id},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_2
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware'},
+    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_2
 }
 
 datarequest_index_test_case_7 = {
-	'organization_show_func': _organization_show,
-	'content': {'closed': True},
-	'expected_ddbb_params': {'closed': True},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_2
+    'organization_show_func': _organization_show,
+    'content': {'closed': True},
+    'expected_ddbb_params': {'closed': True},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_2
 }
 
 datarequest_index_test_case_8 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware', 'closed': True},
-	'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_2
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware', 'closed': True},
+    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_2
 }
 
 datarequest_index_test_case_9 = {
-	'organization_show_func': _organization_show,
-	'content': {'offset': default_offset, 'limit': default_limit},
-	'expected_ddbb_params': {},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_3
+    'organization_show_func': _organization_show,
+    'content': {'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_3
 }
 
 datarequest_index_test_case_10 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware', 'offset': default_offset, 'limit': default_limit},
-	'expected_ddbb_params': {'organization_id': organization_default_id},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_3
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware', 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_3
 }
 
 datarequest_index_test_case_11 = {
-	'organization_show_func': _organization_show,
-	'content': {'closed': True, 'offset': default_offset, 'limit': default_limit},
-	'expected_ddbb_params': {'closed': True},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_3
+    'organization_show_func': _organization_show,
+    'content': {'closed': True, 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'closed': True},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_3
 }
 
 datarequest_index_test_case_12 = {
-	'organization_show_func': _organization_show,
-	'content': {'organization_id': 'fiware', 'closed': True, 'offset': default_offset, 'limit': default_limit},
-	'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
-	'ddbb_response': ddbb_response_2,
-	'expected_response': expected_result_3
+    'organization_show_func': _organization_show,
+    'content': {'organization_id': 'fiware', 'closed': True, 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_3
 }

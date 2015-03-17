@@ -113,11 +113,16 @@ class ValidatorTest(unittest.TestCase):
         package_validator = validator.tk.get_validator.return_value
         package_validator.side_effect = self._tk.ValidationError({'Dataset': 'Invalid Dataset'})
 
+        # Call the function (exception expected)
         with self.assertRaises(self._tk.ValidationError) as c:
-            validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+            validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset_id': accepted_ds_id})
 
+        # Check that the correct validator is called
+        validator.tk.get_validator.assert_called_once_with('package_name_exists')
+
+        # Check that the validator has been properly called
         package_validator.assert_called_once_with(accepted_ds_id, context)
-        self.assertEquals({'Accepted Dataset': ['Dataset not found']}, 
+        self.assertEquals({'Accepted Dataset': ['Dataset not found']},
                           c.exception.error_dict)
 
     def test_close_valid(self):
@@ -126,7 +131,10 @@ class ValidatorTest(unittest.TestCase):
         package_validator = validator.tk.get_validator.return_value
 
         # Call the function
-        validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+        validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset_id': accepted_ds_id})
+
+        # Check that the correct validator is called
+        validator.tk.get_validator.assert_called_once_with('package_name_exists')
 
         # Check that the package existence has been checked
         package_validator.assert_called_once_with(accepted_ds_id, context)

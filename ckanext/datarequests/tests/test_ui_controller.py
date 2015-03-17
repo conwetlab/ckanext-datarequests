@@ -87,7 +87,7 @@ class UIControllerTest(unittest.TestCase):
         result = function(datarequest_id)
 
         # Assertions
-        controller.tk.abort.assert_called_once_with(401, 'You are not authorized to %s the Data Request %s' % (action, datarequest_id))
+        controller.tk.abort.assert_called_once_with(403, 'You are not authorized to %s the Data Request %s' % (action, datarequest_id))
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
@@ -130,7 +130,7 @@ class UIControllerTest(unittest.TestCase):
             self.assertEquals(controller.tk.render.return_value, result)
             controller.tk.render.assert_called_once_with('datarequests/new.html')
         else:
-            controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
+            controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
         self.assertIsNone(controller.tk.response.location)
@@ -196,10 +196,10 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
                                   controller.tk.response.location)
         else:
-            controller.tk.abort.assert_called_once_with(401, 'Unauthorized to create a Data Request')
+            controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
-    
+
     ######################################################################
     ################################ SHOW ################################
     ######################################################################
@@ -225,17 +225,21 @@ class UIControllerTest(unittest.TestCase):
         (True,  True,  'uudiv4', True)
     })
     def test_show_found(self, user_show_exception, organization_show_exception, accepted_dataset, package_show_exception=False):
+
         datarequest_id = 'example_uuidv4'
+        default_user = {'display_name': 'User Display Name'}
+        default_organization = {'display_name': 'Organization Name'}
+        default_package = {'title': 'Package'}
+
         datarequest_show = MagicMock(return_value={
             'id': 'example_uuidv4',
             'user_id': 'example_uuidv4_user',
             'organization_id': 'example_uuidv4_organization',
-            'accepted_dataset': accepted_dataset
+            'accepted_dataset_id': accepted_dataset,
+            'user': default_user,
+            'organization': default_organization,
+            'accepted_dataset': default_package
         })
-
-        default_user = {'display_name': 'User Display Name'}
-        default_organization = {'display_name': 'Organization Name'}
-        default_package = {'title': 'Package'}
 
         def _user_show(context, data_request):
             if user_show_exception:
@@ -345,7 +349,7 @@ class UIControllerTest(unittest.TestCase):
         # Set up the get_action function
         datarequest_show = MagicMock(return_value=original_dr)
         datarequest_update = MagicMock()
-        
+
         def _get_action(action):
             if action == constants.DATAREQUEST_SHOW:
                 return datarequest_show
@@ -404,7 +408,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
                                   controller.tk.response.location)
         else:
-            controller.tk.abort.assert_called_once_with(401, 'You are not authorized to update the Data Request %s' % datarequest_id)
+            controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
 
 
@@ -419,7 +423,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.index()
 
         # Assertions
-        controller.tk.abort.assert_called_once_with(401, 'Unauthorized to list Data Requests')
+        controller.tk.abort.assert_called_once_with(403, 'Unauthorized to list Data Requests')
         self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
@@ -486,6 +490,7 @@ class UIControllerTest(unittest.TestCase):
         # Mocking
         organization_show = MagicMock()
         datarequest_index = MagicMock()
+
         def _get_action(action):
             if action == organization_show_action:
                 return organization_show
@@ -696,9 +701,7 @@ class UIControllerTest(unittest.TestCase):
         post_content = {'accepted_dataset': 'example_ds'}
         exception = controller.tk.ValidationError({'Accepted Dataset': ['error1', 'error2']})
         datarequest_close = MagicMock(side_effect=exception)
-        
+
         # Execute the test
         self.test_close(organization, post_content, exception.error_dict, 
                         {'Accepted Dataset': 'error1, error2'}, datarequest_close)
-
-
