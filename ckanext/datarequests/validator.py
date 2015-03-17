@@ -68,6 +68,12 @@ def validate_datarequest_closing(context, request_data):
 def validate_comment(context, request_data):
     comment = request_data.get('comment', '')
 
+    # Check if the data request exists
+    try:
+        tk.get_action(constants.DATAREQUEST_SHOW)(context, {'id': request_data['datarequest_id']})
+    except Exception:
+        raise tk.ValidationError({'Data Request': [tk._('Data Request not found')]})
+
     if not comment or len(comment) <= 0:
         raise tk.ValidationError({'Comment': [tk._('Comments must be a minimum of 1 character long')]})
 

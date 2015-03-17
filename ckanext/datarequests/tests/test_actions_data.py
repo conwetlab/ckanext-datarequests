@@ -22,6 +22,9 @@ import datetime
 
 from mock import MagicMock
 
+COMMENT_ID = 'comment_uuid4'
+DATAREQUEST_ID = 'example_uuidv4'
+
 ######################################################################
 ############################## FUNCTIONS #############################
 ######################################################################
@@ -77,7 +80,7 @@ def _generate_basic_ddbb_response(number, organizations=None, closed=None):
     return response
 
 
-def _generate_basic_datarequest(id='example_uuidv4', user_id='example_uuidv4_user',
+def _generate_basic_datarequest(id=DATAREQUEST_ID, user_id='example_uuidv4_user',
                                 title='This is a title', description='This is a basic description',
                                 organization_id='example_uuidv4_organization', closed=False):
     datarequest = MagicMock()
@@ -93,6 +96,18 @@ def _generate_basic_datarequest(id='example_uuidv4', user_id='example_uuidv4_use
     datarequest.accepted_dataset = {'test': 'test1', 'test2': 'test3'}
 
     return datarequest
+
+
+def _generate_basic_comment(id=COMMENT_ID, user_id='example_uuidv4_user',
+                            comment='Example Comment', datarequest_id='example_dr_id'):
+    comment = MagicMock()
+    comment.id = id
+    comment.user_id = user_id
+    comment.comment = comment
+    comment.datarequest_id = datarequest_id
+    comment.time = datetime.datetime.now()
+
+    return comment
 
 
 def _initialize_basic_actions(actions, default_user, default_org, default_pkg):
@@ -123,27 +138,47 @@ create_request_data = {
 }
 
 show_request_data = {
-    'id': 'example_uuidv4'
+    'id': DATAREQUEST_ID
 }
 
 update_request_data = {
-    'id': 'example_uuidv4',
+    'id': DATAREQUEST_ID,
     'title': 'title',
     'description': 'description',
     'organization_id': 'organization'
 }
 
 delete_request_data = {
-    'id': 'example_uuidv4'
+    'id': DATAREQUEST_ID
 }
 
 close_request_data = {
-    'id': 'example_uuidv4'
+    'id': DATAREQUEST_ID
 }
 
 close_request_data_accepted_ds = {
-    'id': 'example_uuidv4',
+    'id': DATAREQUEST_ID,
     'accepted_dataset_id': 'uuid_v4_ds'
+}
+
+comment_request_data = {
+    'datarequest_id': DATAREQUEST_ID,
+    'comment': 'This is a basic comment'
+}
+
+comment_show_request_data = {
+    'datarequest_id': DATAREQUEST_ID,
+    'id': COMMENT_ID
+}
+
+comment_list_request_data = {
+    'datarequest_id': DATAREQUEST_ID,
+}
+
+comment_update_request_data = {
+    'id': COMMENT_ID,
+    'datarequest_id': DATAREQUEST_ID,
+    'comment': 'This is a basic comment'
 }
 
 

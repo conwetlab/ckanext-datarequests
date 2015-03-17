@@ -315,7 +315,6 @@ class DataRequestsUI(base.BaseController):
             data_dict_comment_list = {'datarequest_id': id}
             data_dict_dr_show = {'id': id}
             tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict_comment_list)
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
 
             comment = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
@@ -342,12 +341,17 @@ class DataRequestsUI(base.BaseController):
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
             c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
+            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
 
             # Replace URLs by links
             # Replace new lines by HTML line break
             for comment in c.comments:
                 comment['comment'] = convert_links(comment['comment'])
                 comment['comment'] = comment['comment'].replace('\n', '<br/>')
+
+        except tk.ObjectNotFound as e:
+            log.warn(e)
+            tk.abort(404, tk._('Data Request %s not found' % id))
 
         except tk.NotAuthorized as e:
             log.warn(e)

@@ -138,3 +138,34 @@ class ValidatorTest(unittest.TestCase):
 
         # Check that the package existence has been checked
         package_validator.assert_called_once_with(accepted_ds_id, context)
+
+    @parameterized.expand([
+        ({},              'Comment', 'Comments must be a minimum of 1 character long'),
+        ({'comment': ''}, 'Comment', 'Comments must be a minimum of 1 character long'),
+        ({'comment': generate_string(validator.constants.COMMENT_MAX_LENGTH + 1)}, 'Comment',
+            'Comments must be a maximum of %d characters long' % validator.constants.COMMENT_MAX_LENGTH)
+    ])
+    def test_comment_invalid(self, request_data, field, message):
+        context = {}
+        request_data['datarequest_id'] = 'exmaple'
+
+        # Call the function
+        with self.assertRaises(self._tk.ValidationError) as c:
+            validator.validate_comment(context, request_data)
+
+        self.assertEquals({field: [message]}, c.exception.error_dict)
+
+    def test_comment_invalid_datarequest(self):
+        datarequest_show = validator.tk.get_action.return_value
+        datarequest_show.side_effect = self._tk.ObjectNotFound('Store Not found')
+
+        self.test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
+                                  'Data Request not found')
+
+    def test_comment_valid(self):
+        request_data = {
+            'datarequest_id': 'uuid4',
+            'comment': 'Example comment'
+        }
+
+        validator.validate_comment({}, request_data)
