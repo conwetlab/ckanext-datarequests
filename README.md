@@ -101,6 +101,57 @@ Action to close a data request. Access rights will be checked before closing the
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
+#### `datarequest_comment(context, data_dict)`
+Action to create a comment in a data request. Access rights will be checked before creating the comment and a `NotAuthorized` exception will be risen if the user is not allowed to create the comment
+
+##### Parameters (included in `data_dict`):
+* **`datarequest_id`** (string): the ID of the datarequest to be commented
+* **`comment`** (string): The comment to be added to the data request
+
+##### Returns:
+A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
+
+
+#### `datarequest_comment_show(context, data_dict)`
+Action to retrieve a comment. Access rights will be checked before getting the comment and a `NotAuthorized` exception will be risen if the user is not allowed to get the comment
+
+##### Parameters (included in `data_dict`):
+* **`datarequest_id`** (string): The ID of the comment to be retrieved
+
+##### Returns:
+A dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
+
+
+#### `datarequest_comment_list(context, data_dict)`
+Action to retrieve all the comments of a data request. Access rights will be checked before getting the comments and a `NotAuthorized` exception will be risen if the user is not allowed to read the comments
+
+##### Parameters (included in `data_dict`):
+* **`datarequest_id`** (string): The ID of the datarequest whose comments want to be retrieved  
+
+##### Returns:
+ A list with all the comments of a data request. Every comment is a dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
+ 
+
+#### `datarequest_comment_update(context, data_dict)`
+Action to update a comment of a data request. Access rights will be checked before updating the comment and a `NotAuthorized` exception will be risen if the user is not allowed to update the comment
+
+##### Parameters (included in `data_dict`):
+* **`id`** (string): The ID of the comment to be updated
+* **`comment`** (string): The new comment
+
+##### Returns:
+A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
+
+
+#### `datarequest_comment_delete(context, data_dict)`
+Action to delete a comment of a data request. Access rights will be checked before deleting the comment and a `NotAuthorized` exception will be risen if the user is not allowed to delete the comment
+
+##### Parameters (included in `data_dict`):
+* **`id`** (string): The ID of the comment to be deleted
+
+##### Returns:
+A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
+
 Installation
 ------------
 Install this extension in your CKAN instance is as easy as intall any other CKAN extension.
