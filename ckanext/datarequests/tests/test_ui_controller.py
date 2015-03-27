@@ -737,6 +737,19 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
+    def test_comment_list_not_found(self):
+        datarequest_id = 'example_uuidv4'
+        controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Comment not found')
+
+        # Call the function
+        result = self.controller_instance.comment(datarequest_id)
+
+        # Assertions
+        controller.tk.get_action(constants.DATAREQUEST_COMMENT)
+        controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
+        self.assertEquals(0, controller.tk.render.call_count)
+        self.assertIsNone(result)
+
     @parameterized.expand([
         (),
         (True,  False),

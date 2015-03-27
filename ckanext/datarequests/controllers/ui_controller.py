@@ -270,6 +270,7 @@ class DataRequestsUI(base.BaseController):
                 # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
                 # We assume that a user will close their data request with a recently added or modified dataset
                 # In the future, we should fix this with an autocomplete form...
+                # Expected for CKAN 2.3
                 base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 500})['results']
 
             c.datasets = []
