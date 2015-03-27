@@ -31,7 +31,7 @@ from ckan.common import request
 from urllib import urlencode
 
 
-_link = re.compile(r'(?:(http://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]*)(\s|$)', re.I)
+_link = re.compile(r'(?:(https?://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]*)(\s|$)', re.I)
 
 log = logging.getLogger(__name__)
 tk = plugins.toolkit
@@ -43,7 +43,7 @@ def convert_links(text):
         groups = match.groups()
         protocol = groups[0] or ''  # may be None
         www_lead = groups[1] or ''  # may be None
-        return '<a href="http://{1}{2}" target="_blank">{0}{1}{2}</a>{3}{4}'.format(
+        return '<a href="{0}{1}{2}" target="_blank">{0}{1}{2}</a>{3}{4}'.format(
             protocol, www_lead, *groups[2:])
     return _link.sub(replace, text)
 
@@ -316,17 +316,26 @@ class DataRequestsUI(base.BaseController):
             data_dict_dr_show = {'id': id}
             tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict_comment_list)
 
+            # Raises 404 Not Found if the data request does not exist
+            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
+
             comment = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
 
             if request.POST:
+                action = constants.DATAREQUEST_COMMENT
+                action_text = 'comment'
+
+                if comment_id:
+                    action = constants.DATAREQUEST_COMMENT_UPDATE
+                    action_text = 'update comment'
+
                 try:
                     comment_data_dict = {'datarequest_id': id, 'comment': comment, 'id': comment_id}
-                    action = constants.DATAREQUEST_COMMENT if not comment_id else constants.DATAREQUEST_COMMENT_UPDATE
                     comment = tk.get_action(action)(context, comment_data_dict)
                 except tk.NotAuthorized as e:
                     log.warn(e)
-                    tk.abort(403, tk._('You are not authorized to create/edit the comment'))
+                    tk.abort(403, tk._('You are not authorized to %s' % action_text))
                 except tk.ValidationError as e:
                     log.warn(e)
                     c.errors = e.error_dict
@@ -334,14 +343,12 @@ class DataRequestsUI(base.BaseController):
                     c.comment = comment
                 except tk.ObjectNotFound as e:
                     log.warn(e)
-                    tk.abort(404, tk._('Data Request %s not found') % id)
+                    tk.abort(404, tk._(str(e)))
+                # Other exceptions are not expected. Otherwise, the request will fail.
 
-            # TODO: Fix me... this function is not called if an exception is risen when the comment is
-            # being created
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
             c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
 
             # Replace URLs by links
             # Replace new lines by HTML line break
@@ -349,22 +356,22 @@ class DataRequestsUI(base.BaseController):
                 comment['comment'] = convert_links(comment['comment'])
                 comment['comment'] = comment['comment'].replace('\n', '<br/>')
 
+            return tk.render('datarequests/comment.html')
+
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found' % id))
 
         except tk.NotAuthorized as e:
             log.warn(e)
-            tk.abort(403, tk._('You are not authorized to comment the Data Request %s'
+            tk.abort(403, tk._('You are not authorized to list the comments of the Data Request %s'
                                % id))
 
-        return tk.render('datarequests/comment.html')
-
     def delete_comment(self, datarequest_id, comment_id):
-        print 'that feeling is the best thing, alright'
         try:
             context = self._get_context()
             data_dict = {'id': comment_id}
+            tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
             tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
             tk.response.status_int = 302
             tk.response.location = '/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id)

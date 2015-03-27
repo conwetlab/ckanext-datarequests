@@ -1,5 +1,11 @@
 {% extends "datarequests/show.html" %}
 
+{% block breadcrumb_content %}
+  {{ super() }}
+  <li class="active"><a href="">{{ _('Comments') }}</a></li>
+{% endblock %}
+
+
 {% block primary_content_inner %}
 
   {% if h.check_access('datarequest_comment', {'id':c.datarequest.id }) %}

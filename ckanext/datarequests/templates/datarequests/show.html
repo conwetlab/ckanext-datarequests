@@ -6,7 +6,7 @@
 
 {% block breadcrumb_content %}
   <li>{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
-  <li class="active"><a href="">{{ c.datarequest.get('title') }}</a></li>
+  <li>{% link_for c.datarequest.get('title'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=datarequest_id %}</li>
 {% endblock %}
 
 {% block content_action %}
