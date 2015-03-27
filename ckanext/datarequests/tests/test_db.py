@@ -29,6 +29,7 @@ class DBTest(unittest.TestCase):
     def setUp(self):
         # Restart databse initial status
         db.DataRequest = None
+        db.Comment = None
 
         # Create mocks
         self._sa = db.sa
@@ -38,22 +39,101 @@ class DBTest(unittest.TestCase):
         db.func = MagicMock()
 
     def tearDown(self):
+        db.Comment = None
         db.DataRequest = None
         db.sa = self._sa
         db.func = self._func
 
+    def _test_get(self, table):
+        '''
+        Aux method for Comment and Data Requests
+        '''
+        db_response = [MagicMock(), MagicMock(), MagicMock()]
+
+        query_result = MagicMock()
+        query_result.all.return_value = db_response
+
+        final_query = MagicMock()
+        final_query.filter_by.return_value = query_result
+
+        query = MagicMock()
+        query.autoflush = MagicMock(return_value=final_query)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        params = {
+            'title': 'Default Title',
+            'organization_id': 'example_uuid_v4'
+        }
+        result = getattr(db, table).get(**params)
+
+        # Assertions
+        self.assertEquals(db_response, result)
+        final_query.filter_by.assert_called_once_with(**params)
+
+    def _test_get_ordered_by_date(self, table, time_column):
+        db_response = [MagicMock(), MagicMock(), MagicMock()]
+
+        query_result = MagicMock()
+        query_result.all.return_value = db_response
+
+        no_ordered = MagicMock()
+        no_ordered.order_by.return_value = query_result
+
+        final_query = MagicMock()
+        final_query.filter_by.return_value = no_ordered
+
+        query = MagicMock()
+        query.autoflush = MagicMock(return_value=final_query)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+        # Mapping
+        table = getattr(db, table)
+        time_column_value = MagicMock()
+        setattr(table, time_column, time_column_value)
+
+        # Call the method
+        params = {
+            'title': 'Default Title',
+            'organization_id': 'example_uuid_v4'
+        }
+        result = table.get_ordered_by_date(**params)
+
+        # Assertions
+        self.assertEquals(db_response, result)
+        no_ordered.order_by.assert_called_once_with(time_column_value.desc())
+        final_query.filter_by.assert_called_once_with(**params)
+
     def test_initdb_not_initialized(self):
+
+        table_data_request = MagicMock()
+        table_comment = MagicMock()
+
+        db.sa.Table = MagicMock(side_effect=[table_data_request, table_comment])
 
         # Call the function
         model = MagicMock()
         db.init_db(model)
 
         # Assert that table method has been called
-        db.sa.Table.assert_called_once()
-        model.meta.mapper.assert_called_once()
+        self.assertEquals(2, db.sa.Table.call_count)
+        model.meta.mapper.assert_any_call(db.DataRequest, table_data_request)
+        model.meta.mapper.assert_any_call(db.Comment, table_comment)
 
     def test_initdb_initialized(self):
         db.DataRequest = MagicMock()
+        db.Comment = MagicMock()
 
         # Call the function
         model = MagicMock()
@@ -61,7 +141,10 @@ class DBTest(unittest.TestCase):
 
         # Assert that table method has been called
         self.assertEquals(0, db.sa.Table.call_count)
-        self.assertEquals(0, model.meta.mapper.call_count)        
+        self.assertEquals(0, model.meta.mapper.call_count)
+
+    def test_datarequest_get(self):
+        self._test_get('DataRequest')
 
     @parameterized.expand([
         (None, False),
@@ -112,70 +195,11 @@ class DBTest(unittest.TestCase):
         # equalization of these results must be True
         final_query.filter.assert_called_once_with(expected_result)
 
-    def test_datarequest_get(self):
-        db_response = [MagicMock(), MagicMock(), MagicMock()]
-
-        query_result = MagicMock()
-        query_result.all.return_value = db_response
-
-        final_query = MagicMock()
-        final_query.filter_by.return_value = query_result
-
-        query = MagicMock()
-        query.autoflush = MagicMock(return_value=final_query)
-
-        model = MagicMock()
-        model.DomainObject = object
-        model.Session.query = MagicMock(return_value=query)
-
-        # Init the database
-        db.init_db(model)
-
-        # Call the method
-        params = {
-            'title': 'Default Title',
-            'organization_id': 'example_uuid_v4'
-        }
-        result = db.DataRequest.get(**params)
-
-        # Assertions
-        self.assertEquals(db_response, result)
-        final_query.filter_by.assert_called_once_with(**params)
-
     def test_datarequest_get_ordered_by_date(self):
-        db_response = [MagicMock(), MagicMock(), MagicMock()]
+        self._test_get_ordered_by_date('DataRequest', 'open_time')
 
-        query_result = MagicMock()
-        query_result.all.return_value = db_response
+    def test_comment_get(self):
+        self._test_get('Comment')
 
-        no_ordered = MagicMock()
-        no_ordered.order_by.return_value = query_result
-
-        final_query = MagicMock()
-        final_query.filter_by.return_value = no_ordered
-
-        query = MagicMock()
-        query.autoflush = MagicMock(return_value=final_query)
-
-        model = MagicMock()
-        model.DomainObject = object
-        model.Session.query = MagicMock(return_value=query)
-
-        # Init the database
-        db.init_db(model)
-        # Mapping
-        db.DataRequest.open_time = MagicMock()
-
-        # Call the method
-        params = {
-            'title': 'Default Title',
-            'organization_id': 'example_uuid_v4'
-        }
-        result = db.DataRequest.get_ordered_by_date(**params)
-
-        # Assertions
-        self.assertEquals(db_response, result)
-        no_ordered.order_by.assert_called_once_with(db.DataRequest.open_time.desc())
-        final_query.filter_by.assert_called_once_with(**params)
-
-
+    def test_comment_get_ordered_by_date(self):
+        self._test_get_ordered_by_date('Comment', 'time')

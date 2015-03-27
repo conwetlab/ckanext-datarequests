@@ -9,3 +9,7 @@
 .uppercase {
     text-transform: uppercase;
 }
+
+.comment-actions {
+	text-align: right;
+}

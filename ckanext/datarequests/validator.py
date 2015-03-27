@@ -57,8 +57,25 @@ def validate_datarequest(context, request_data):
 
 def validate_datarequest_closing(context, request_data):
 
-    if request_data['accepted_dataset']:
+    accepted_dataset_id = request_data.get('accepted_dataset_id', '')
+    if accepted_dataset_id:
         try:
-            tk.get_validator('package_name_exists')(request_data['accepted_dataset'], context)
+            tk.get_validator('package_name_exists')(accepted_dataset_id, context)
         except Exception:
             raise tk.ValidationError({'Accepted Dataset': ['Dataset not found']})
+
+
+def validate_comment(context, request_data):
+    comment = request_data.get('comment', '')
+
+    # Check if the data request exists
+    try:
+        tk.get_action(constants.DATAREQUEST_SHOW)(context, {'id': request_data['datarequest_id']})
+    except Exception:
+        raise tk.ValidationError({'Data Request': [tk._('Data Request not found')]})
+
+    if not comment or len(comment) <= 0:
+        raise tk.ValidationError({'Comment': [tk._('Comments must be a minimum of 1 character long')]})
+
+    if len(comment) > constants.COMMENT_MAX_LENGTH:
+        raise tk.ValidationError({'Comment': [tk._('Comments must be a maximum of %d characters long') % constants.COMMENT_MAX_LENGTH]})

@@ -113,11 +113,16 @@ class ValidatorTest(unittest.TestCase):
         package_validator = validator.tk.get_validator.return_value
         package_validator.side_effect = self._tk.ValidationError({'Dataset': 'Invalid Dataset'})
 
+        # Call the function (exception expected)
         with self.assertRaises(self._tk.ValidationError) as c:
-            validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+            validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset_id': accepted_ds_id})
 
+        # Check that the correct validator is called
+        validator.tk.get_validator.assert_called_once_with('package_name_exists')
+
+        # Check that the validator has been properly called
         package_validator.assert_called_once_with(accepted_ds_id, context)
-        self.assertEquals({'Accepted Dataset': ['Dataset not found']}, 
+        self.assertEquals({'Accepted Dataset': ['Dataset not found']},
                           c.exception.error_dict)
 
     def test_close_valid(self):
@@ -126,7 +131,41 @@ class ValidatorTest(unittest.TestCase):
         package_validator = validator.tk.get_validator.return_value
 
         # Call the function
-        validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset': accepted_ds_id})
+        validator.validate_datarequest_closing(context, {'id': 'dr_id', 'accepted_dataset_id': accepted_ds_id})
+
+        # Check that the correct validator is called
+        validator.tk.get_validator.assert_called_once_with('package_name_exists')
 
         # Check that the package existence has been checked
         package_validator.assert_called_once_with(accepted_ds_id, context)
+
+    @parameterized.expand([
+        ({},              'Comment', 'Comments must be a minimum of 1 character long'),
+        ({'comment': ''}, 'Comment', 'Comments must be a minimum of 1 character long'),
+        ({'comment': generate_string(validator.constants.COMMENT_MAX_LENGTH + 1)}, 'Comment',
+            'Comments must be a maximum of %d characters long' % validator.constants.COMMENT_MAX_LENGTH)
+    ])
+    def test_comment_invalid(self, request_data, field, message):
+        context = {}
+        request_data['datarequest_id'] = 'exmaple'
+
+        # Call the function
+        with self.assertRaises(self._tk.ValidationError) as c:
+            validator.validate_comment(context, request_data)
+
+        self.assertEquals({field: [message]}, c.exception.error_dict)
+
+    def test_comment_invalid_datarequest(self):
+        datarequest_show = validator.tk.get_action.return_value
+        datarequest_show.side_effect = self._tk.ObjectNotFound('Store Not found')
+
+        self.test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
+                                  'Data Request not found')
+
+    def test_comment_valid(self):
+        request_data = {
+            'datarequest_id': 'uuid4',
+            'comment': 'Example comment'
+        }
+
+        validator.validate_comment({}, request_data)
