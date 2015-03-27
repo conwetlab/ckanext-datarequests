@@ -116,7 +116,7 @@ A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` 
 Action to retrieve a comment. Access rights will be checked before getting the comment and a `NotAuthorized` exception will be risen if the user is not allowed to get the comment
 
 ##### Parameters (included in `data_dict`):
-* **`datarequest_id`** (string): The ID of the comment to be retrieved
+* **`id`** (string): The ID of the comment to be retrieved
 
 ##### Returns:
 A dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
