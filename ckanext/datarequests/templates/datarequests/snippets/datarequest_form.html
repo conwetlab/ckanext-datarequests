@@ -2,7 +2,7 @@
 
 {% set title = data.get('title', '') %}
 {% set description = data.get('description', '') %}
-{% set organization_id = data.get('organization_id', '') %}
+{% set organization_id = data.get('organization_id', h.get_request_param('organization')) %}
 {% set organizations_available = h.organizations_available('read') %}
 
 {# This provides a full page that renders a form for publishing a dataset. It can
