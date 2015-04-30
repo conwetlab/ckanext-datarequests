@@ -30,18 +30,10 @@ c = plugins.toolkit.c
 log = logging.getLogger(__name__)
 tk = plugins.toolkit
 
-# Avoid user_show lag
-USERS_CACHE = {}
-
 
 def _get_user(user_id):
     try:
-        if user_id in USERS_CACHE:
-            return USERS_CACHE[user_id]
-        else:
-            user = tk.get_action('user_show')({'ignore_auth': True}, {'id': user_id})
-            USERS_CACHE[user_id] = user
-            return user
+        return tk.get_action('user_show')({'ignore_auth': True}, {'id': user_id})
     except Exception as e:
         log.warn(e)
 
@@ -537,7 +529,7 @@ def datarequest_comment_show(context, data_dict):
     :type id: string
 
     :returns: A dict with the following fields: id, user_id, datarequest_id, time
-        and comment
+        and comment)
     :rtype: dict
     '''
 
