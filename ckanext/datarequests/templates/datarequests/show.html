@@ -23,7 +23,10 @@
 
 {% block content_primary_nav %}
   {{ h.build_nav_icon('datarequest_show', _('Data Request'), id=datarequest_id) }}
-  {{ h.build_nav_icon('datarequest_comment', _('Comments'), id=datarequest_id) }}
+
+  {% if h.show_comments_tab() %}
+    {{ h.build_nav_icon('datarequest_comment', _('Comments'), id=datarequest_id) }}
+  {% endif %}
 {% endblock %}
 
 {% block secondary_content %}
