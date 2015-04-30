@@ -48,7 +48,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def get_actions(self):
-        functions = {
+        additional_actions = {
             constants.DATAREQUEST_CREATE: actions.datarequest_create,
             constants.DATAREQUEST_SHOW: actions.datarequest_show,
             constants.DATAREQUEST_UPDATE: actions.datarequest_update,
@@ -58,13 +58,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
         }
 
         if self.comments_enabled:
-            functions[constants.DATAREQUEST_COMMENT] = actions.datarequest_comment
-            functions[constants.DATAREQUEST_COMMENT_LIST] = actions.datarequest_comment_list
-            functions[constants.DATAREQUEST_COMMENT_SHOW] = actions.datarequest_comment_show
-            functions[constants.DATAREQUEST_COMMENT_UPDATE] = actions.datarequest_comment_update
-            functions[constants.DATAREQUEST_COMMENT_DELETE] = actions.datarequest_comment_delete
+            additional_actions[constants.DATAREQUEST_COMMENT] = actions.datarequest_comment
+            additional_actions[constants.DATAREQUEST_COMMENT_LIST] = actions.datarequest_comment_list
+            additional_actions[constants.DATAREQUEST_COMMENT_SHOW] = actions.datarequest_comment_show
+            additional_actions[constants.DATAREQUEST_COMMENT_UPDATE] = actions.datarequest_comment_update
+            additional_actions[constants.DATAREQUEST_COMMENT_DELETE] = actions.datarequest_comment_delete
 
-        return functions
+        return additional_actions
 
     ######################################################################
     ########################### AUTH FUNCTIONS ###########################
@@ -78,15 +78,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_INDEX: auth.datarequest_index,
             constants.DATAREQUEST_DELETE: auth.datarequest_delete,
             constants.DATAREQUEST_CLOSE: auth.datarequest_close,
-            constants.DATAREQUEST_COMMENT: auth.datarequest_comment,
-            constants.DATAREQUEST_COMMENT_LIST: auth.datarequest_comment_list,
-            constants.DATAREQUEST_COMMENT_SHOW: auth.datarequest_comment_show,
-            constants.DATAREQUEST_COMMENT_UPDATE: auth.datarequest_comment_update,
-            constants.DATAREQUEST_COMMENT_DELETE: auth.datarequest_comment_delete
         }
 
         if self.comments_enabled:
-            auth_functions[constants.DATAREQUEST_COMMENT] = auth.datarequest_comment,
+            auth_functions[constants.DATAREQUEST_COMMENT] = auth.datarequest_comment
             auth_functions[constants.DATAREQUEST_COMMENT_LIST] = auth.datarequest_comment_list
             auth_functions[constants.DATAREQUEST_COMMENT_SHOW] = auth.datarequest_comment_show
             auth_functions[constants.DATAREQUEST_COMMENT_UPDATE] = auth.datarequest_comment_update
@@ -168,8 +163,4 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def get_helpers(self):
-
-        def _show_comments_tab():
-            return self.comments_enabled
-
-        return {'show_comments_tab': _show_comments_tab }
+        return {'show_comments_tab': lambda: self.comments_enabled}
