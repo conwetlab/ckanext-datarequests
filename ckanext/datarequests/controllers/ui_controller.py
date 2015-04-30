@@ -252,7 +252,7 @@ class DataRequestsUI(base.BaseController):
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
-            log.warn(e)
+            log.warn(e) 
             tk.abort(403, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
@@ -266,7 +266,7 @@ class DataRequestsUI(base.BaseController):
         context = self._get_context()
         c.user_dict = tk.get_action('user_show')(context, {'id': id, 'include_num_followers': True})
         url_func = functools.partial(user_datarequest_url, id=id)
-        return self._show_index(id, None, True, url_func, 'user/datarequests.html')
+        return self._show_index(id, request.GET.get('organization', ''), True, url_func, 'user/datarequests.html')
 
     def close(self, id):
         data_dict = {'id': id}
