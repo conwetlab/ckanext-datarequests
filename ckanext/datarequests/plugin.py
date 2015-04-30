@@ -23,6 +23,14 @@ import auth
 import actions
 import constants
 
+from pylons import config
+
+
+def get_config_bool_value(config_name, default_value=False):
+    value = config.get(config_name, default_value)
+    value = value if type(value) == bool else value != 'False'
+    return value
+
 
 class DataRequestsPlugin(p.SingletonPlugin):
 
@@ -30,45 +38,56 @@ class DataRequestsPlugin(p.SingletonPlugin):
     p.implements(p.IAuthFunctions)
     p.implements(p.IConfigurer)
     p.implements(p.IRoutes, inherit=True)
+    p.implements(p.ITemplateHelpers)
+
+    def __init__(self, name=None):
+        self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
 
     ######################################################################
     ############################## IACTIONS ##############################
     ######################################################################
 
     def get_actions(self):
-        return {
+        additional_actions = {
             constants.DATAREQUEST_CREATE: actions.datarequest_create,
             constants.DATAREQUEST_SHOW: actions.datarequest_show,
             constants.DATAREQUEST_UPDATE: actions.datarequest_update,
             constants.DATAREQUEST_INDEX: actions.datarequest_index,
             constants.DATAREQUEST_DELETE: actions.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: actions.datarequest_close,
-            constants.DATAREQUEST_COMMENT: actions.datarequest_comment,
-            constants.DATAREQUEST_COMMENT_LIST: actions.datarequest_comment_list,
-            constants.DATAREQUEST_COMMENT_SHOW: actions.datarequest_comment_show,
-            constants.DATAREQUEST_COMMENT_UPDATE: actions.datarequest_comment_update,
-            constants.DATAREQUEST_COMMENT_DELETE: actions.datarequest_comment_delete
-
+            constants.DATAREQUEST_CLOSE: actions.datarequest_close
         }
+
+        if self.comments_enabled:
+            additional_actions[constants.DATAREQUEST_COMMENT] = actions.datarequest_comment
+            additional_actions[constants.DATAREQUEST_COMMENT_LIST] = actions.datarequest_comment_list
+            additional_actions[constants.DATAREQUEST_COMMENT_SHOW] = actions.datarequest_comment_show
+            additional_actions[constants.DATAREQUEST_COMMENT_UPDATE] = actions.datarequest_comment_update
+            additional_actions[constants.DATAREQUEST_COMMENT_DELETE] = actions.datarequest_comment_delete
+
+        return additional_actions
 
     ######################################################################
     ########################### AUTH FUNCTIONS ###########################
     ######################################################################
 
     def get_auth_functions(self):
-        return {
+        auth_functions = {
             constants.DATAREQUEST_CREATE: auth.datarequest_create,
             constants.DATAREQUEST_SHOW: auth.datarequest_show,
             constants.DATAREQUEST_UPDATE: auth.datarequest_update,
             constants.DATAREQUEST_INDEX: auth.datarequest_index,
             constants.DATAREQUEST_DELETE: auth.datarequest_delete,
             constants.DATAREQUEST_CLOSE: auth.datarequest_close,
-            constants.DATAREQUEST_COMMENT: auth.datarequest_comment,
-            constants.DATAREQUEST_COMMENT_LIST: auth.datarequest_comment_list,
-            constants.DATAREQUEST_COMMENT_SHOW: auth.datarequest_comment_show,
-            constants.DATAREQUEST_COMMENT_UPDATE: auth.datarequest_comment_update,
-            constants.DATAREQUEST_COMMENT_DELETE: auth.datarequest_comment_delete
         }
+
+        if self.comments_enabled:
+            auth_functions[constants.DATAREQUEST_COMMENT] = auth.datarequest_comment
+            auth_functions[constants.DATAREQUEST_COMMENT_LIST] = auth.datarequest_comment_list
+            auth_functions[constants.DATAREQUEST_COMMENT_SHOW] = auth.datarequest_comment_show
+            auth_functions[constants.DATAREQUEST_COMMENT_UPDATE] = auth.datarequest_comment_update
+            auth_functions[constants.DATAREQUEST_COMMENT_DELETE] = auth.datarequest_comment_delete
+
+        return auth_functions
 
     ######################################################################
     ############################ ICONFIGURER #############################
@@ -126,14 +145,28 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   action='organization_datarequests', conditions=dict(method=['GET']),
                   ckan_icon='question-sign')
 
-        # Comment, update and view comments (of) a Data Request
-        m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        # Data Request that belongs to an user
+        m.connect('user_datarequests', '/user/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                  action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
+                  action='user_datarequests', conditions=dict(method=['GET']),
+                  ckan_icon='question-sign')
 
-        # Delete data request
-        m.connect('/%s/comment/{datarequest_id}/delete/{comment_id}' % constants.DATAREQUESTS_MAIN_PATH,
-                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                  action='delete_comment', conditions=dict(method=['GET', 'POST']))
+        if self.comments_enabled:
+            # Comment, update and view comments (of) a Data Request
+            m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                      action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
+
+            # Delete data request
+            m.connect('/%s/comment/{datarequest_id}/delete/{comment_id}' % constants.DATAREQUESTS_MAIN_PATH,
+                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                      action='delete_comment', conditions=dict(method=['GET', 'POST']))
 
         return m
+
+    ######################################################################
+    ######################### ITEMPLATESHELPER ###########################
+    ######################################################################
+
+    def get_helpers(self):
+        return {'show_comments_tab': lambda: self.comments_enabled}
