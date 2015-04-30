@@ -21,6 +21,7 @@
       {% if description %}
         <div>{{ description }}</div>
       {% endif %}
+      <div class="date-datarequests">{{ h.time_ago_from_timestamp(datarequest.open_time) }}</div>
     </div>
   {% endblock %}
 </li>
