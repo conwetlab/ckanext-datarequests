@@ -25,6 +25,11 @@ from mock import MagicMock
 from nose_parameterized import parameterized
 
 
+INDEX_FUNCTION = 'index'
+ORGANIZATION_DATAREQUESTS_FUNCTION = 'organization_datarequests'
+USER_DATAREQUESTS_FUNCTION = 'user_datarequests'
+
+
 class UIControllerTest(unittest.TestCase):
 
     def setUp(self):
@@ -456,22 +461,27 @@ class UIControllerTest(unittest.TestCase):
         self.assertIsNone(result)
 
     @parameterized.expand([
-        ('index', '1', 'conwet', 0,    10),
-        ('index', '2', 'conwet', 10,   10),
-        ('index', '7', 'conwet', 60,   10),
-        ('index', '1', 'conwet', 0,    25, 25),
-        ('index', '2', 'conwet', 25,   25, 25),
-        ('index', '7', 'conwet', 150,  25, 25),
-        ('index', '5', None,     40,   10),
-        ('organization_datarequests', '1', 'conwet', 0,    10),
-        ('organization_datarequests', '2', 'conwet', 10,   10),
-        ('organization_datarequests', '7', 'conwet', 60,   10),
-        ('organization_datarequests', '1', 'conwet', 0,    25, 25),
-        ('organization_datarequests', '2', 'conwet', 25,   25, 25),
-        ('organization_datarequests', '7', 'conwet', 150,  25, 25),
+        (INDEX_FUNCTION, '1', 'conwet', '', 0,    10),
+        (INDEX_FUNCTION, '2', 'conwet', '', 10,   10),
+        (INDEX_FUNCTION, '7', 'conwet', '', 60,   10),
+        (INDEX_FUNCTION, '1', 'conwet', '', 0,    25, 25),
+        (INDEX_FUNCTION, '2', 'conwet', '', 25,   25, 25),
+        (INDEX_FUNCTION, '7', 'conwet', '', 150,  25, 25),
+        (INDEX_FUNCTION, '5', None,     '', 40,   10),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     10,   10),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     60,   10),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    25, 25),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     25,   25, 25),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     150,  25, 25),
+        (USER_DATAREQUESTS_FUNCTION,         '1', 'conwet', 'ckan', 0,    10),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10),
+        (USER_DATAREQUESTS_FUNCTION,         '7', 'conwet', 'ckan', 60,   10),
+        (USER_DATAREQUESTS_FUNCTION,         '7', '',       'ckan', 150,  25, 25),
     ])
-    def test_index_organization_dr(self, func, page, organization, expected_offset, expected_limit, datarequests_per_page=10):
+    def test_index_organization_user_dr(self, func, page, organization, user, expected_offset, expected_limit, datarequests_per_page=10):
         params = {}
+        user_show_action = 'user_show'
         organization_show_action = 'organization_show'
         base_url = 'http://someurl.com/somepath/otherpath'
 
@@ -492,22 +502,28 @@ class UIControllerTest(unittest.TestCase):
             controller.request.GET['page'] = page
 
         # Set the organization in the correct place depending on the function
-        if func == 'index':
+        if func == ORGANIZATION_DATAREQUESTS_FUNCTION:
+            params['id'] = organization
+            expected_data_dict['organization_id'] = organization
+        else:
+            if func == USER_DATAREQUESTS_FUNCTION:
+                params['id'] = user
+                expected_data_dict['user_id'] = user
+
             if organization:
                 controller.request.GET['organization'] = organization
                 expected_data_dict['organization_id'] = organization
-        else:
-            # organization_datarequests
-            params['id'] = organization
-            expected_data_dict['organization_id'] = organization
 
         # Mocking
+        user_show = MagicMock()
         organization_show = MagicMock()
         datarequest_index = MagicMock()
 
         def _get_action(action):
             if action == organization_show_action:
                 return organization_show
+            elif action == 'user_show':
+                return user_show
             else:
                 return datarequest_index
 
@@ -522,17 +538,24 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
 
         # Specific assertions depending on the function called
-        if func == 'index':
+        if func == INDEX_FUNCTION:
             controller.tk.get_action.assert_called_once_with(constants.DATAREQUEST_INDEX)
             self.assertEquals(0, organization_show.call_count)
             expected_render_page = 'datarequests/index.html'
-        else:
+        elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
             self.assertEquals(2, controller.tk.get_action.call_count)
             controller.tk.get_action.assert_any_call(constants.DATAREQUEST_INDEX)
             controller.tk.get_action.assert_any_call(organization_show_action)
             self.assertEquals(organization_show.return_value, controller.c.group_dict)
             organization_show.assert_called_once_with(self.expected_context, {'id': organization})
             expected_render_page = 'organization/datarequests.html'
+        elif func == USER_DATAREQUESTS_FUNCTION:
+            self.assertEquals(2, controller.tk.get_action.call_count)
+            controller.tk.get_action.assert_any_call(constants.DATAREQUEST_INDEX)
+            controller.tk.get_action.assert_any_call(user_show_action)
+            self.assertEquals(user_show.return_value, controller.c.user_dict)
+            user_show.assert_called_once_with(self.expected_context, {'id': user, 'include_num_followers': True})
+            expected_render_page = 'user/datarequests.html'
 
         # Check the values put in c
         datarequest_index.assert_called_once_with(self.expected_context, expected_data_dict)
@@ -552,19 +575,23 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals("%s?page=%d" % (base_url, silly_page), page_arguments['url'](page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
-        if func == 'index':
+        if func == INDEX_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='index')
-        else:
+        elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='organization_datarequests', id=organization)
+        elif func == USER_DATAREQUESTS_FUNCTION:
+            controller.helpers.url_for.assert_called_once_with(
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                action='user_datarequests', id=user)
 
         # Check the facets
         expected_facet_titles = {}
         expected_facet_titles['state'] = controller.tk._('State')
-        if func == 'index':
+        if func != ORGANIZATION_DATAREQUESTS_FUNCTION:
             expected_facet_titles['organization'] = controller.tk._('Organizations')
 
         self.assertEquals(expected_facet_titles, controller.c.facet_titles)

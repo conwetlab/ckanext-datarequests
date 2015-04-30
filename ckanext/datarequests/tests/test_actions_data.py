@@ -194,6 +194,7 @@ org1 = 'org1'
 org2 = 'org2'
 org3 = 'org3'
 organization_default_id = 'organziation_id'
+user_default_id = 'user_id'
 default_offset = 2
 default_limit = 3
 
@@ -378,8 +379,8 @@ datarequest_index_test_case_11 = {
 
 datarequest_index_test_case_12 = {
     'organization_show_func': _organization_show,
-    'content': {'organization_id': 'fiware', 'closed': True, 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'content': {'organization_id': 'fiware', 'user_id': 'ckan', 'closed': True, 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True, 'user_id': user_default_id},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
