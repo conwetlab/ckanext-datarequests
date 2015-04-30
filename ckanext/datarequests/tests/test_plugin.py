@@ -134,7 +134,8 @@ class DataRequestPlutinTest(unittest.TestCase):
     ])
     def test_before_map(self, comments_enabled):
 
-        mapa_calls = 9 if comments_enabled == 'True' else 9 - 2
+        urls_set = 10
+        mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 2
 
         # Configure config and get instance
         plugin.config.get.return_value = comments_enabled
@@ -176,6 +177,12 @@ class DataRequestPlutinTest(unittest.TestCase):
             action='organization_datarequests', conditions=dict(method=['GET']), 
             ckan_icon='question-sign')
 
+        mapa.connect.assert_any_call('user_datarequests',
+            '/user/%s/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='user_datarequests', conditions=dict(method=['GET']), 
+            ckan_icon='question-sign')
+
         if comments_enabled == 'True':
             mapa.connect.assert_any_call('datarequest_comment', '/%s/comment/{id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
@@ -184,3 +191,17 @@ class DataRequestPlutinTest(unittest.TestCase):
             mapa.connect.assert_any_call('/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='delete_comment', conditions=dict(method=['GET', 'POST']))
+
+    @parameterized.expand([
+        ('True',),
+        ('False')
+    ])
+    def test_helpers(self, comments_enabled):
+
+        # Configure config and get instance
+        plugin.config.get.return_value = comments_enabled
+        self.plg_instance = plugin.DataRequestsPlugin()
+
+        # Check result
+        expected_result = True if comments_enabled == 'True' else False
+        self.assertEquals(self.plg_instance.get_helpers()['show_comments_tab'](), expected_result)

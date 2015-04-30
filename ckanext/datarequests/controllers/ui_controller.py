@@ -79,13 +79,19 @@ def org_datarequest_url(params, id):
     return url_with_params(url, params)
 
 
+def user_datarequest_url(params, id):
+    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                          action='user_datarequests', id=id)
+    return url_with_params(url, params)
+
+
 class DataRequestsUI(base.BaseController):
 
     def _get_context(self):
         return {'model': model, 'session': model.Session,
                 'user': c.user, 'auth_user_obj': c.userobj}
 
-    def _show_index(self, organization_id, include_organization_facet, url_func, file_to_render):
+    def _show_index(self, user_id, organization_id, include_organization_facet, url_func, file_to_render):
 
         def pager_url(q=None, page=None):
             params = list()
@@ -105,6 +111,9 @@ class DataRequestsUI(base.BaseController):
 
             if organization_id:
                 data_dict['organization_id'] = organization_id
+
+            if user_id:
+                data_dict['user_id'] = user_id
 
             tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
             datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
@@ -136,7 +145,7 @@ class DataRequestsUI(base.BaseController):
             tk.abort(403, tk._('Unauthorized to list Data Requests'))
 
     def index(self):
-        return self._show_index(request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
+        return self._show_index(None, request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
 
     def _process_post(self, action, context):
         # If the user has submitted the form, the data request must be created
@@ -243,7 +252,7 @@ class DataRequestsUI(base.BaseController):
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
-            log.warn(e)
+            log.warn(e) 
             tk.abort(403, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
@@ -251,7 +260,13 @@ class DataRequestsUI(base.BaseController):
         context = self._get_context()
         c.group_dict = tk.get_action('organization_show')(context, {'id': id})
         url_func = functools.partial(org_datarequest_url, id=id)
-        return self._show_index(id, False, url_func, 'organization/datarequests.html')
+        return self._show_index(None, id, False, url_func, 'organization/datarequests.html')
+
+    def user_datarequests(self, id):
+        context = self._get_context()
+        c.user_dict = tk.get_action('user_show')(context, {'id': id, 'include_num_followers': True})
+        url_func = functools.partial(user_datarequest_url, id=id)
+        return self._show_index(id, request.GET.get('organization', ''), True, url_func, 'user/datarequests.html')
 
     def close(self, id):
         data_dict = {'id': id}

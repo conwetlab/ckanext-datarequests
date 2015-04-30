@@ -384,12 +384,13 @@ class ActionsTest(unittest.TestCase):
         ddbb_response = test_case['ddbb_response']
         expected_response = test_case['expected_response']
         _organization_show = test_case['organization_show_func']
+        _user_show = test_case.get('user_show_func', None)
 
         # Set the mocks
         actions.db.DataRequest.get_ordered_by_date.return_value = ddbb_response
         default_pkg = {'pkg': 1}
         default_org = {'org': 2}
-        default_user = {'user': 3}
+        default_user = {'user': 3, 'id': test_data.user_default_id}
         test_data._initialize_basic_actions(actions, default_user, default_org, default_pkg)
 
         # Modify the default behaviour of 'organization_show'
