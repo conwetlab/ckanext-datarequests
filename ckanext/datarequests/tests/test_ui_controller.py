@@ -519,7 +519,7 @@ class UIControllerTest(unittest.TestCase):
         result = function(**params)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)        
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
 
         # Specific assertions depending on the function called
         if func == 'index':
@@ -858,7 +858,7 @@ class UIControllerTest(unittest.TestCase):
 
 
     ######################################################################
-    ############################### COMMENT ##############################
+    ########################### DELETE COMMENT ###########################
     ######################################################################
 
     def test_delete_comment_not_authorized(self):
