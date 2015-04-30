@@ -281,6 +281,10 @@ def datarequest_index(context, data_dict):
         to filter the results by organization
     :type organization_id: string
 
+    :param user_id: This parameter is optional and allows users
+        to filter the results by user
+    :type organization_id: string
+
     :param closed: This parameter is optional and allos users to filter
         the result by the data request status (open or closed)
     :type closed: bool
@@ -292,13 +296,14 @@ def datarequest_index(context, data_dict):
     :type limit: init
 
     :returns: A dict with three fields: result (a list of data requests),
-        facets (a list of the facets that can be used) and count (the total 
+        facets (a list of the facets that can be used) and count (the total
         number of existing data requests)
     :rtype: dict
     '''
 
     model = context['model']
     organization_show = tk.get_action('organization_show')
+    user_show = tk.get_action('user_show')
 
     # Init the data base
     db.init_db(model)
@@ -310,11 +315,19 @@ def datarequest_index(context, data_dict):
     organization_id = data_dict.get('organization_id', None)
     params = {}
     if organization_id:
-        # Get organization ID (in some cases, user give the system the organization name)
+        # Get organization ID (in some cases the organization name is received)
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
 
-        # Include the organization into the parameters to filter the database query
+        # Include organization ID into the parameters to filter the database query
         params['organization_id'] = organization_id
+
+    user_id = data_dict.get('user_id', None)
+    if user_id:
+        # Get user ID (the user name is received)
+        user_id = user_show({'ignore_auth': True}, {'id': user_id}).get('id')
+
+        # Include user ID into the parameters to filter the database query
+        params['user_id'] = user_id
 
     # Filter by state
     closed = data_dict.get('closed', None)

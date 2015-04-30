@@ -72,6 +72,7 @@ Returns a list with the existing data requests. Rights access will be checked be
     
 ##### Parameters (included in `data_dict`):
 * **`organization_id`** (string) (optional): to filter the result by organization
+* **`user_id`** (string) (optional): to filter the result by user
 * **`closed`** (string) (optional): to filter the result by state (`True`: Closed, `False`: Open)
 * **`offset`** (int) (optional) (default `0`): the first element to be returned
 * **`limit`** (int) (optional) (default `10`): The max number of data requests to be returned
