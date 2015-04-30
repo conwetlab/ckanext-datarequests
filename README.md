@@ -161,7 +161,7 @@ Install this extension in your CKAN instance is as easy as intall any other CKAN
 * Activate your virtual environment (generally by running `. /usr/lib/ckan/default/bin/activate`)
 * Install the extension by running `python setup.py develop`
 * Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` setting. 
- * If you want to disable the comments system, you must also add this `ckan.datarequests.comments = False`
+ * If you want to disable the comments system, you must also add this `ckan.datarequests.comments = False` to your properties file.
 * Restart your apache2 reserver (`sudo service apache2 restart`)
 * That's All!
 
