@@ -161,7 +161,7 @@ class DataRequestsUI(base.BaseController):
             try:
                 result = tk.get_action(action)(context, data_dict)
                 tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
+                tk.response.location = '/data/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
                                                    result['id'])
 
             except tk.ValidationError as e:
@@ -246,7 +246,7 @@ class DataRequestsUI(base.BaseController):
             tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
             datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
             tk.response.status_int = 302
-            tk.response.location = '/%s' % constants.DATAREQUESTS_MAIN_PATH
+            tk.response.location = '/data/%s' % constants.DATAREQUESTS_MAIN_PATH
             helpers.flash_notice(tk._('Data Request %s deleted correctly') % datarequest.get('title', ''))
         except tk.ObjectNotFound as e:
             log.warn(e)
@@ -309,7 +309,7 @@ class DataRequestsUI(base.BaseController):
 
                 tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
                 tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, data_dict['id'])
+                tk.response.location = '/data/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, data_dict['id'])
             else:   # GET
                 return _return_page()
 

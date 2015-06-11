@@ -121,7 +121,7 @@ def _undictize_comment_basic(comment, data_dict):
 
 def datarequest_create(context, data_dict):
     '''
-    Action to create a new dara request. The function checks the access rights
+    Action to create a new data request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
@@ -135,7 +135,7 @@ def datarequest_create(context, data_dict):
     :param description: A brief description for your data request
     :type description: string
 
-    :param organiztion_id: If you want to create the data request in a specific
+    :param organization_id: If you want to create the data request in a specific
         organization.
     :type organization_id: string
 
