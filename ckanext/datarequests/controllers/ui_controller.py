@@ -390,7 +390,7 @@ class DataRequestsUI(base.BaseController):
             tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
             tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
             tk.response.status_int = 302
-            tk.response.location = '/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id)
+            tk.response.location = '/data/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id)
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Comment %s not found') % comment_id)
