@@ -9,8 +9,7 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CKAN Data Requests Extension is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# CKAN Data Requests Extension is distributed in the hope that it will be useful# but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
@@ -39,7 +38,7 @@ def active_organizations_available(permission='edit_group'):
     context = {'user': c.user}
     data_dict = {'permission': permission}
     organizations = logic.get_action('organization_list_for_user')(context, data_dict)
-    return organization for organization in organizations if has_organization_maintainer(organization.orgid)
+    return organization for organization in organizations if has_organization_maintainer(organization)
 
 def has_organization_maintainer(orgid):
     '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
