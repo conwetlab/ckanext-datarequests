@@ -22,6 +22,7 @@ import ckan.plugins.toolkit as tk
 import auth
 import actions
 import constants
+import ckan.plugins.toolkit as toolkit
 
 from pylons import config
 
@@ -31,6 +32,16 @@ def get_config_bool_value(config_name, default_value=False):
     value = value if type(value) == bool else value != 'False'
     return value
 
+def has_organization_maintainer(orgid):
+    '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
+       false otherwise'''
+     members = toolkit.get_action('member_list')(
+        data_dict={'id': orgid, 'capacity': 'editor', 'all_fields': True})
+    if members:
+       ##TODO: missing the check for default admin
+       return True
+    else:
+       return False
 
 class DataRequestsPlugin(p.SingletonPlugin):
 
@@ -170,3 +181,4 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def get_helpers(self):
         return {'show_comments_tab': lambda: self.comments_enabled}
+        return {'is_organization_requestable': has_organization_maintainer}  
