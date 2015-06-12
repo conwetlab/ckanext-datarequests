@@ -3,12 +3,15 @@
   {{ super() }}
   <link rel="stylesheet" href="/datarequests.css" />
 {% endblock %}
+{% set organization_id = data.get('organization_id', h.get_request_param('organization')) %}
 
 {% block page_primary_action %}
-  {% if h.check_access('datarequest_create') %}
+  {% if h.has_organization_maintainer(organization_id) %}
+  {% if h.check_access('datarequest_create')  %}
     <div class="page_primary_action">
       {% link_for _('Add Data Request'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='new', organization=c.group_dict.id, class_='btn btn-primary', icon='plus-sign-alt' %}
     </div>
+  {% endif %}
   {% endif %}
   {{ h.snippet('datarequests/snippets/datarequest_list.html', datarequest_count=c.datarequest_count, datarequests=c.datarequests, page=c.page)}}
 {% endblock %}
