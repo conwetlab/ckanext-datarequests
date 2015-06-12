@@ -36,7 +36,7 @@ def has_organization_maintainer(orgid):
     '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
        false otherwise'''
      members = toolkit.get_action('member_list')(
-        data_dict={'id': orgid, 'capacity': 'editor', 'all_fields': True})
+        data_dict={'id': orgid, 'capacity': 'editor'})
     if members:
        ##TODO: missing the check for default admin
        return True
