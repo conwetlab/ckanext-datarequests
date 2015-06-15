@@ -201,5 +201,5 @@ class DataRequestsPlugin(p.SingletonPlugin):
                 if member[0] in admins.values():
                     sys_maintainers += 1
             return sys_maintainers == len(members)
-         else:
+        else:
             return False
