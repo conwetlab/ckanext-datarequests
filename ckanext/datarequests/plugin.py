@@ -187,8 +187,11 @@ class DataRequestsPlugin(p.SingletonPlugin):
     def has_organization_maintainer(self, orgid):
         '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
            false otherwise'''
-        members = tk.get_action('member_list')(
-        data_dict={'id': orgid, 'capacity': 'editor'})
+        context = {'user': c.user}
+        data_dict={'id' orgid, 'capacity': 'admin'}
+        members = tk.get_action('member_list')(context,data_dict)
+        #data_dict={'id': orgid, 'capacity': 'editor'})
+        
         if members:
         ##TODO: missing the check for default admin
             return True
