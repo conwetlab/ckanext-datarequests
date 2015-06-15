@@ -18,14 +18,12 @@
 
 import ckan.plugins as p
 from ckan.common import c
-import ckan.plugins.toolkit as tk
 import auth
 import actions
 import constants
-import ckan.plugins.toolkit as toolkit
+import ckan.plugins.toolkit as tk
 
 from pylons import config
-from ckan.logic import get_action
 
 def get_config_bool_value(config_name, default_value=False):
     value = config.get(config_name, default_value)
@@ -183,13 +181,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
         '''
         context = {'user': c.user}
         data_dict = {'permission': permission}
-        organizations = get_action('organization_list_for_user')(context, data_dict)
+        organizations = tk.get_action('organization_list_for_user')(context, data_dict)
         return [organization for organization in organizations if self.has_organization_maintainer(organization)]
 
     def has_organization_maintainer(self, orgid):
         '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
            false otherwise'''
-        members = toolkit.get_action('member_list')(
+        members = tk.get_action('member_list')(
         data_dict={'id': orgid, 'capacity': 'editor'})
         if members:
         ##TODO: missing the check for default admin
