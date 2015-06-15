@@ -17,6 +17,7 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 import ckan.plugins as p
+from ckan.common import c
 import ckan.plugins.toolkit as tk
 import auth
 import actions
@@ -24,32 +25,14 @@ import constants
 import ckan.plugins.toolkit as toolkit
 
 from pylons import config
-
+from ckan.logic import get_action
 
 def get_config_bool_value(config_name, default_value=False):
     value = config.get(config_name, default_value)
     value = value if type(value) == bool else value != 'False'
     return value
 
-def active_organizations_available(permission='edit_group'):
-    '''Return a list of organizations that the current user has the specified
-    permission for and have an active maintainer.
-    '''
-    context = {'user': c.user}
-    data_dict = {'permission': permission}
-    organizations = logic.get_action('organization_list_for_user')(context, data_dict)
-    return organization for organization in organizations if has_organization_maintainer(organization)
 
-def has_organization_maintainer(orgid):
-    '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
-       false otherwise'''
-     members = toolkit.get_action('member_list')(
-        data_dict={'id': orgid, 'capacity': 'editor'})
-    if members:
-       ##TODO: missing the check for default admin
-       return True
-    else:
-       return False
 
 class DataRequestsPlugin(p.SingletonPlugin):
 
@@ -188,6 +171,29 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def get_helpers(self):
-        return {'show_comments_tab': lambda: self.comments_enabled}
-        return {'is_organization_requestable': has_organization_maintainer}  
-        return {'active_organizations_available': active_organizations_available}
+        return {
+            'show_comments_tab': lambda: self.comments_enabled,
+            'is_organization_requestable': self.has_organization_maintainer,
+            'active_organizations_available': self.active_organizations_available
+        }
+
+    def active_organizations_available(self, permission='edit_group'):
+        '''Return a list of organizations that the current user has the specified
+        permission for and have an active maintainer.
+        '''
+        context = {'user': c.user}
+        data_dict = {'permission': permission}
+        organizations = get_action('organization_list_for_user')(context, data_dict)
+        return [organization for organization in organizations if self.has_organization_maintainer(organization)]
+
+    def has_organization_maintainer(self, orgid):
+        '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
+           false otherwise'''
+        members = toolkit.get_action('member_list')(
+        data_dict={'id': orgid, 'capacity': 'editor'})
+        if members:
+        ##TODO: missing the check for default admin
+            return True
+        else:
+            return False
+
