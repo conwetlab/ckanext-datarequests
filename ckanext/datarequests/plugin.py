@@ -18,6 +18,7 @@
 
 import ckan.plugins as p
 from ckan.common import c
+from ckan import model
 import auth
 import actions
 import constants
@@ -189,11 +190,16 @@ class DataRequestsPlugin(p.SingletonPlugin):
            false otherwise'''
         context = {'user': c.user}
         data_dict={'id': orgid, 'capacity': 'admin'}
-        members = tk.get_action('member_list')(context,data_dict)
-       
-        if members:
-        ##TODO: missing the check for default admin
-            return True
-        else:
-            return False
 
+        members = tk.get_action('member_list')(context,data_dict)
+        
+        if members:
+            sys_maintainers = 0
+            ## Return all sysadmins and check whether this organization has any other admin more than a default sysadmin has it
+            admins = set(model.Session.query(model.User).filter(model.User.sysadmin == True))  # noqa
+            for member in members:
+                if member[0] in admins.values():
+                    sys_maintainers += 1
+            return sys_maintainers == len(members)
+         else:
+            return False
