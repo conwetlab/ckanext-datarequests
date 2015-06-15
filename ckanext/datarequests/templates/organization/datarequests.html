@@ -3,7 +3,7 @@
   {{ super() }}
   <link rel="stylesheet" href="/datarequests.css" />
 {% endblock %}
-{% set organization_id = data.get('organization_id', h.get_request_param('organization')) %}
+{% set organization_id = c.group_dict.id %}
 
 {% block page_primary_action %}
   {% if h.has_organization_maintainer(organization_id) %}
