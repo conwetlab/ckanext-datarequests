@@ -191,15 +191,21 @@ class DataRequestsPlugin(p.SingletonPlugin):
         context = {'user': c.user}
         data_dict={'id': orgid, 'capacity': 'admin'}
 
+        ## TODO: Do it in a more python way
         members = tk.get_action('member_list')(context,data_dict)
-        
+
         if members:
             sys_maintainers = 0
             ## Return all sysadmins and check whether this organization has any other admin more than a default sysadmin has it
-            admins = set(model.Session.query(model.User).filter(model.User.sysadmin == True))  # noqa
+            admins = list(model.Session.query(model.User).filter(model.User.sysadmin == True))  # noqa
+            adminsuuid = {}
+            for admin in admins:
+                adminsuuid['%s' %admin.id] = []
+
             for member in members:
-                if member[0] in admins.values():
+                if any(str(member[0]) in adminuuid for adminuuid in adminsuuid):
                     sys_maintainers += 1
-            return sys_maintainers == len(members)
+            return sys_maintainers != len(members)
         else:
             return False
+
