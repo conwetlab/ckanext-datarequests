@@ -15,7 +15,7 @@
   {{ h.snippet('datarequests/snippets/datarequest_list.html', datarequest_count=c.datarequest_count, datarequests=c.datarequests, page=c.page)}}
   {% else %}
      <p class="empty">
-      {{ _('This organization cannot handle data request petitions') }}.
+      {{ _('This organization cannot handle data requests') }}.
      </p>
   {% endif %}
 {% endblock %}
