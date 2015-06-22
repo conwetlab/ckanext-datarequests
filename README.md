@@ -27,7 +27,7 @@ On the other hand, you can also use the API. To access this API, you should POST
 Here you have a brief description of all the implemented actions:
 
 #### `datarequest_create(context, data_dict)`
-Action to create a new dara request. The function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
+Action to create a new data request. This function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
 
