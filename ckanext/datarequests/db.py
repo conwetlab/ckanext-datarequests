@@ -94,6 +94,13 @@ def init_db(model):
                 query = model.Session.query(cls).autoflush(False)
                 return query.filter_by(**kw).order_by(cls.time.desc()).all()
 
+            @classmethod
+            def get_datarequest_comments(cls, **kw):
+                '''
+                Returned the number of comments of a data request
+                '''
+                return model.Session.query(func.count(cls.id)).filter_by(**kw).scalar()
+
         Comment = _Comment
 
         # FIXME: References to the other tables...

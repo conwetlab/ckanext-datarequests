@@ -22,6 +22,7 @@ import ckan.plugins.toolkit as tk
 import auth
 import actions
 import constants
+import helpers
 
 from pylons import config
 
@@ -169,4 +170,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
     ######################################################################
 
     def get_helpers(self):
-        return {'show_comments_tab': lambda: self.comments_enabled}
+        return {
+            'show_comments_tab': lambda: self.comments_enabled,
+            'get_comments_number': helpers.get_comments_number,
+            'get_comments_badge': helpers.get_comments_badge
+        }
