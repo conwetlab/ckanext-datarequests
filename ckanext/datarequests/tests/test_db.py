@@ -203,3 +203,37 @@ class DBTest(unittest.TestCase):
 
     def test_comment_get_ordered_by_date(self):
         self._test_get_ordered_by_date('Comment', 'time')
+
+    def test_get_datarequests_comments(self):
+
+        n_comments = 7
+        count = 'example'
+
+        db.func = MagicMock()
+        db.func.count.return_value = count
+
+        filter_by = MagicMock()
+        filter_by.scalar.return_value = n_comments
+
+        query = MagicMock()
+        query.filter_by = MagicMock(return_value=filter_by)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        params = {
+            'datarequest_id': 'example_uuid_v4'
+        }
+        db.Comment.id = 'id'
+        result = db.Comment.get_datarequest_comments(**params)
+
+        # Assertions
+        self.assertEquals(n_comments, result)
+        query.filter_by.assert_called_once_with(**params)
+        model.Session.query.assert_called_once_with(count)
+        db.func.count.assert_called_once_with(db.Comment.id)

@@ -29,7 +29,7 @@ COMMENTS_ACTIONS = 5
 ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 
 
-class DataRequestPlutinTest(unittest.TestCase):
+class DataRequestPluginTest(unittest.TestCase):
 
     def setUp(self):
         self._actions = plugin.actions
@@ -43,6 +43,9 @@ class DataRequestPlutinTest(unittest.TestCase):
 
         self._config = plugin.config
         plugin.config = MagicMock()
+
+        self._helpers = plugin.helpers
+        plugin.helpers = MagicMock()
 
         # plg = plugin
         self.datarequest_create = constants.DATAREQUEST_CREATE
@@ -60,6 +63,7 @@ class DataRequestPlutinTest(unittest.TestCase):
         plugin.actions = self._actions
         plugin.auth = self._auth
         plugin.tk = self._tk
+        plugin.helpers = self._helpers
 
     @parameterized.expand([
         ('True',),
@@ -204,4 +208,7 @@ class DataRequestPlutinTest(unittest.TestCase):
 
         # Check result
         expected_result = True if comments_enabled == 'True' else False
-        self.assertEquals(self.plg_instance.get_helpers()['show_comments_tab'](), expected_result)
+        helpers = self.plg_instance.get_helpers()
+        self.assertEquals(helpers['show_comments_tab'](), expected_result)
+        self.assertEquals(helpers['get_comments_number'], plugin.helpers.get_comments_number)
+        self.assertEquals(helpers['get_comments_badge'], plugin.helpers.get_comments_badge)
