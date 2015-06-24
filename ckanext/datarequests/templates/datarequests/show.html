@@ -25,7 +25,7 @@
   {{ h.build_nav_icon('datarequest_show', _('Data Request'), id=datarequest_id) }}
 
   {% if h.show_comments_tab() %}
-    {{ h.build_nav_icon('datarequest_comment', _('Comments'), id=datarequest_id) }}
+    {{ h.build_nav_icon('datarequest_comment', _('Comments') + ' ' + h.get_comments_badge(datarequest_id), id=datarequest_id) }}
   {% endif %}
 {% endblock %}
 

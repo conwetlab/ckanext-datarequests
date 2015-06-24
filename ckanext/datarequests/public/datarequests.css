@@ -20,3 +20,12 @@
     white-space: nowrap;
     margin-top: 8px;
 }
+
+.divider {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.datarequest-properties {
+    margin-top: 8px;
+}
