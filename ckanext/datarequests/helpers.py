@@ -23,11 +23,26 @@ import db
 
 
 def get_comments_number(datarequest_id):
-    # DB can be not intialized
+    # DB should be intialized
     db.init_db(model)
-    return db.Comment.get_datarequest_comments(datarequest_id=datarequest_id)
+    return db.Comment.get_datarequest_comments_number(datarequest_id=datarequest_id)
 
 
 def get_comments_badge(datarequest_id):
-    return tk.render_snippet('datarequests/snippets/comments_badge.html',
+    return tk.render_snippet('datarequests/snippets/badge.html',
                              {'comments_count': get_comments_number(datarequest_id)})
+
+
+def get_open_datarequests_number():
+    # DB should be initialized
+    db.init_db(model)
+    return db.DataRequest.get_open_datarequests_number()
+
+
+def get_open_datarequests_badge(show_badge):
+    '''The snippet is only returned when show_badge == True'''
+    if show_badge:
+        return tk.render_snippet('datarequests/snippets/badge.html',
+                                 {'comments_count': get_open_datarequests_number()})
+    else:
+        return ''

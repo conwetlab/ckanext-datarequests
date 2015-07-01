@@ -198,6 +198,37 @@ class DBTest(unittest.TestCase):
     def test_datarequest_get_ordered_by_date(self):
         self._test_get_ordered_by_date('DataRequest', 'open_time')
 
+    def test_get_open_datarequests_number(self):
+
+        n_datarequests = 7
+        count = 'example'
+
+        db.func = MagicMock()
+        db.func.count.return_value = count
+
+        filter_by = MagicMock()
+        filter_by.scalar.return_value = n_datarequests
+
+        query = MagicMock()
+        query.filter_by = MagicMock(return_value=filter_by)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        db.DataRequest.id = 'id'
+        result = db.DataRequest.get_open_datarequests_number()
+
+        # Assertions
+        self.assertEquals(n_datarequests, result)
+        query.filter_by.assert_called_once_with(closed=False)
+        model.Session.query.assert_called_once_with(count)
+        db.func.count.assert_called_once_with(db.DataRequest.id)
+
     def test_comment_get(self):
         self._test_get('Comment')
 
@@ -230,7 +261,7 @@ class DBTest(unittest.TestCase):
             'datarequest_id': 'example_uuid_v4'
         }
         db.Comment.id = 'id'
-        result = db.Comment.get_datarequest_comments(**params)
+        result = db.Comment.get_datarequest_comments_number(**params)
 
         # Assertions
         self.assertEquals(n_comments, result)

@@ -58,6 +58,11 @@ def init_db(model):
                 query = model.Session.query(cls).autoflush(False)
                 return query.filter_by(**kw).order_by(cls.open_time.desc()).all()
 
+            @classmethod
+            def get_open_datarequests_number(cls):
+                '''Returns the number of data requests that are open'''
+                return model.Session.query(func.count(cls.id)).filter_by(closed=False).scalar()
+
         DataRequest = _DataRequest
 
         # FIXME: References to the other tables...
@@ -95,7 +100,7 @@ def init_db(model):
                 return query.filter_by(**kw).order_by(cls.time.desc()).all()
 
             @classmethod
-            def get_datarequest_comments(cls, **kw):
+            def get_datarequest_comments_number(cls, **kw):
                 '''
                 Returned the number of comments of a data request
                 '''
