@@ -24,6 +24,7 @@ import actions
 import constants
 import helpers
 
+from functools import partial
 from pylons import config
 
 
@@ -43,6 +44,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def __init__(self, name=None):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
+        self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
 
     ######################################################################
     ############################## IACTIONS ##############################
@@ -173,5 +175,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         return {
             'show_comments_tab': lambda: self.comments_enabled,
             'get_comments_number': helpers.get_comments_number,
-            'get_comments_badge': helpers.get_comments_badge
+            'get_comments_badge': helpers.get_comments_badge,
+            'get_open_datarequests_number': helpers.get_open_datarequests_number,
+            'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge)
         }
