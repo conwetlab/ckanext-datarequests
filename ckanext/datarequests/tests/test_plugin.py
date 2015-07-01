@@ -47,6 +47,9 @@ class DataRequestPluginTest(unittest.TestCase):
         self._helpers = plugin.helpers
         plugin.helpers = MagicMock()
 
+        self._partial = plugin.partial
+        plugin.partial = MagicMock()
+
         # plg = plugin
         self.datarequest_create = constants.DATAREQUEST_CREATE
         self.datarequest_show = constants.DATAREQUEST_SHOW
@@ -64,6 +67,7 @@ class DataRequestPluginTest(unittest.TestCase):
         plugin.auth = self._auth
         plugin.tk = self._tk
         plugin.helpers = self._helpers
+        plugin.partial = self._partial
 
     @parameterized.expand([
         ('True',),
@@ -197,18 +201,29 @@ class DataRequestPluginTest(unittest.TestCase):
                 action='delete_comment', conditions=dict(method=['GET', 'POST']))
 
     @parameterized.expand([
-        ('True',),
-        ('False')
+        ('True',  'True'),
+        ('True',  'False'),
+        ('False', 'True'),
+        ('False', 'False')
     ])
-    def test_helpers(self, comments_enabled):
+    def test_helpers(self, comments_enabled, show_datarequests_badge):
 
         # Configure config and get instance
-        plugin.config.get.return_value = comments_enabled
+        plugin.config = {
+            'ckan.datarequests.comments': comments_enabled,
+            'ckan.datarequests.show_datarequests_badge': show_datarequests_badge
+        }
         self.plg_instance = plugin.DataRequestsPlugin()
 
         # Check result
-        expected_result = True if comments_enabled == 'True' else False
+        show_comments_expected = True if comments_enabled == 'True' else False
         helpers = self.plg_instance.get_helpers()
-        self.assertEquals(helpers['show_comments_tab'](), expected_result)
+        self.assertEquals(helpers['show_comments_tab'](), show_comments_expected)
         self.assertEquals(helpers['get_comments_number'], plugin.helpers.get_comments_number)
         self.assertEquals(helpers['get_comments_badge'], plugin.helpers.get_comments_badge)
+        self.assertEquals(helpers['get_open_datarequests_number'], plugin.helpers.get_open_datarequests_number)
+        self.assertEquals(helpers['get_open_datarequests_badge'], plugin.partial.return_value)
+
+        # Check that partial has been called
+        show_datarequests_expected = True if show_datarequests_badge == 'True' else False
+        plugin.partial.assert_called_once_with(plugin.helpers.get_open_datarequests_badge, show_datarequests_expected)
