@@ -280,7 +280,7 @@ class DataRequestsUI(base.BaseController):
             # belongs to the organization are shown)
             organization_id = c.datarequest.get('organization_id', '')
             if organization_id:
-                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id})['packages']
+                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id, 'include_datasets': True})['packages']
             else:
                 # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
                 # We assume that a user will close their data request with a recently added or modified dataset
