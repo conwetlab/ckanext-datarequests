@@ -691,7 +691,7 @@ class UIControllerTest(unittest.TestCase):
         datarequest_show.assert_called_once_with(self.expected_context, {'id': datarequest_id})
 
         if organization:
-            organization_show.assert_called_once_with({'ignore_auth': True}, {'id': organization})
+            organization_show.assert_called_once_with({'ignore_auth': True}, {'id': organization, 'include_datasets': True})
         else:
             package_search.assert_called_once_with({'ignore_auth': True}, {'rows': 500})
 
