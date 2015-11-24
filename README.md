@@ -12,7 +12,7 @@ If you prefer to use the graphical interface, you should click on the "Data Requ
 
 * **Title**: a title for your data request
 * **Description**: a long description for your data request. You should include as much details as you can in order to allow others to understand you needs and upload a dataset that fulfil your requeriments.
-* **Organization**: in some cases, you want to ask specific data to an specific organization. If you are in such situation, you should complete this field. 
+* **Organization**: in some cases, you want to ask specific data to an specific organization. If you are in such situation, you should complete this field.
 
 Once that you have created your data request, you can view it by clicking on the link provided when you created it. When you are the owner of a data request, you will also be able of:
 * **Closing the data request** if you consider that there is a new dataset that fulfil your needs
@@ -41,7 +41,7 @@ A dict with the data request (`id`, `user_id`, `title`, `description`,`organizat
 
 
 #### `datarequest_show(context, data_dict)`
-Action to retrieve the information of a data request. The only required parameter is the `id` of the data request. A `NotFound` exception will be risen if the `id` is not found. 
+Action to retrieve the information of a data request. The only required parameter is the `id` of the data request. A `NotFound` exception will be risen if the `id` is not found.
 
 Access rights will be checked before returning the information and an exception will be risen (`NotAuthorized`) if the user is not authorized.
 
@@ -69,7 +69,7 @@ A dict with the data request (`id`, `user_id`, `title`, `description`,`organizat
 
 #### `datarequest_index(context, data_dict)`
 Returns a list with the existing data requests. Rights access will be checked before returning the results. If the user is not allowed, a `NotAuthorized` exception will be risen
-    
+
 ##### Parameters (included in `data_dict`):
 * **`organization_id`** (string) (optional): to filter the result by organization
 * **`user_id`** (string) (optional): to filter the result by user
@@ -131,7 +131,7 @@ Action to retrieve all the comments of a data request. Access rights will be che
 
 ##### Returns:
  A list with all the comments of a data request. Every comment is a dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
- 
+
 
 #### `datarequest_comment_update(context, data_dict)`
 Action to update a comment of a data request. Access rights will be checked before updating the comment and a `NotAuthorized` exception will be risen if the user is not allowed to update the comment
@@ -159,8 +159,8 @@ Install this extension in your CKAN instance is as easy as intall any other CKAN
 
 * Download the source from this GitHub repo.
 * Activate your virtual environment (generally by running `. /usr/lib/ckan/default/bin/activate`)
-* Install the extension by running `python setup.py develop`
-* Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` setting. 
+* Install the extension by running `python setup.py install`
+* Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` setting.
  * If you want to disable the comments system, you must also add this `ckan.datarequests.comments = False` to your properties file.
 * Restart your apache2 reserver (`sudo service apache2 restart`)
 * That's All!
@@ -171,7 +171,7 @@ This sofware contains a set of test to detect errors and failures. You can run t
 ```
 nosetests --ckan --with-pylons=test.ini ckanext/datarequests/tests/
 ```
-**Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`). 
+**Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
 
 You can also generate coverage reports by running:
 ```
