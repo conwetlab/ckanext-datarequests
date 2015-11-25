@@ -157,32 +157,32 @@ Installation
 ------------
 Install this extension in your CKAN instance is as easy as intall any other CKAN extension.
 
-1. Activate your virtual environment
+* Activate your virtual environment
 ```
 . /usr/lib/ckan/default/bin/activate
 ```
-2. Install the extension
+* Install the extension
 ```
 pip install ckanext-datarequests
 ```
  * You can also install the extension by downloading the source from the repository and running `python setup.py install`
-3. Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` property.
+* Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` property.
 ```
 ckan.plugins = datarequests <OTHER_PLUGINS>
 ```
-4. Enable or disable the comments system by setting up the `ckan.datarequests.comments` property in the configuration file (by default, the comments system is enabled).
+* Enable or disable the comments system by setting up the `ckan.datarequests.comments` property in the configuration file (by default, the comments system is enabled).
 ```
 ckan.datarequests.comments = [True|False]
 ```
-5. Enable or disable a badge to show the number of data requests in the menu by setting up the `ckan.datarequests.show_datarequests_badge` property in the configuration file (by default, the badge is not shown).
+* Enable or disable a badge to show the number of data requests in the menu by setting up the `ckan.datarequests.show_datarequests_badge` property in the configuration file (by default, the badge is not shown).
 ```
 ckan.datarequests.show_datarequests_badge = [True|False]
 ```
-6. Restart your apache2 reserver
+* Restart your apache2 reserver
 ```
 sudo service apache2 restart
 ```
-7. That's All!
+* That's All!
 
 Tests
 -----
