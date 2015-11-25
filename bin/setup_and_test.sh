@@ -97,7 +97,7 @@ cd ..
 
 echo "Installing ckanext-datarequests and its requirements..."
 python setup.py develop
-pip install -r dev-requirements.txt
+python setup.py nosetests
 
 
 echo "Running tests..."
