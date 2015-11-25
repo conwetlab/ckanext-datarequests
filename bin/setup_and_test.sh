@@ -97,9 +97,7 @@ cd ..
 
 echo "Installing ckanext-datarequests and its requirements..."
 python setup.py develop
-python setup.py nosetests
 
 
 echo "Running tests..."
-nosetests --ckan --with-xunit --with-pylons=test.ini ckanext/datarequests/tests/ --with-coverage \
---cover-package=ckanext.datarequests --cover-inclusive --cover-erase . --cover-xml
+python setup.py nosetests
