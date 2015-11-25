@@ -35,7 +35,7 @@ setup(
     author='CoNWeT Lab.',
     author_email='amagan@conwet.com',
     url='https://conwet.fi.upm.es',
-    download_url='https://github.com/conwetlab/ckanext-datarequests/releases/tag/v' + version,
+    download_url='https://github.com/conwetlab/ckanext-datarequests/tarball/v' + version,
     license='GNU Affero General Public License',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['ckanext', 'ckanext.datarequests'],
