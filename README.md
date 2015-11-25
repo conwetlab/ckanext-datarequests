@@ -157,22 +157,33 @@ Installation
 ------------
 Install this extension in your CKAN instance is as easy as intall any other CKAN extension.
 
-* Download the source from this GitHub repo.
-* Activate your virtual environment (generally by running `. /usr/lib/ckan/default/bin/activate`)
-* Install the extension by running `python setup.py install`
+* Activate your virtual environment
+```
+. /usr/lib/ckan/default/bin/activate
+```
+* Install the extension
+```
+pip install ckanext-datarequests
+```
 * Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` setting.
- * If you want to disable the comments system, you must also add this `ckan.datarequests.comments = False` to your properties file.
+```
+ckan.plugins = datarequests <OTHER_PLUGINS>
+```
+* Enable or disable the comments system by setting up the `ckan.datarequests.comments` property in the configuration file.
+```
+ckan.datarequests.comments = [True|False]
+```
+* Enable or disable a badge to show the number of data requests in the menu by setting up the `ckan.datarequests.show_datarequests_badge` property in the configuration file.
+```
+ckan.datarequests.show_datarequests_badge = [True|False]
+```
 * Restart your apache2 reserver (`sudo service apache2 restart`)
 * That's All!
 
 Tests
 -----
-This sofware contains a set of test to detect errors and failures. You can run this tests by running the following command:
+This sofware contains a set of test to detect errors and failures. You can run this tests by running the following command (this command will generate coverage reports):
 ```
-nosetests --ckan --with-pylons=test.ini ckanext/datarequests/tests/
+python setup.py nosetests
 ```
 **Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
-
-You can also generate coverage reports by running:
-```
-nosetests --ckan --with-xunit --with-pylons=test.ini ckanext/datarequests/tests/ --with-coverage --cover-package=ckanext.datarequests --cover-inclusive --cover-erase . --cover-xml

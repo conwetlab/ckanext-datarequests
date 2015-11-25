@@ -41,7 +41,7 @@ setup(
     namespace_packages=['ckanext', 'ckanext.datarequests'],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=['nose>=1.0'],
+    setup_requires=['nose==1.3.7'],
     install_requires=[
         # -*- Extra requirements: -*-
     ],
