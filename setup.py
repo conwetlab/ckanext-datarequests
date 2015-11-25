@@ -35,13 +35,13 @@ setup(
     author='CoNWeT Lab.',
     author_email='amagan@conwet.com',
     url='https://conwet.fi.upm.es',
-    download_url='https://github.com/conwetlab/ckanext-datarequests/releases/tag/v0.2.11',
+    download_url='https://github.com/conwetlab/ckanext-datarequests/releases/tag/v' + version,
     license='GNU Affero General Public License',
     packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
     namespace_packages=['ckanext', 'ckanext.datarequests'],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=['nose==1.3.7'],
+    setup_requires=['nose>=1.3.0'],
     install_requires=[
         # -*- Extra requirements: -*-
     ],
