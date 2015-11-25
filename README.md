@@ -177,7 +177,10 @@ ckan.datarequests.comments = [True|False]
 ```
 ckan.datarequests.show_datarequests_badge = [True|False]
 ```
-* Restart your apache2 reserver (`sudo service apache2 restart`)
+* Restart your apache2 reserver 
+```
+sudo service apache2 restart
+```
 * That's All!
 
 Tests
