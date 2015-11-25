@@ -165,8 +165,6 @@ Install this extension in your CKAN instance is as easy as intall any other CKAN
 ```
 pip install ckanext-datarequests
 ```
- * You can also install the extension by downloading the source from the repository and running `python setup.py install`
-
 * Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` property.
 ```
 ckan.plugins = datarequests <OTHER_PLUGINS>
