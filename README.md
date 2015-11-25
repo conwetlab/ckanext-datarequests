@@ -165,15 +165,15 @@ Install this extension in your CKAN instance is as easy as intall any other CKAN
 ```
 pip install ckanext-datarequests
 ```
-* Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` setting.
+* Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` property.
 ```
 ckan.plugins = datarequests <OTHER_PLUGINS>
 ```
-* Enable or disable the comments system by setting up the `ckan.datarequests.comments` property in the configuration file.
+* Enable or disable the comments system by setting up the `ckan.datarequests.comments` property in the configuration file (by default, the comments system is enabled).
 ```
 ckan.datarequests.comments = [True|False]
 ```
-* Enable or disable a badge to show the number of data requests in the menu by setting up the `ckan.datarequests.show_datarequests_badge` property in the configuration file.
+* Enable or disable a badge to show the number of data requests in the menu by setting up the `ckan.datarequests.show_datarequests_badge` property in the configuration file (by default, the badge is not shown).
 ```
 ckan.datarequests.show_datarequests_badge = [True|False]
 ```
