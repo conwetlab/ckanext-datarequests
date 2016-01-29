@@ -62,8 +62,8 @@ pip install --upgrade pip
 echo "Installing CKAN dependencies..."
 cd ckan
 python setup.py develop
-pip install -r requirements.txt --allow-all-external
-pip install -r dev-requirements.txt --allow-all-external
+pip install -r requirements.txt
+pip install -r dev-requirements.txt
 cd ..
 
 
