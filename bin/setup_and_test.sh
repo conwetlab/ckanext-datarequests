@@ -82,9 +82,9 @@ sudo -u postgres psql -c 'CREATE DATABASE datastore_test WITH OWNER ckan_default
 echo "Modifying the configuration to setup properly the Postgres port..."
 mkdir -p data/storage
 echo "
-sqlalchemy.url = postgresql://ckan_default:pass@localhost:$POSTGRES_PORT/ckan_test
-ckan.datastore.write_url = postgresql://ckan_default:pass@localhost:$POSTGRES_PORT/datastore_test
-ckan.datastore.read_url = postgresql://datastore_default:pass@localhost:$POSTGRES_PORT/datastore_test
+sqlalchemy.url = postgresql://ckan_default:pass@$DB_HOST_IP:$POSTGRES_PORT/ckan_test
+ckan.datastore.write_url = postgresql://ckan_default:pass@$DB_HOST_IP:$POSTGRES_PORT/datastore_test
+ckan.datastore.read_url = postgresql://datastore_default:pass@$DB_HOST_IP:$POSTGRES_PORT/datastore_test
 
 ckan.storage_path=data/storage" >> test.ini
 
