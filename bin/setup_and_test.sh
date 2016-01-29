@@ -6,6 +6,7 @@ export PATH=$PATH:/usr/local/bin
 export PIP_DOWNLOAD_CACHE=~/.pip_cache
 
 WD=`pwd`
+DB_HOST_IP=${DB_HOST_IP:=127.0.0.1}
 POSTGRES_PORT=${POSTGRES_PORT:=5432}
 
 echo "Downloading CKAN..."
@@ -30,7 +31,7 @@ then
     if [ ! -d "$CACHE_DIR/$SOLAR_UNZIP_FOLDER" ]
     then
         # Download the solar installation file if it does not exist
-        wget --quiet --timestamping --directory-prefix=$CACHE_DIR http://apache.rediris.es/lucene/solr/4.8.1/$FILE
+        wget --no-verbose --timestamping --directory-prefix=$CACHE_DIR https://archive.apache.org/dist/lucene/solr/4.8.1/$FILE
 
         # Unzip the folder
         tar -xf "$CACHE_DIR/$FILE" --directory "$CACHE_DIR"
@@ -89,7 +90,7 @@ ckan.storage_path=data/storage" >> test.ini
 
 
 echo "Initializing the database..."
-sed -i "s/\(postgresql:\/\/.\+@localhost\)/\1:$POSTGRES_PORT/g" ckan/test-core.ini 
+sed -i "s/\(postgresql:\/\/.\+\)@localhost\(:[0-9]\+\)/\1:@$DB_HOST_IP:$POSTGRES_PORT/g" ckan/test-core.ini
 cd ckan
 paster db init -c test-core.ini
 cd ..
