@@ -90,7 +90,7 @@ ckan.storage_path=data/storage" >> test.ini
 
 
 echo "Initializing the database..."
-sed -i "s/\(postgresql:\/\/.\+\)@localhost\(:[0-9]\+\)\?/\1:@$DB_HOST_IP:$POSTGRES_PORT/g" ckan/test-core.ini
+sed -i "s/\(postgresql:\/\/.\+\)@localhost\(:[0-9]\+\)\?/\1@$DB_HOST_IP:$POSTGRES_PORT/g" ckan/test-core.ini
 cd ckan
 paster db init -c test-core.ini
 cd ..
