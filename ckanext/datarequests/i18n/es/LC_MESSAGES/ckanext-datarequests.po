@@ -305,15 +305,3 @@ msgstr "¿Quieres crear una?"
 #: ckanext/datarequests/templates/datarequests/snippets/edit_datarequest_form.html:4
 msgid "Update Data Request"
 msgstr "Actualizar Solicitud de Datos"
-
-#: ckanext/datarequests/templates/home/snippets/stats.html:5
-msgid "{0} statistics"
-msgstr "{0} estadísticas"
-
-#: ckanext/datarequests/templates/home/snippets/stats.html:34
-msgid "data request"
-msgstr "solicitud de datos"
-
-#: ckanext/datarequests/templates/home/snippets/stats.html:34
-msgid "data requests"
-msgstr "solicitudes de datos"
