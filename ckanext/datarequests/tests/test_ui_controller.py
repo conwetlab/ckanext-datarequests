@@ -58,6 +58,9 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
+        self._base = controller.base
+        controller.base = MagicMock()
+
         self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
 
         self.expected_context = {
@@ -77,6 +80,7 @@ class UIControllerTest(unittest.TestCase):
         controller.model = self._model
         controller.request = self._request
         controller.helpers = self._helpers
+        controller.base = self._base
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
 
@@ -207,9 +211,10 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
-                self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                                  controller.tk.response.location)
+                controller.helpers.url_for.assert_called_once_with(
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                    action='show', id=datarequest_id)
+                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
@@ -419,9 +424,10 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
-                self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                                  controller.tk.response.location)
+                controller.helpers.url_for.assert_called_once_with(
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                    action='show', id=datarequest_id)
+                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
@@ -637,8 +643,10 @@ class UIControllerTest(unittest.TestCase):
             'Data Request %s deleted correctly' % datarequest.get('title')))
 
         # Redirection
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s' % constants.DATAREQUESTS_MAIN_PATH, controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='index')
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
 
 
     ######################################################################
@@ -728,9 +736,10 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.close(datarequest_id)
 
         # Checks
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                          controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='show', id=datarequest_id)
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         self.assertIsNone(result)
 
     @parameterized.expand([
@@ -929,6 +938,7 @@ class UIControllerTest(unittest.TestCase):
         datarequest_comment_delete.assert_called_once_with(self.expected_context, {'id': comment_id})
 
         # Check redirection
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                          controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='comment', id=datarequest_id)
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)

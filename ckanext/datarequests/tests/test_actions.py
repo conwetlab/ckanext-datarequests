@@ -392,6 +392,7 @@ class ActionsTest(unittest.TestCase):
         default_org = {'org': 2}
         default_user = {'user': 3, 'id': test_data.user_default_id}
         test_data._initialize_basic_actions(actions, default_user, default_org, default_pkg)
+        actions.tk._ = lambda x: x
 
         # Modify the default behaviour of 'organization_show'
         organization_show = actions.tk.get_action('organization_show')
