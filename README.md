@@ -190,6 +190,29 @@ sudo service apache2 restart
 ```
 * That's All!
 
+Translations
+------------
+Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English and Spanish. If you want to contribute with your translation, the first step is to close this repo. Then, create the locale for your translation by executing:
+
+```
+python setup.py init_catalog -l <YOUR_LOCALE>
+```
+
+This will generate a file called `i18n/YOUR_LOCALE/LC_MESSAGES/ckanext-datarequests.po`. This file contains all the untranslated strings. You can manually add a translation for it by editing the `msgstr` section:
+
+```
+msgid "This is an untranslated string"
+msgstr "This is a itranslated string"
+```
+
+Once the translation files (`po`) have been updated, compile them by running:
+
+```
+python setup.py compile_catalog
+```
+
+This will generate the required `mo` file. Once this file has been generated, commit your changes and create a Pull Request. 
+
 Tests
 -----
 This sofware contains a set of test to detect errors and failures. You can run this tests by running the following command (this command will generate coverage reports):
