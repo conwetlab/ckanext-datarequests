@@ -11,7 +11,7 @@
 
   <div class="control-full control-large control-group {{ 'error' if errors and errors.get('Comment') }} editor">
     <textarea id="field-comment" name="comment" cols="20" rows="3" placeholder="{{ _('Add a new Comment') }}">{{ comment if comment else '' }}</textarea>
-    <span class="editor-info-block">You can reference datasets by adding their URLs</span>
+    <span class="editor-info-block">{% trans %}You can reference datasets by adding their URLs{% endtrans %}</span>
   </div>
 
   <div class="comment-actions">

@@ -346,9 +346,9 @@ def datarequest_index(context, data_dict):
 
     # Facets
     no_processed_organization_facet = {}
-    CLOSED = 'Closed'
-    OPEN = 'Open'
-    no_processed_state_facet = {CLOSED:0 , OPEN: 0}
+    CLOSED = tk._('Closed')
+    OPEN = tk._('Open')
+    no_processed_state_facet = {CLOSED: 0, OPEN: 0}
     for data_req in db_datarequests:
         if data_req.organization_id:
             # Facets

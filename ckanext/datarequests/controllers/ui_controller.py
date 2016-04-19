@@ -160,9 +160,8 @@ class DataRequestsUI(base.BaseController):
 
             try:
                 result = tk.get_action(action)(context, data_dict)
-                tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
-                                                   result['id'])
+                base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', 
+                                              action='show', id=result['id']))
 
             except tk.ValidationError as e:
                 log.warn(e)
@@ -245,8 +244,7 @@ class DataRequestsUI(base.BaseController):
         try:
             tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
             datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
-            tk.response.status_int = 302
-            tk.response.location = '/%s' % constants.DATAREQUESTS_MAIN_PATH
+            base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
             helpers.flash_notice(tk._('Data Request %s deleted correctly') % datarequest.get('title', ''))
         except tk.ObjectNotFound as e:
             log.warn(e)
@@ -308,8 +306,8 @@ class DataRequestsUI(base.BaseController):
                 data_dict['id'] = id
 
                 tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
-                tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, data_dict['id'])
+                base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                              action='show', id=data_dict['id']))
             else:   # GET
                 return _return_page()
 
@@ -389,8 +387,8 @@ class DataRequestsUI(base.BaseController):
             data_dict = {'id': comment_id}
             tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
             tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
-            tk.response.status_int = 302
-            tk.response.location = '/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id)
+            base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                          action='comment', id=datarequest_id))
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Comment %s not found') % comment_id)

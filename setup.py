@@ -20,7 +20,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2.13'
+version = '0.2.14'
 
 setup(
     name='ckanext-datarequests',
@@ -51,9 +51,18 @@ setup(
     ],
     test_suite='nosetests',
     entry_points='''
+
         [ckan.plugins]
-        # Add plugins here, e.g.
-        # myplugin=ckanext.datarequests.plugin:PluginClass
         datarequests=ckanext.datarequests.plugin:DataRequestsPlugin
+
+        [babel.extractors]
+        ckan = ckan.lib.extract:extract_ckan
     ''',
+    message_extractors={
+        'ckanext': [
+            ('**.py', 'python', None),
+            ('**.js', 'javascript', None),
+            ('**/templates/**.html', 'ckan', None),
+        ],
+    }
 )
