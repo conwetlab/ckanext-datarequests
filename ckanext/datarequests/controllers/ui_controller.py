@@ -93,9 +93,18 @@ class DataRequestsUI(base.BaseController):
 
     def _show_index(self, user_id, organization_id, include_organization_facet, url_func, file_to_render):
 
-        def pager_url(q=None, page=None):
+        def pager_url(state=None, sort=None, q=None, page=None):
             params = list()
+
+            if q:
+                params.append(('q', q))
+
+            if state is not None:
+                params.append(('state', state))
+
+            params.append(('sort', sort))
             params.append(('page', page))
+
             return url_func(params)
 
         try:
@@ -109,21 +118,35 @@ class DataRequestsUI(base.BaseController):
             if state:
                 data_dict['closed'] = True if state == 'closed' else False
 
+            q = request.GET.get('q', '')
+            if q:
+                data_dict['q'] = q
+
             if organization_id:
                 data_dict['organization_id'] = organization_id
 
             if user_id:
                 data_dict['user_id'] = user_id
 
+            sort = request.GET.get('sort', 'desc')
+            if sort is not None:
+                data_dict['sort'] = sort
+
             tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
             datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
+
+            c.filters = [(tk._('Newest'), 'desc'), (tk._('Oldest'), 'asc')]
+            c.sort = sort
+            c.q = q
+            c.organization = organization_id
+            c.state = state
             c.datarequest_count = datarequests_list['count']
             c.datarequests = datarequests_list['result']
             c.search_facets = datarequests_list['facets']
             c.page = helpers.Page(
                 collection=datarequests_list['result'],
                 page=page,
-                url=pager_url,
+                url=functools.partial(pager_url, state, sort),
                 item_count=datarequests_list['count'],
                 items_per_page=limit
             )

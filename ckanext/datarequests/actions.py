@@ -313,41 +313,44 @@ def datarequest_index(context, data_dict):
 
     # Get the organization
     organization_id = data_dict.get('organization_id', None)
-    params = {}
     if organization_id:
         # Get organization ID (in some cases the organization name is received)
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
-
-        # Include organization ID into the parameters to filter the database query
-        params['organization_id'] = organization_id
 
     user_id = data_dict.get('user_id', None)
     if user_id:
         # Get user ID (the user name is received)
         user_id = user_show({'ignore_auth': True}, {'id': user_id}).get('id')
 
-        # Include user ID into the parameters to filter the database query
-        params['user_id'] = user_id
-
     # Filter by state
     closed = data_dict.get('closed', None)
-    if closed is not None:
-        params['closed'] = closed
+
+    # Free text filter
+    q = data_dict.get('q', None)
+
+    # Sort. By default, data requests are returned in the order they are created
+    # This is something new in version 0.3.0. In previous versions, requests were
+    # returned in inverse order
+    desc = False
+    if data_dict.get('sort', None) == 'desc':
+        desc = True
 
     # Call the function
-    db_datarequests = db.DataRequest.get_ordered_by_date(**params)
+    db_datarequests = db.DataRequest.get_ordered_by_date(organization_id=organization_id,
+                                                         user_id=user_id, closed=closed,
+                                                         q=q, desc=desc)
 
     # Dictize the results
+    datarequests = []
     offset = data_dict.get('offset', 0)
     limit = data_dict.get('limit', constants.DATAREQUESTS_PER_PAGE)
-    datarequests = []
     for data_req in db_datarequests[offset:offset + limit]:
         datarequests.append(_dictize_datarequest(data_req))
 
     # Facets
     no_processed_organization_facet = {}
-    CLOSED = tk._('Closed')
-    OPEN = tk._('Open')
+    CLOSED = 'Closed'
+    OPEN = 'Open'
     no_processed_state_facet = {CLOSED: 0, OPEN: 0}
     for data_req in db_datarequests:
         if data_req.organization_id:
@@ -357,7 +360,7 @@ def datarequest_index(context, data_dict):
             else:
                 no_processed_organization_facet[data_req.organization_id] = 1
 
-        no_processed_state_facet[CLOSED if data_req.closed else OPEN] +=1
+        no_processed_state_facet[CLOSED if data_req.closed else OPEN] += 1
 
     # Format facets
     organization_facet = []
@@ -377,7 +380,7 @@ def datarequest_index(context, data_dict):
         if no_processed_state_facet[state]:
             state_facet.append({
                 'name': state.lower(),
-                'display_name': state,
+                'display_name': tk._(state),
                 'count': no_processed_state_facet[state]
             })
 
