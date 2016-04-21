@@ -34,7 +34,7 @@ In addition, you should note that the parameters will be checked and an exceptio
 ##### Parameters (included in `data_dict`):
 * **`title`** (string): the title of the data request
 * **`description`** (string): a brief description for your data request
-* **`organization_id`** (string): the ID of the organization in case you want to assing the data request to an organization.
+* **`organization_id`** (string): The ID of the organization you want to asign the data request (optional).
 
 ##### Returns:
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
@@ -46,22 +46,22 @@ Action to retrieve the information of a data request. The only required paramete
 Access rights will be checked before returning the information and an exception will be risen (`NotAuthorized`) if the user is not authorized.
 
 ##### Parameters (included in `data_dict`):
-* **`id`** (string): the ID of the datarequest to be displayed
+* **`id`** (string): the ID of the datarequest to be returned.
 
 ##### Returns:
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
 #### `datarequest_update(context, data_dict)`
-Action to update a dara request. The function checks the access rights of the user before updating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
+Action to update a data request. The function checks the access rights of the user before updating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
 
 ##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be updated
-* **`title`** (string): the title of the data request
-* **`description`** (string): a brief description for your data request
-* **`organization_id`** (string): the ID of the organization in case you want to assing the data request to an organization.
+* **`title`** (string): the updated title of the data request
+* **`description`** (string): a updated brief description for your data request
+* **`organization_id`** (string): The ID of the organization you want to asign the data request (optional).
 
 ##### Returns:
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
@@ -76,13 +76,15 @@ Returns a list with the existing data requests. Rights access will be checked be
 * **`closed`** (string) (optional): to filter the result by state (`True`: Closed, `False`: Open)
 * **`offset`** (int) (optional) (default `0`): the first element to be returned
 * **`limit`** (int) (optional) (default `10`): The max number of data requests to be returned
+* **`q`** (string) (optional): to filter the result using a free-text.
+* **`sort`** (string) (optional) (default `asc`): `desc` to order data requests in a descending way. `asc` to order data requests in an ascending way.
 
 ##### Returns:
 A dict with three fields: `result` (a list of data requests), `facets` (a list of the facets that can be used) and `count` (the total number of existing data requests)
 
 
 #### `datarequest_delete(context, data_dict)`
-Action to delete a new dara request. The function checks the access rights of the user before deleting the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
+Action to delete a new data request. The function checks the access rights of the user before deleting the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
 ##### Parameters (included in `data_dict`):
 * **`id`** (string): the ID of the datarequest to be deleted
@@ -127,7 +129,8 @@ A dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and 
 Action to retrieve all the comments of a data request. Access rights will be checked before getting the comments and a `NotAuthorized` exception will be risen if the user is not allowed to read the comments
 
 ##### Parameters (included in `data_dict`):
-* **`datarequest_id`** (string): The ID of the datarequest whose comments want to be retrieved  
+* **`datarequest_id`** (string): The ID of the datarequest whose comments want to be retrieved
+* **`sort`** (string) (optional) (default `asc`): `desc` to order comments in a descending way. `asc` to order comments in an ascending way.
 
 ##### Returns:
  A list with all the comments of a data request. Every comment is a dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
