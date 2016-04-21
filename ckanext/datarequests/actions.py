@@ -626,9 +626,9 @@ def datarequest_comment_list(context, data_dict):
     # Init the data base
     db.init_db(model)
 
-    # Sort. By default, data requests are returned in the order they are created
-    # This is something new in version 0.3.0. In previous versions, requests were
-    # returned in inverse order
+    # Sort. By default, comments are returned in the order they are created
+    # This is something new in version 0.3.0. In previous versions, comments
+    # were returned in inverse order
     desc = False
     if data_dict.get('sort', None) == 'desc':
         desc = True
