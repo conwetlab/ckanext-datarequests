@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-20 16:16+0200\n"
+"POT-Creation-Date: 2016-04-21 12:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,92 +89,92 @@ msgstr ""
 msgid "Comments must be a maximum of %d characters long"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:138
+#: ckanext/datarequests/controllers/ui_controller.py:128
 msgid "Newest"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:138
+#: ckanext/datarequests/controllers/ui_controller.py:128
 msgid "Oldest"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:154
+#: ckanext/datarequests/controllers/ui_controller.py:144
 #: ckanext/datarequests/tests/test_ui_controller.py:599
 msgid "State"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:159
+#: ckanext/datarequests/controllers/ui_controller.py:149
 #: ckanext/datarequests/templates/header.html:6
 #: ckanext/datarequests/tests/test_ui_controller.py:601
 msgid "Organizations"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:165
+#: ckanext/datarequests/controllers/ui_controller.py:155
 msgid "\"page\" parameter must be an integer"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:168
+#: ckanext/datarequests/controllers/ui_controller.py:158
 msgid "Unauthorized to list Data Requests"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:219
+#: ckanext/datarequests/controllers/ui_controller.py:209
 msgid "Unauthorized to create a Data Request"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:234
-#: ckanext/datarequests/controllers/ui_controller.py:257
-#: ckanext/datarequests/controllers/ui_controller.py:274
-#: ckanext/datarequests/controllers/ui_controller.py:343
-#: ckanext/datarequests/controllers/ui_controller.py:400
+#: ckanext/datarequests/controllers/ui_controller.py:224
+#: ckanext/datarequests/controllers/ui_controller.py:247
+#: ckanext/datarequests/controllers/ui_controller.py:264
+#: ckanext/datarequests/controllers/ui_controller.py:333
+#: ckanext/datarequests/controllers/ui_controller.py:384
 #, python-format
 msgid "Data Request %s not found"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:237
+#: ckanext/datarequests/controllers/ui_controller.py:227
 #, python-format
 msgid "You are not authorized to view the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:260
+#: ckanext/datarequests/controllers/ui_controller.py:250
 #, python-format
 msgid "You are not authorized to update the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:270
+#: ckanext/datarequests/controllers/ui_controller.py:260
 #: ckanext/datarequests/tests/test_ui_controller.py:643
 #, python-format
 msgid "Data Request %s deleted correctly"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:277
+#: ckanext/datarequests/controllers/ui_controller.py:267
 #, python-format
 msgid "You are not authorized to delete the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:325
+#: ckanext/datarequests/controllers/ui_controller.py:315
 msgid "This data request is already closed"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:346
+#: ckanext/datarequests/controllers/ui_controller.py:336
 #, python-format
 msgid "You are not authorized to close the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:375
+#: ckanext/datarequests/controllers/ui_controller.py:365
 #, python-format
 msgid "You are not authorized to %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:404
+#: ckanext/datarequests/controllers/ui_controller.py:388
 #, python-format
 msgid "You are not authorized to list the comments of the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:417
+#: ckanext/datarequests/controllers/ui_controller.py:401
 #, python-format
 msgid "Comment %s not found"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:420
+#: ckanext/datarequests/controllers/ui_controller.py:404
 msgid "You are not authorized to delete this comment"
 msgstr ""
 
@@ -237,6 +237,8 @@ msgid "Add Data Request"
 msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/index.html:12
+#: ckanext/datarequests/templates/organization/datarequests.html:13
+#: ckanext/datarequests/templates/user/datarequests.html:9
 msgid "Search Data Requests..."
 msgstr ""
 
@@ -301,44 +303,44 @@ msgstr ""
 msgid "Accep. Dataset"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:13
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
 msgid "Add a new Comment"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:14
-msgid "You can reference datasets by adding their URLs"
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:24
+#, python-format
+msgid ""
+"You can use <a href=\"#markdown\" title=\"Markdown quick reference\" data-"
+"target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-"
+"html=\"true\">Markdown formatting</a> here. You can refer datasets by adding "
+"their URL."
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:18
-msgid "Add Comment"
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:29
+msgid "Cancel"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:19
-msgid "Discard Changes"
-msgstr ""
-
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:20
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:30
 msgid "Update Comment"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:13
-msgid "Edit"
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:32
+msgid "Add Comment"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:17
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:11
 msgid "Are you sure you want to delete this comment?"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:18
-#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:44
-msgid "Delete"
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:22
+msgid "commented"
 msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/comments.html:3
 msgid "Current Discussion"
 msgstr ""
 
-#: ckanext/datarequests/templates/datarequests/snippets/comments.html:15
+#: ckanext/datarequests/templates/datarequests/snippets/comments.html:13
 msgid "This data request has not been commented yet"
 msgstr ""
 
@@ -356,6 +358,10 @@ msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:43
 msgid "Are you sure you want to delete this data request?"
+msgstr ""
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:44
+msgid "Delete"
 msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:1

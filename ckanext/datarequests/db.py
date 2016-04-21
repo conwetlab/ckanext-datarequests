@@ -113,10 +113,11 @@ def init_db(model):
                 return query.filter_by(**kw).all()
 
             @classmethod
-            def get_ordered_by_date(cls, **kw):
+            def get_ordered_by_date(cls, datarequest_id, desc=False):
                 '''Personalized query'''
                 query = model.Session.query(cls).autoflush(False)
-                return query.filter_by(**kw).order_by(cls.time.desc()).all()
+                order_by_filter = cls.time.desc() if desc else cls.time.asc()
+                return query.filter_by(datarequest_id=datarequest_id).order_by(order_by_filter).all()
 
             @classmethod
             def get_datarequest_comments_number(cls, **kw):

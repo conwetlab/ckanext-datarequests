@@ -38,16 +38,6 @@ tk = plugins.toolkit
 c = tk.c
 
 
-def convert_links(text):
-    def replace(match):
-        groups = match.groups()
-        protocol = groups[0] or ''  # may be None
-        www_lead = groups[1] or ''  # may be None
-        return '<a href="{0}{1}{2}" target="_blank">{0}{1}{2}</a>{3}{4}'.format(
-            protocol, www_lead, *groups[2:])
-    return _link.sub(replace, text)
-
-
 def _get_errors_summary(errors):
     errors_summary = {}
 
@@ -356,7 +346,7 @@ class DataRequestsUI(base.BaseController):
             # Raises 404 Not Found if the data request does not exist
             c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
 
-            comment = request.POST.get('comment', '')
+            comment_text = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
 
             if request.POST:
@@ -368,7 +358,7 @@ class DataRequestsUI(base.BaseController):
                     action_text = 'update comment'
 
                 try:
-                    comment_data_dict = {'datarequest_id': id, 'comment': comment, 'id': comment_id}
+                    comment_data_dict = {'datarequest_id': id, 'comment': comment_text, 'id': comment_id}
                     comment = tk.get_action(action)(context, comment_data_dict)
                 except tk.NotAuthorized as e:
                     log.warn(e)
@@ -377,21 +367,24 @@ class DataRequestsUI(base.BaseController):
                     log.warn(e)
                     c.errors = e.error_dict
                     c.errors_summary = _get_errors_summary(c.errors)
-                    c.comment = comment
                 except tk.ObjectNotFound as e:
                     log.warn(e)
                     tk.abort(404, tk._(str(e)))
                 # Other exceptions are not expected. Otherwise, the request will fail.
 
+                # This is required to scroll the user to the appropriate comment
+                c.updated_comment = {
+                    'comment': comment_text,
+                    'id': comment_id
+                }
+
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
             c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
 
-            # Replace URLs by links
-            # Replace new lines by HTML line break
-            for comment in c.comments:
-                comment['comment'] = convert_links(comment['comment'])
-                comment['comment'] = comment['comment'].replace('\n', '<br/>')
+            # This happens when new comments are created
+            if c.updated_comment and c.updated_comment['id'] == '' and not c.errors:
+                c.updated_comment['id'] = c.comments[-1]['id']
 
             return tk.render('datarequests/comment.html')
 

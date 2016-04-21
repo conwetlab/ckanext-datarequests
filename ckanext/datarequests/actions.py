@@ -121,7 +121,7 @@ def _undictize_comment_basic(comment, data_dict):
 
 def datarequest_create(context, data_dict):
     '''
-    Action to create a new dara request. The function checks the access rights
+    Action to create a new data request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
@@ -135,8 +135,8 @@ def datarequest_create(context, data_dict):
     :param description: A brief description for your data request
     :type description: string
 
-    :param organiztion_id: If you want to create the data request in a specific
-        organization.
+    :param organiztion_id: The ID of the organization you want to asign the
+        data request (optional).
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
@@ -172,7 +172,7 @@ def datarequest_show(context, data_dict):
     '''
     Action to retrieve the information of a data request. The only required
     parameter is the id of the data request. A NotFound exception will be
-    risen if the id is not found.
+    risen if the given id is not found.
 
     Access rights will be checked before returning the information and an
     exception will be risen (NotAuthorized) if the user is not authorized.
@@ -180,7 +180,7 @@ def datarequest_show(context, data_dict):
     :param id: The id of the data request to be shown
     :type id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -210,15 +210,15 @@ def datarequest_show(context, data_dict):
 
 def datarequest_update(context, data_dict):
     '''
-    Action to update a dara request. The function checks the access rights of
+    Action to update a data request. The function checks the access rights of
     the user before updating the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
     In addition, you should note that the parameters will be checked and an
     exception (ValidationError) will be risen if some of these parameters are
-    not valid.
+    invalid.
 
-    :param id: The id of the data request to be updated
+    :param id: The ID of the data request to be updated
     :type id: string
 
     :param title: The title of the data request
@@ -227,11 +227,11 @@ def datarequest_update(context, data_dict):
     :param description: A brief description for your data request
     :type description: string
 
-    :param organiztion_id: If you want to create the data request in a specific
-        organization.
+    :param organiztion_id: The ID of the organization you want to asign the
+        data request.
     :type organization_id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -273,9 +273,9 @@ def datarequest_update(context, data_dict):
 
 def datarequest_index(context, data_dict):
     '''
-    Returns a list with the existing data requests. Rights access will be checked
-    before returning the results. If the user is not allowed, a NotAuthorized 
-    exception will be risen.
+    Returns a list with the existing data requests. Rights access will be
+    checked before returning the results. If the user is not allowed, a
+    NotAuthorized exception will be risen.
 
     :param organization_id: This parameter is optional and allows users
         to filter the results by organization
@@ -283,17 +283,29 @@ def datarequest_index(context, data_dict):
 
     :param user_id: This parameter is optional and allows users
         to filter the results by user
-    :type organization_id: string
+    :type user_id: string
 
-    :param closed: This parameter is optional and allos users to filter
+    :param closed: This parameter is optional and allows users to filter
         the result by the data request status (open or closed)
     :type closed: bool
+
+    :param q: This parameter is optional and allows users to filter
+        datarequests based on a free text
+    :type q: string
+
+    :param sort: This parameter is optional and allows users to sort
+        data requests. You can choose 'desc' for retrieving data requests
+        in descending order or 'asc' for retrieving data requests in
+        ascending order. Data Requests are returned in ascending order
+        by default.
+    :type sort: string
 
     :param offset: The first element to be returned (0 by default)
     :type offset: int
 
-    :param limit: The max number of data requests to be returned (10 by default)
-    :type limit: init
+    :param limit: The max number of data requests to be returned (10 by
+        default)
+    :type limit: int
 
     :returns: A dict with three fields: result (a list of data requests),
         facets (a list of the facets that can be used) and count (the total
@@ -314,12 +326,12 @@ def datarequest_index(context, data_dict):
     # Get the organization
     organization_id = data_dict.get('organization_id', None)
     if organization_id:
-        # Get organization ID (in some cases the organization name is received)
+        # Get organization ID (organization name is received sometimes)
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
 
     user_id = data_dict.get('user_id', None)
     if user_id:
-        # Get user ID (the user name is received)
+        # Get user ID (user name is received sometimes)
         user_id = user_show({'ignore_auth': True}, {'id': user_id}).get('id')
 
     # Filter by state
@@ -402,14 +414,14 @@ def datarequest_index(context, data_dict):
 
 def datarequest_delete(context, data_dict):
     '''
-    Action to delete a new dara request. The function checks the access rights
+    Action to delete a new data request. The function checks the access rights
     of the user before deleting the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
-    :param id: The id of the data request to be updated
+    :param id: The ID of the data request to be deleted
     :type id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -442,14 +454,15 @@ def datarequest_delete(context, data_dict):
 
 def datarequest_close(context, data_dict):
     '''
-    Action to close a data request. Access rights will be checked before closing the
-    data request. If the user is not allowed, a NotAuthorized exception will be risen.
+    Action to close a data request. Access rights will be checked before
+    closing the data request. If the user is not allowed, a NotAuthorized
+    exception will be risen.
 
-    :param id: The id of the data request to be closed
+    :param id: The ID of the data request to be closed
     :type id: string
 
-    :param accepted_dataset_id: The ID of the dataset accepted as solution for this
-        data request
+    :param accepted_dataset_id: The ID of the dataset accepted as solution
+        for this data request
     :type accepted_dataset_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
@@ -498,9 +511,9 @@ def datarequest_close(context, data_dict):
 
 def datarequest_comment(context, data_dict):
     '''
-    Action to create a comment in a data request. Access rights will be checked before
-    creating the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to create the comment
+    Action to create a comment in a data request. Access rights will be checked
+    before creating the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to create the comment
 
     :param datarequest_id: The ID of the datarequest to be commented
     :type id: string
@@ -508,8 +521,8 @@ def datarequest_comment(context, data_dict):
     :param comment: The comment to be added to the data request
     :type comment: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+       time and comment)
     :rtype: dict
 
     '''
@@ -545,15 +558,15 @@ def datarequest_comment(context, data_dict):
 
 def datarequest_comment_show(context, data_dict):
     '''
-    Action to retrieve a comment. Access rights will be checked before getting the
-    comment and a NotAuthorized exception will be risen if the user is not allowed
-    to get the comment
+    Action to retrieve a comment. Access rights will be checked before getting
+    the comment and a NotAuthorized exception will be risen if the user is not
+    allowed to get the comment
 
     :param id: The ID of the comment to be retrieved
     :type id: string
 
-    :returns: A dict with the following fields: id, user_id, datarequest_id, time
-        and comment
+    :returns: A dict with the following fields: id, user_id, datarequest_id,
+        time and comment
     :rtype: dict
     '''
 
@@ -580,15 +593,26 @@ def datarequest_comment_show(context, data_dict):
 
 def datarequest_comment_list(context, data_dict):
     '''
-    Action to retrieve all the comments of a data request. Access rights will be checked before
-    getting the comments and a NotAuthorized exception will be risen if the user is not
-    allowed to read the comments
+    Action to retrieve all the comments of a data request. Access rights will
+    be checked before getting the comments and a NotAuthorized exception will
+    be risen if the user is not allowed to read the comments
 
-    :param datarequest_id: The ID of the datarequest whose comments want to be retrieved
+    :param datarequest_id: The ID of the datarequest whose comments want to be
+        retrieved
     :type id: string
 
-    :returns: A list with all the comments of a data request. Every comment is a dict with the
-    following fields: id, user_id, datarequest_id, time and comment
+    :param sort: This parameter is optional and allows users to sort
+        comments. You can choose 'desc' for retrieving comments in
+        descending order or 'asc' for retrieving comments in ascending
+        order. Comments are returned in ascending order by default.
+    :type sort: string
+
+    :param sort: The ID of the datarequest whose comments want to be retrieved
+    :type sort: string
+
+    :returns: A list with all the comments of a data request. Every comment is
+        a dict with the following fields: id, user_id, datarequest_id, time and
+        comment
     :rtype: list
     '''
 
@@ -601,6 +625,13 @@ def datarequest_comment_list(context, data_dict):
 
     # Init the data base
     db.init_db(model)
+
+    # Sort. By default, data requests are returned in the order they are created
+    # This is something new in version 0.3.0. In previous versions, requests were
+    # returned in inverse order
+    desc = False
+    if data_dict.get('sort', None) == 'desc':
+        desc = True
 
     # Check access
     tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict)
@@ -617,18 +648,18 @@ def datarequest_comment_list(context, data_dict):
 
 def datarequest_comment_update(context, data_dict):
     '''
-    Action to update a comment of a data request. Access rights will be checked before
-    updating the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to update the comment
+    Action to update a comment of a data request. Access rights will be checked
+    before updating the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to update the comment
 
     :param id: The ID of the comment to be updated
     :type id: string
 
-    :param comment: The comment to be added to the data request
+    :param comment: The updated comment
     :type comment: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+        time and comment)
     :rtype: dict
     '''
 
@@ -666,15 +697,15 @@ def datarequest_comment_update(context, data_dict):
 
 def datarequest_comment_delete(context, data_dict):
     '''
-    Action to delete a comment of a data request. Access rights will be checked before
-    deleting the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to delete the comment
+    Action to delete a comment of a data request. Access rights will be checked
+    before deleting the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to delete the comment
 
     :param id: The ID of the comment to be deleted
     :type id: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+        time and comment)
     :rtype: dict
     '''
 
