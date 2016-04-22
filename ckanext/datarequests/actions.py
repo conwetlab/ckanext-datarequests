@@ -637,7 +637,7 @@ def datarequest_comment_list(context, data_dict):
     tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict)
 
     # Get comments
-    comments_db = db.Comment.get_ordered_by_date(datarequest_id=datarequest_id)
+    comments_db = db.Comment.get_ordered_by_date(datarequest_id=datarequest_id, desc=desc)
 
     comments_list = []
     for comment in comments_db:

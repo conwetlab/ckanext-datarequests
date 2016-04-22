@@ -375,7 +375,12 @@ class ActionsTest(unittest.TestCase):
         (test_data.datarequest_index_test_case_9,),
         (test_data.datarequest_index_test_case_10,),
         (test_data.datarequest_index_test_case_11,),
-        (test_data.datarequest_index_test_case_12,)
+        (test_data.datarequest_index_test_case_12,),
+        (test_data.datarequest_index_test_case_13,),
+        (test_data.datarequest_index_test_case_14,),
+        (test_data.datarequest_index_test_case_15,),
+        (test_data.datarequest_index_test_case_16,),
+        (test_data.datarequest_index_test_case_17,)
     ])
     def test_datarequest_index(self, test_case):
 
@@ -670,7 +675,13 @@ class ActionsTest(unittest.TestCase):
     def test_comment_list_no_id(self):
         self._test_no_id(actions.datarequest_comment_list)
 
-    def test_comment_list(self):
+    @parameterized.expand([
+        (),
+        ('asc'),
+        ('desc', True),
+        ('invalid')
+    ])
+    def test_comment_list(self, sort=None, desc=False):
         # Configure mock
         comments = []
         for i in range(0, 5):
@@ -683,7 +694,17 @@ class ActionsTest(unittest.TestCase):
         test_data._initialize_basic_actions(actions, default_user, None, None)
 
         # Call the function
-        results = actions.datarequest_comment_list(self.context, test_data.comment_show_request_data)
+        params = test_data.comment_show_request_data.copy()
+        params.pop('id')
+
+        if sort:
+            params['sort'] = sort
+
+        results = actions.datarequest_comment_list(self.context, params)
+
+        # Check that the DB has been called appropriately
+        actions.db.Comment.get_ordered_by_date.assert_called_once_with(datarequest_id=test_data.comment_show_request_data['datarequest_id'],
+                                                                       desc=desc)
 
         # Check that the response is OK
         for i in range(0, len(results)):

@@ -24,6 +24,7 @@ from mock import MagicMock
 
 COMMENT_ID = 'comment_uuid4'
 DATAREQUEST_ID = 'example_uuidv4'
+FREE_TEXT = 'free-text'
 
 ######################################################################
 ############################## FUNCTIONS #############################
@@ -381,6 +382,47 @@ datarequest_index_test_case_12 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'user_id': 'ckan', 'closed': True, 'offset': default_offset, 'limit': default_limit},
     'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': user_default_id, 'closed': True, 'desc': False},
+    'ddbb_response': ddbb_response_2,
+    'expected_response': expected_result_3
+}
+
+datarequest_index_test_case_13 = {
+    'organization_show_func': _organization_show,
+    'content': {'q': FREE_TEXT},
+    'expected_ddbb_params': {'q': FREE_TEXT, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': False},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
+}
+
+datarequest_index_test_case_14 = {
+    'organization_show_func': _organization_show,
+    'content': {'sort': 'desc'},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': True},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
+}
+
+datarequest_index_test_case_15 = {
+    'organization_show_func': _organization_show,
+    'content': {'sort': 'asc'},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': False},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
+}
+
+
+datarequest_index_test_case_16 = {
+    'organization_show_func': _organization_show,
+    'content': {'closed': False},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': False, 'desc': False},
+    'ddbb_response': ddbb_response_1,
+    'expected_response': expected_result_1
+}
+
+datarequest_index_test_case_17 = {
+    'organization_show_func': _organization_show,
+    'content': {'q': FREE_TEXT, 'organization_id': 'fiware', 'user_id': 'ckan', 'closed': False, 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'q': FREE_TEXT, 'organization_id': organization_default_id, 'user_id': user_default_id, 'closed': False, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
