@@ -119,6 +119,7 @@ class DataRequestsUI(base.BaseController):
                 data_dict['user_id'] = user_id
 
             sort = request.GET.get('sort', 'desc')
+            sort = sort if sort in ['asc', 'desc'] else 'desc'
             if sort is not None:
                 data_dict['sort'] = sort
 

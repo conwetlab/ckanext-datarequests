@@ -474,29 +474,47 @@ class UIControllerTest(unittest.TestCase):
         (INDEX_FUNCTION, '2', 'conwet', '', 25,   25, 25),
         (INDEX_FUNCTION, '7', 'conwet', '', 150,  25, 25),
         (INDEX_FUNCTION, '5', None,     '', 40,   10),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'asc'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'desc'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'invalid'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, None,   'free-text'),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     10,   10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     60,   10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    25, 25),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     25,   25, 25),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     150,  25, 25),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'asc'),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'desc'),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'invalid', ''),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, None,      'free-text'),
         (USER_DATAREQUESTS_FUNCTION,         '1', 'conwet', 'ckan', 0,    10),
         (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10),
         (USER_DATAREQUESTS_FUNCTION,         '7', 'conwet', 'ckan', 60,   10),
         (USER_DATAREQUESTS_FUNCTION,         '7', '',       'ckan', 150,  25, 25),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'asc'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'desc'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'invalid'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, None,      'free-text'),
     ])
-    def test_index_organization_user_dr(self, func, page, organization, user, expected_offset, expected_limit, datarequests_per_page=10):
+    def test_index_organization_user_dr(self, func, page, organization, user, expected_offset,
+                                        expected_limit, datarequests_per_page=10, sort=None,
+                                        query=None):
         params = {}
         user_show_action = 'user_show'
         organization_show_action = 'organization_show'
         base_url = 'http://someurl.com/somepath/otherpath'
+        expected_sort = sort if sort and sort in ['asc', 'desc'] else 'desc'
 
         # Expected data_dict
         expected_data_dict = {
             'offset': expected_offset,
             'limit': expected_limit,
-            'sort': 'desc'
+            'sort': expected_sort
         }
+
+        if query:
+            expected_data_dict['q'] = query
 
         # Set datarequests_per_page
         constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
@@ -521,6 +539,12 @@ class UIControllerTest(unittest.TestCase):
                 controller.request.GET['organization'] = organization
                 expected_data_dict['organization_id'] = organization
 
+        if sort:
+            controller.request.GET['sort'] = sort
+
+        if query:
+            controller.request.GET['q'] = query
+
         # Mocking
         user_show = MagicMock()
         organization_show = MagicMock()
@@ -542,7 +566,9 @@ class UIControllerTest(unittest.TestCase):
         result = function(**params)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX,
+                                                           self.expected_context,
+                                                           expected_data_dict)
 
         # Specific assertions depending on the function called
         if func == INDEX_FUNCTION:
@@ -579,7 +605,9 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_response['count'], page_arguments['item_count'])
         self.assertEquals(expected_response['result'], page_arguments['collection'])
         silly_page = 72
-        self.assertEquals("%s?sort=%s&page=%d" % (base_url, 'desc', silly_page), page_arguments['url'](page=silly_page))
+        query_param = 'q={0}&'.format(query) if query else ''
+        self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
+                          page_arguments['url'](q=query,page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
@@ -587,7 +615,7 @@ class UIControllerTest(unittest.TestCase):
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.helpers.url_for.assert_once_with(
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='organization_datarequests', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
