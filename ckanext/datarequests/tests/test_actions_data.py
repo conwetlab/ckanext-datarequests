@@ -292,7 +292,7 @@ expected_result_3['result'] = expected_result_3['result'][default_offset:default
 datarequest_index_test_case_1 = {
     'organization_show_func': _organization_show,
     'content': {},
-    'expected_ddbb_params': {},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_1,
     'expected_response': expected_result_1
 }
@@ -300,7 +300,7 @@ datarequest_index_test_case_1 = {
 datarequest_index_test_case_2 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware'},
-    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_1,
     'expected_response': expected_result_1
 }
@@ -308,7 +308,7 @@ datarequest_index_test_case_2 = {
 datarequest_index_test_case_3 = {
     'organization_show_func': _organization_show,
     'content': {'closed': True},
-    'expected_ddbb_params': {'closed': True},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_1,
     'expected_response': expected_result_1
 }
@@ -316,7 +316,7 @@ datarequest_index_test_case_3 = {
 datarequest_index_test_case_4 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'closed': True},
-    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': None, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_1,
     'expected_response': expected_result_1
 }
@@ -324,7 +324,7 @@ datarequest_index_test_case_4 = {
 datarequest_index_test_case_5 = {
     'organization_show_func': _organization_show,
     'content': {},
-    'expected_ddbb_params': {},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_2
 }
@@ -332,7 +332,7 @@ datarequest_index_test_case_5 = {
 datarequest_index_test_case_6 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware'},
-    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_2
 }
@@ -340,7 +340,7 @@ datarequest_index_test_case_6 = {
 datarequest_index_test_case_7 = {
     'organization_show_func': _organization_show,
     'content': {'closed': True},
-    'expected_ddbb_params': {'closed': True},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_2
 }
@@ -348,7 +348,7 @@ datarequest_index_test_case_7 = {
 datarequest_index_test_case_8 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'closed': True},
-    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': None, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_2
 }
@@ -356,7 +356,7 @@ datarequest_index_test_case_8 = {
 datarequest_index_test_case_9 = {
     'organization_show_func': _organization_show,
     'content': {'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
@@ -364,7 +364,7 @@ datarequest_index_test_case_9 = {
 datarequest_index_test_case_10 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'organization_id': organization_default_id},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': None, 'closed': None, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
@@ -372,7 +372,7 @@ datarequest_index_test_case_10 = {
 datarequest_index_test_case_11 = {
     'organization_show_func': _organization_show,
     'content': {'closed': True, 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'closed': True},
+    'expected_ddbb_params': {'q': None, 'organization_id': None, 'user_id': None, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
@@ -380,7 +380,7 @@ datarequest_index_test_case_11 = {
 datarequest_index_test_case_12 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'user_id': 'ckan', 'closed': True, 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'organization_id': organization_default_id, 'closed': True, 'user_id': user_default_id},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': user_default_id, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }

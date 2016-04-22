@@ -359,7 +359,7 @@ class DataRequestsUI(base.BaseController):
 
                 try:
                     comment_data_dict = {'datarequest_id': id, 'comment': comment_text, 'id': comment_id}
-                    comment = tk.get_action(action)(context, comment_data_dict)
+                    updated_comment = tk.get_action(action)(context, comment_data_dict)
                 except tk.NotAuthorized as e:
                     log.warn(e)
                     tk.abort(403, tk._('You are not authorized to %s' % action_text))
@@ -373,18 +373,17 @@ class DataRequestsUI(base.BaseController):
                 # Other exceptions are not expected. Otherwise, the request will fail.
 
                 # This is required to scroll the user to the appropriate comment
-                c.updated_comment = {
-                    'comment': comment_text,
-                    'id': comment_id
-                }
+                if 'updated_comment' in locals():
+                    c.updated_comment = updated_comment
+                else:
+                    c.updated_comment = {
+                        'id': comment_id,
+                        'comment': comment_text
+                    }
 
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
             c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
-
-            # This happens when new comments are created
-            if c.updated_comment and c.updated_comment['id'] == '' and not c.errors:
-                c.updated_comment['id'] = c.comments[-1]['id']
 
             return tk.render('datarequests/comment.html')
 

@@ -446,7 +446,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.index()
 
         # Assertions
-        expected_data_req = {'organization_id': organization_name, 'limit': 10, 'offset': 0}
+        expected_data_req = {'organization_id': organization_name, 'limit': 10, 'offset': 0, 'sort': 'desc'}
         controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_req)
         controller.tk.abort.assert_called_once_with(403, 'Unauthorized to list Data Requests')
         self.assertEquals(0, controller.tk.get_action.call_count)
@@ -494,7 +494,8 @@ class UIControllerTest(unittest.TestCase):
         # Expected data_dict
         expected_data_dict = {
             'offset': expected_offset,
-            'limit': expected_limit
+            'limit': expected_limit,
+            'sort': 'desc'
         }
 
         # Set datarequests_per_page
@@ -578,7 +579,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_response['count'], page_arguments['item_count'])
         self.assertEquals(expected_response['result'], page_arguments['collection'])
         silly_page = 72
-        self.assertEquals("%s?page=%d" % (base_url, silly_page), page_arguments['url'](page=silly_page))
+        self.assertEquals("%s?sort=%s&page=%d" % (base_url, 'desc', silly_page), page_arguments['url'](page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
@@ -800,16 +801,18 @@ class UIControllerTest(unittest.TestCase):
     ])
     def test_comment_list(self, new_comment=False, update_comment=False,
                           comment_or_update_exception=None):
+
         controller.request.POST = {}
         datarequest_id = 'example_uuidv4'
         comment_id = 'comment_uuidv4'
         comment = 'example comment'
+        new_comment_id = 'another_uuidv4'
 
         if new_comment or update_comment:
             controller.request.POST = {
                 'datarequest_id': datarequest_id,
                 'comment': comment,
-                'comment-id': comment_id if update_comment else None
+                'comment-id': comment_id if update_comment else ''
             }
 
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -821,21 +824,14 @@ class UIControllerTest(unittest.TestCase):
             {'comment': 'Coment\nwith http://fiware.org\nhttp://fiware.eu'}
         ]
 
-        expected_comment_list = [
-            {'comment': 'Comment 1<br/>with new line'},
-            {'comment': 'Commnet 2<br/>with two<br/>new lines'},
-            {'comment': 'Comment 3 with link <a href="https://fiware.org/some/path?param1=1&param2=2" target="_blank">'
-                        + 'https://fiware.org/some/path?param1=1&param2=2</a>'},
-            {'comment': 'Comment 4 with two links <a href="https://fiware.org/some/path?param1=1&param2=2" target="_blank">'
-                        + 'https://fiware.org/some/path?param1=1&param2=2</a> and <a href="https://google.es" '
-                        + 'target="_blank">https://google.es</a>'},
-            {'comment': 'Coment<br/>with <a href="http://fiware.org" target="_blank">http://fiware.org</a><br/><a '
-                        + 'href="http://fiware.eu" target="_blank">http://fiware.eu</a>'}
-        ]
+        default_action_return = {
+            'id': new_comment_id if new_comment else comment_id,
+            'comment': comment
+        }
 
         datarequest_show = MagicMock(return_value=datarequest)
         datarequest_comment_list = MagicMock(return_value=comments_list)
-        default_action = MagicMock(side_effect=comment_or_update_exception)
+        default_action = MagicMock(side_effect=comment_or_update_exception, return_value=default_action_return)
 
         def _get_action(action):
             if action == constants.DATAREQUEST_SHOW:
@@ -845,6 +841,8 @@ class UIControllerTest(unittest.TestCase):
             else:
                 return default_action
 
+        delattr(controller.c, 'updated_comment')
+        delattr(controller.c, 'errors')
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
@@ -856,7 +854,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Verify comments and data request
         self.assertEquals(controller.c.datarequest, datarequest)
-        self.assertEquals(controller.c.comments, expected_comment_list)
+        self.assertEquals(controller.c.comments, comments_list)
 
         # Check calls
         datarequest_show.assert_called_once_with(self.expected_context, {'id': datarequest_id})
@@ -869,7 +867,7 @@ class UIControllerTest(unittest.TestCase):
 
         if new_comment or update_comment:
             default_action.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else None})
+                    'comment': comment, 'id': comment_id if update_comment else ''})
 
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
@@ -883,7 +881,6 @@ class UIControllerTest(unittest.TestCase):
             self.assertEquals(0, controller.tk.abort.call_count)
 
             # Check controller.c values
-            self.assertEquals(comment, controller.c.comment)
             self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
 
             errors_summary = {}
@@ -891,6 +888,19 @@ class UIControllerTest(unittest.TestCase):
                     errors_summary[key] = ', '.join(error)
 
             self.assertEquals(errors_summary, controller.c.errors_summary)
+
+        if new_comment or update_comment:
+
+            # self.assertEquals(comment, controller.c.updated_comment['comment'])
+
+            if new_comment:
+                if comment_or_update_exception:
+                    self.assertEquals('', controller.c.updated_comment['id'])
+                else:
+                    self.assertEquals(new_comment_id, controller.c.updated_comment['id'])
+
+            if update_comment:
+                self.assertEquals(comment_id, controller.c.updated_comment['id'])
 
 
     ######################################################################
