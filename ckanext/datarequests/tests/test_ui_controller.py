@@ -669,7 +669,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_DELETE, self.expected_context, expected_data_dict)
         datarequest_delete.assert_called_once_with(self.expected_context, expected_data_dict)
         controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
-            'Data Request %s deleted correctly' % datarequest.get('title')))
+            'Your Data Request %s has been deleted' % datarequest.get('title')))
 
         # Redirection
         controller.helpers.url_for.assert_called_once_with(
