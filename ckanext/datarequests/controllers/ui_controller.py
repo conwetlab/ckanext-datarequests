@@ -258,7 +258,7 @@ class DataRequestsUI(base.BaseController):
         try:
             tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
             datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
-            helpers.flash_notice(tk._('Data Request %s deleted correctly') % datarequest.get('title', ''))
+            helpers.flash_notice(tk._('Your Data Request %s has been deleted') % datarequest.get('title', ''))
             base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
         except tk.ObjectNotFound as e:
             log.warn(e)
@@ -361,6 +361,14 @@ class DataRequestsUI(base.BaseController):
                 try:
                     comment_data_dict = {'datarequest_id': id, 'comment': comment_text, 'id': comment_id}
                     updated_comment = tk.get_action(action)(context, comment_data_dict)
+
+                    if not comment_id:
+                        flash_message = tk._('Your comment has been published')
+                    else:
+                        flash_message = tk._('Your comment has been updated')
+
+                    helpers.flash_notice(flash_message)
+
                 except tk.NotAuthorized as e:
                     log.warn(e)
                     tk.abort(403, tk._('You are not authorized to %s' % action_text))
@@ -403,6 +411,7 @@ class DataRequestsUI(base.BaseController):
             data_dict = {'id': comment_id}
             tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
             tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
+            helpers.flash_notice(tk._('Your comment has been deleted'))
             base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                                           action='comment', id=datarequest_id))
         except tk.ObjectNotFound as e:

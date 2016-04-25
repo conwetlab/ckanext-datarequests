@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-25 09:54+0200\n"
+"POT-Creation-Date: 2016-04-25 10:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -151,7 +151,7 @@ msgstr ""
 #: ckanext/datarequests/controllers/ui_controller.py:248
 #: ckanext/datarequests/controllers/ui_controller.py:265
 #: ckanext/datarequests/controllers/ui_controller.py:334
-#: ckanext/datarequests/controllers/ui_controller.py:393
+#: ckanext/datarequests/controllers/ui_controller.py:401
 #, python-format
 msgid "Data Request %s not found"
 msgstr ""
@@ -167,9 +167,8 @@ msgid "You are not authorized to update the Data Request %s"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:261
-#: ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
-msgid "Data Request %s deleted correctly"
+msgid "Your Data Request %s has been deleted"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:268
@@ -187,21 +186,33 @@ msgid "You are not authorized to close the Data Request %s"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:366
+msgid "Your comment has been published"
+msgstr ""
+
+#: ckanext/datarequests/controllers/ui_controller.py:368
+msgid "Your comment has been updated"
+msgstr ""
+
+#: ckanext/datarequests/controllers/ui_controller.py:374
 #, python-format
 msgid "You are not authorized to %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:397
+#: ckanext/datarequests/controllers/ui_controller.py:405
 #, python-format
 msgid "You are not authorized to list the comments of the Data Request %s"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:410
+#: ckanext/datarequests/controllers/ui_controller.py:414
+msgid "Your comment has been deleted"
+msgstr ""
+
+#: ckanext/datarequests/controllers/ui_controller.py:419
 #, python-format
 msgid "Comment %s not found"
 msgstr ""
 
-#: ckanext/datarequests/controllers/ui_controller.py:413
+#: ckanext/datarequests/controllers/ui_controller.py:422
 msgid "You are not authorized to delete this comment"
 msgstr ""
 
@@ -454,5 +465,10 @@ msgstr ""
 #: ckanext/datarequests/templates/organization/read_base.html:5
 #: ckanext/datarequests/templates/user/read_base.html:5
 msgid "Activity Stream"
+msgstr ""
+
+#: ckanext/datarequests/tests/test_ui_controller.py:672
+#, python-format
+msgid "Data Request %s deleted correctly"
 msgstr ""
 
