@@ -189,7 +189,7 @@ def datarequest_show(context, data_dict):
     datarequest_id = data_dict.get('id', '')
 
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -200,7 +200,7 @@ def datarequest_show(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
     data_dict = _dictize_datarequest(data_req)
@@ -241,7 +241,7 @@ def datarequest_update(context, data_dict):
     datarequest_id = data_dict.get('id', '')
 
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -252,7 +252,7 @@ def datarequest_update(context, data_dict):
     # Get the initial data
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
 
@@ -432,7 +432,7 @@ def datarequest_delete(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -443,7 +443,7 @@ def datarequest_delete(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
     session.delete(data_req)
@@ -477,7 +477,7 @@ def datarequest_close(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -488,7 +488,7 @@ def datarequest_close(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     # Validate data
     validator.validate_datarequest_closing(context, data_dict)
@@ -497,7 +497,7 @@ def datarequest_close(context, data_dict):
 
     # Was the data request previously closed?
     if data_req.closed:
-        raise tk.ValidationError(['This Data Request is already closed'])
+        raise tk.ValidationError([tk._('This Data Request is already closed')])
 
     data_req.closed = True
     data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
@@ -533,7 +533,7 @@ def datarequest_comment(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError(['Data Request ID has not been included'])
+        raise tk.ValidationError([tk._('Data Request ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -575,7 +575,7 @@ def datarequest_comment_show(context, data_dict):
 
     # Check id
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -586,7 +586,7 @@ def datarequest_comment_show(context, data_dict):
     # Get comments
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     return _dictize_comment(result[0])
 
@@ -621,7 +621,7 @@ def datarequest_comment_list(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -668,7 +668,7 @@ def datarequest_comment_update(context, data_dict):
     comment_id = data_dict.get('id', '')
 
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -679,7 +679,7 @@ def datarequest_comment_update(context, data_dict):
     # Get the data request
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     comment = result[0]
 
@@ -714,7 +714,7 @@ def datarequest_comment_delete(context, data_dict):
     comment_id = data_dict.get('id', '')
 
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -725,7 +725,7 @@ def datarequest_comment_delete(context, data_dict):
     # Get the data request
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     comment = result[0]
 

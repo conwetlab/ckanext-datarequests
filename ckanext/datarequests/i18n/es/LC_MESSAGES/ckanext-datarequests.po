@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.0\n"
 "Report-Msgid-Bugs-To: amagan@conwet.com\n"
-"POT-Creation-Date: 2016-04-21 12:12+0200\n"
+"POT-Creation-Date: 2016-04-25 09:54+0200\n"
 "PO-Revision-Date: 2016-04-19 11:43+0200\n"
 "Last-Translator: Aitor Magán <amagan@conwet.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -18,6 +18,33 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
+
+#: ckanext/datarequests/actions.py:192 ckanext/datarequests/actions.py:244
+#: ckanext/datarequests/actions.py:435 ckanext/datarequests/actions.py:480
+#: ckanext/datarequests/actions.py:536 ckanext/datarequests/actions.py:624
+msgid "Data Request ID has not been included"
+msgstr "El ID de la Solicitud de Datos no ha sido incluído"
+
+#: ckanext/datarequests/actions.py:203 ckanext/datarequests/actions.py:255
+#: ckanext/datarequests/actions.py:446 ckanext/datarequests/actions.py:491
+#, python-format
+msgid "Data Request %s not found in the data base"
+msgstr "Solicitud de Datos %s no encontrada"
+
+#: ckanext/datarequests/actions.py:500
+msgid "This Data Request is already closed"
+msgstr "Esta Solicitud de Datos ya está cerrada"
+
+#: ckanext/datarequests/actions.py:578 ckanext/datarequests/actions.py:671
+#: ckanext/datarequests/actions.py:717
+msgid "Comment ID has not been included"
+msgstr "El ID del comentario no ha sido incluído"
+
+#: ckanext/datarequests/actions.py:589 ckanext/datarequests/actions.py:682
+#: ckanext/datarequests/actions.py:728
+#, python-format
+msgid "Comment %s not found in the data base"
+msgstr "Comentario %s no encontrado"
 
 #: ckanext/datarequests/validator.py:31
 #, python-format
@@ -69,86 +96,86 @@ msgstr "Los comentarios deben tener al menos un carácter"
 msgid "Comments must be a maximum of %d characters long"
 msgstr "Los comentarios deben tener una longitud máxima de %d carácteres"
 
-#: ckanext/datarequests/controllers/ui_controller.py:128
+#: ckanext/datarequests/controllers/ui_controller.py:129
 msgid "Newest"
 msgstr "Los más nuevos"
 
-#: ckanext/datarequests/controllers/ui_controller.py:128
+#: ckanext/datarequests/controllers/ui_controller.py:129
 msgid "Oldest"
 msgstr "Los más viejos"
 
-#: ckanext/datarequests/controllers/ui_controller.py:144
-#: ckanext/datarequests/tests/test_ui_controller.py:599
+#: ckanext/datarequests/controllers/ui_controller.py:145
+#: ckanext/datarequests/tests/test_ui_controller.py:628
 msgid "State"
 msgstr "Estado"
 
-#: ckanext/datarequests/controllers/ui_controller.py:155
+#: ckanext/datarequests/controllers/ui_controller.py:156
 msgid "\"page\" parameter must be an integer"
 msgstr "El parámetro \"page\" debe ser un número entero"
 
-#: ckanext/datarequests/controllers/ui_controller.py:158
+#: ckanext/datarequests/controllers/ui_controller.py:159
 msgid "Unauthorized to list Data Requests"
 msgstr "No estás autorizado a listar las Solicitudes de Datos"
 
-#: ckanext/datarequests/controllers/ui_controller.py:209
+#: ckanext/datarequests/controllers/ui_controller.py:210
 msgid "Unauthorized to create a Data Request"
 msgstr "No estás autorizado a crear una nueva Solicitud de Datos"
 
-#: ckanext/datarequests/controllers/ui_controller.py:224
-#: ckanext/datarequests/controllers/ui_controller.py:247
-#: ckanext/datarequests/controllers/ui_controller.py:264
-#: ckanext/datarequests/controllers/ui_controller.py:333
-#: ckanext/datarequests/controllers/ui_controller.py:384
+#: ckanext/datarequests/controllers/ui_controller.py:225
+#: ckanext/datarequests/controllers/ui_controller.py:248
+#: ckanext/datarequests/controllers/ui_controller.py:265
+#: ckanext/datarequests/controllers/ui_controller.py:334
+#: ckanext/datarequests/controllers/ui_controller.py:393
 #, python-format
 msgid "Data Request %s not found"
 msgstr "Solicitud de Datos %s no encontrada"
 
-#: ckanext/datarequests/controllers/ui_controller.py:227
+#: ckanext/datarequests/controllers/ui_controller.py:228
 #, python-format
 msgid "You are not authorized to view the Data Request %s"
 msgstr "No estás autorizado a ver la Solicitud de Datos %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:250
+#: ckanext/datarequests/controllers/ui_controller.py:251
 #, python-format
 msgid "You are not authorized to update the Data Request %s"
 msgstr "No estás autorizado a actualizar la Solicitud de Datos %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:260
-#: ckanext/datarequests/tests/test_ui_controller.py:643
+#: ckanext/datarequests/controllers/ui_controller.py:261
+#: ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
 msgid "Data Request %s deleted correctly"
 msgstr "Solicitud de Datos %s borrada correctamente"
 
-#: ckanext/datarequests/controllers/ui_controller.py:267
+#: ckanext/datarequests/controllers/ui_controller.py:268
 #, python-format
 msgid "You are not authorized to delete the Data Request %s"
 msgstr "No estás autorizado a borrar la Solicitud de Datos %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:315
+#: ckanext/datarequests/controllers/ui_controller.py:316
 msgid "This data request is already closed"
 msgstr "Esta Solicitud de Datos ya está borrada"
 
-#: ckanext/datarequests/controllers/ui_controller.py:336
+#: ckanext/datarequests/controllers/ui_controller.py:337
 #, python-format
 msgid "You are not authorized to close the Data Request %s"
 msgstr "No estás autorizado a cerrar la Solicitud de Datos %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:365
+#: ckanext/datarequests/controllers/ui_controller.py:366
 #, python-format
 msgid "You are not authorized to %s"
 msgstr "No estás autorizado a %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:388
+#: ckanext/datarequests/controllers/ui_controller.py:397
 #, python-format
 msgid "You are not authorized to list the comments of the Data Request %s"
 msgstr "No estás autorizado a ver los comentarios de la Solicitud de Datos %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:401
+#: ckanext/datarequests/controllers/ui_controller.py:410
 #, python-format
 msgid "Comment %s not found"
 msgstr "Comentario %s no encontrado"
 
-#: ckanext/datarequests/controllers/ui_controller.py:404
+#: ckanext/datarequests/controllers/ui_controller.py:413
 msgid "You are not authorized to delete this comment"
 msgstr "No tienes autorización para borrar este comentario"
 
@@ -268,11 +295,11 @@ msgstr "No cerrada aún"
 msgid "Accep. Dataset"
 msgstr "Conj. Datos Acept."
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:22
 msgid "Add a new Comment"
 msgstr "Añadir un nuevo Comentario"
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:24
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
 #, python-format
 msgid ""
 "You can use <a href=\"#markdown\" title=\"Markdown quick reference\" "
@@ -285,19 +312,19 @@ msgstr ""
 "html=\"true\">formato Markdown</a> aquí. Puede referenciar conjuntos de "
 "datos añadiendo su URL."
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:30
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:29
 msgid "Update Comment"
 msgstr "Actualizar Comentario"
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:32
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:31
 msgid "Add Comment"
 msgstr "Añadir Comentario"
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:11
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:18
 msgid "Are you sure you want to delete this comment?"
 msgstr "¿Estás seguro de que deseas borrar este comentario?"
 
-#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:22
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:29
 msgid "commented"
 msgstr "comentó"
 
