@@ -355,3 +355,79 @@ class TestSelenium(unittest.TestCase):
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True,
                                organization_name, dataset_name)
+
+    def test_search(self):
+
+        def _check_pages(last_available):
+
+            for i in range(1, last_available + 1):
+                self.assertTrue(self.is_element_present(
+                                By.LINK_TEXT, "{0}".format(i)))
+
+            self.assertFalse(self.is_element_present(
+                             By.LINK_TEXT, "{0}".format(last_available + 1)))
+
+        def _check_n_datarequests(expected_number):
+            self.assertEqual(len(self.driver.find_elements_by_xpath(
+                             "//li[@class='dataset-item']")), expected_number)
+
+        user = 'user1'
+        n_datarequests = 11
+        base_name = 'Data Request'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        for i in range(n_datarequests):
+            datarequest_title = '{0} {1}'.format(base_name, i)
+            datarequest_description = 'Example Description'
+            datarequest_id = self.create_datarequest(datarequest_title,
+                                                     datarequest_description)
+
+            if i % 2 == 0:
+                self.close_datarequest(datarequest_id)
+
+        # If ordered in ascending way, the first data request should be present
+        # in the first page
+        self.driver.get(self.base_url + 'datarequest')
+        Select(self.driver.find_element_by_id("field-order-by")).select_by_visible_text("Oldest")
+        self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, 0)))
+
+        # There must be two pages (10 + 1). One page contains 10 items as a
+        # maximum.
+        _check_pages(2)
+        _check_n_datarequests(10)
+
+        # The latest data request is in the second page
+        self.driver.find_element_by_link_text("2").click()
+        self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, n_datarequests - 1)))
+
+        for i in range(n_datarequests):
+            datarequest_title = 'test {0}'.format(i)
+            datarequest_description = 'Example Description'
+            datarequest_id = self.create_datarequest(datarequest_title,
+                                                     datarequest_description)
+
+        self.driver.get(self.base_url + 'datarequest')
+
+        # There must be three pages (10 + 10 + 2). One page contains 10 items
+        # as a maximum.
+        _check_pages(3)
+        _check_n_datarequests(10)
+
+        # Search by base name
+        self.driver.find_element_by_xpath("(//input[@name='q'])[2]").clear()
+        self.driver.find_element_by_xpath("(//input[@name='q'])[2]").send_keys(base_name)
+        self.driver.find_element_by_xpath("//button[@value='search']").click()
+
+        # There should be two pages
+        _check_pages(2)
+        _check_n_datarequests(10)
+
+        # Filter by open (there should be 5 data requests open with the given
+        # base name)
+        self.driver.find_element_by_link_text("Open (5)").click()
+        _check_n_datarequests(5)
+
+        # Pages selector is not available when there are less than 10 items
+        self.assertFalse(self.is_element_present(By.LINK_TEXT, "1"))
