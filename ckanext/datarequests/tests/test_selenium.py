@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Private Dataset Extension.  If not, see <http://www.gnu.org/licenses/>.
 
+from nose_parameterized import parameterized
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -27,7 +28,13 @@ import ckan.lib.search.index as search_index
 import ckan.model as model
 import ckanext.datarequests.db as db
 import os
+import random
+import string
 import unittest
+
+
+def _generate_random_string(length):
+    return ''.join(random.choice(string.ascii_lowercase) for _ in xrange(length))
 
 
 class TestSelenium(unittest.TestCase):
@@ -199,7 +206,7 @@ class TestSelenium(unittest.TestCase):
 
     def delete_datarequest(self, datarequest_id):
         driver = self.driver
-        driver.get(self.base_url + 'datarequest/' + datarequest_id)
+        driver.get(self.base_url + "datarequest/" + datarequest_id)
 
         driver.find_element_by_link_text("Manage").click()
         driver.find_element_by_link_text("Delete").click()
@@ -207,7 +214,7 @@ class TestSelenium(unittest.TestCase):
 
     def close_datarequest(self, datarequest_id, dataset_name=None):
         driver = self.driver
-        driver.get(self.base_url + 'datarequest/' + datarequest_id)
+        driver.get(self.base_url + "datarequest/" + datarequest_id)
 
         driver.find_element_by_link_text("Close").click()
 
@@ -216,6 +223,25 @@ class TestSelenium(unittest.TestCase):
 
         driver.find_element_by_name("close").click()
 
+    def comment_datarequest(self, datarequest_id, comment):
+        driver = self.driver
+        driver.get(self.base_url + "datarequest/comment/" + datarequest_id)
+
+        new_comment_form = driver.find_elements_by_name("comment")[-1]
+        new_comment_form.clear()
+        new_comment_form.send_keys(comment)
+
+        driver.find_element_by_name('add').click()
+
+    def edit_first_comment(self, datarequest_id, updated_comment):
+        driver = self.driver
+        driver.get(self.base_url + "datarequest/comment/" + datarequest_id)
+
+        driver.find_element(by=By.CSS_SELECTOR, value="i.icon-pencil").click()
+        driver.find_element_by_name("comment").clear()
+        driver.find_element_by_name("comment").send_keys(updated_comment)
+        driver.find_element_by_name("update").click()
+
     def check_n_datarequests(self, expected_number):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
                          "//li[@class='dataset-item']")), expected_number)
@@ -223,7 +249,7 @@ class TestSelenium(unittest.TestCase):
     def check_datarequest(self, datarequest_id, title, description, open, owner, 
                           organization="None", accepted_dataset="None"):
         driver = self.driver
-        driver.get(self.base_url + 'datarequest/' + datarequest_id)
+        driver.get(self.base_url + "datarequest/" + datarequest_id)
 
         self.assertEqual(title, driver.find_element_by_css_selector("h1.page-heading").text)
         self.assertEqual(description, driver.find_element_by_css_selector("p").text)
@@ -243,7 +269,23 @@ class TestSelenium(unittest.TestCase):
 
         self.assertEqual(owner, self.is_element_present(By.LINK_TEXT, "Manage"))
 
-    def test_create_and_permissions(self):
+    def check_form_error(self, expected_message):
+        self.assertEqual(expected_message, self.driver.find_element_by_xpath(
+                         "//div[@id='content']/div[3]/div/article/div/form/div/ul/li").text)
+
+    def check_first_comment_text(self, expected_text):
+        self.assertEqual(self.driver.find_element_by_xpath(
+                         "//div[@class='comment-content ']").text,
+                         expected_text)
+
+    def check_element_optically_displayed(self, element):
+        driver = self.driver
+        scroll_top = driver.execute_script('return $(window).scrollTop()')
+        scroll_bottom = driver.execute_script('return $(window).scrollTop() + $(window).height()')
+
+        return element.location['y'] >= scroll_top and element.location['y'] <= scroll_bottom
+
+    def test_create_datarequest_and_check_permissions(self):
 
         users = ['user1', 'user2']
 
@@ -274,7 +316,48 @@ class TestSelenium(unittest.TestCase):
         self.driver.get(self.base_url + 'user/datarequest/' + users[1])
         self.check_n_datarequests(0)
 
-    def test_update(self):
+    @parameterized.expand([
+        ("", 0, "Title: Title cannot be empty"),
+        ("Title", 1001, "Description: Description must be a maximum of 1000 characters long")
+    ])
+    def test_create_invalid_datarequest(self, title, description_length, expected_error):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        # Create the comment
+        comment = _generate_random_string(description_length)
+
+        # Create the datarequest
+        self.create_datarequest(title, comment)
+        self.check_form_error(expected_error)
+
+    def test_create_datarequest_same_name(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        # Create the comment
+        title = 'Data Request'
+        comment = 'Example description'
+
+        # Create the datarequest
+        self.create_datarequest(title, comment)
+
+        # Create another data request with the same name (it should fail)
+        self.create_datarequest(title, comment)
+        self.check_form_error("Title: That title is already in use")
+
+    @parameterized.expand([
+        ("Cool DR", 10),
+        ("", 10, "Title: Title cannot be empty"),
+        ("Updated Title", 1001, "Description: Description must be a maximum of 1000 characters long")
+    ])
+    def test_update_datarequest(self, new_title, new_description_length, expected_error=None):
 
         user = 'user1'
 
@@ -286,16 +369,37 @@ class TestSelenium(unittest.TestCase):
         datarequest_id = self.create_datarequest(datarequest_title,
                                                  datarequest_description)
 
-        datarequest_modified_title = 'Cool DR'
-        datarequest_modified_description = 'I want all the data coming from Santander'
+        new_description = _generate_random_string(new_description_length)
 
-        self.edit_datarequest(datarequest_id, datarequest_modified_title,
-                              datarequest_modified_description)
+        self.edit_datarequest(datarequest_id, new_title, new_description)
 
-        self.check_datarequest(datarequest_id, datarequest_modified_title,
-                               datarequest_modified_description, True, True)
+        if not expected_error:
+            self.check_datarequest(datarequest_id, new_title, new_description, True, True)
+        else:
+            self.check_form_error(expected_error)
 
-    def test_delete(self):
+    def test_update_datarequest_same_name(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        # Create the comment
+        title = 'Data Request'
+        comment = 'Example description'
+
+        # Create the first data request
+        self.create_datarequest(title, comment)
+
+        # Create the second data request
+        second_dr_id = self.create_datarequest(title + 'a', comment)
+
+        # Create another data request with the same name (it should fail)
+        self.edit_datarequest(second_dr_id, title, comment)
+        self.check_form_error("Title: That title is already in use")
+
+    def test_delete_datarequest(self):
 
         user = 'user1'
 
@@ -315,7 +419,7 @@ class TestSelenium(unittest.TestCase):
         self.assertTrue("Your Data Request " + datarequest_title + " has been deleted"
                         in self.driver.find_element_by_xpath("//div[@id='content']/div/div").text)
 
-    def test_close(self):
+    def test_close_datarequest(self):
 
         user = 'user1'
 
@@ -332,7 +436,7 @@ class TestSelenium(unittest.TestCase):
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True)
 
-    def test_close_with_organization_and_accepted_dataset(self):
+    def test_close_datarequest_with_organization_and_accepted_dataset(self):
 
         user = 'user1'
 
@@ -366,7 +470,7 @@ class TestSelenium(unittest.TestCase):
         self.driver.get(self.base_url + 'organization/datarequest/' + organization_2_name)
         self.check_n_datarequests(0)
 
-    def test_search(self):
+    def test_search_datarequests(self):
 
         def _check_pages(last_available):
 
@@ -407,6 +511,7 @@ class TestSelenium(unittest.TestCase):
         # The latest data request is in the second page
         self.driver.find_element_by_link_text("2").click()
         self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, n_datarequests - 1)))
+        self.check_n_datarequests(1)
 
         for i in range(n_datarequests):
             datarequest_title = 'test {0}'.format(i)
@@ -437,3 +542,109 @@ class TestSelenium(unittest.TestCase):
 
         # Pages selector is not available when there are less than 10 items
         self.assertFalse(self.is_element_present(By.LINK_TEXT, "1"))
+
+    def test_create_comment_and_check_permissions(self):
+
+        def _check_is_editable(editable):
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, "i.icon-pencil"))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, "i.icon-remove"))
+
+        users = ['user1', 'user2']
+
+        # Create users
+        for user in users:
+            self.default_register(user)
+
+        # First user creates the data request
+        self.login(users[0], users[0])
+        datarequest_title = 'Data Request 1'
+        datarequest_description = 'Example Description'
+        datarequest_id = self.create_datarequest(datarequest_title,
+                                                 datarequest_description)
+
+        # Second user creates the comment so they are able to modify it
+        self.logout()
+        self.login(users[1], users[1])
+
+        comment = 'this is a sample comment'
+        self.comment_datarequest(datarequest_id, comment)
+
+        _check_is_editable(True)
+        self.check_first_comment_text(comment)
+
+        # First user is not able to modify the comment
+        self.logout()
+        self.login(users[0], users[0])
+
+        self.driver.get(self.base_url + "datarequest/comment/" +
+                        datarequest_id)
+
+        _check_is_editable(False)
+        self.check_first_comment_text(comment)
+
+    def test_update_comment(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        datarequest_title = 'Data Request 1'
+        datarequest_description = 'Example Description'
+        datarequest_id = self.create_datarequest(datarequest_title,
+                                                 datarequest_description)
+
+        comment = 'this is a sample comment'
+        self.comment_datarequest(datarequest_id, comment)
+
+        updated_comment = 'this is an updated comment'
+        self.edit_first_comment(datarequest_id, updated_comment)
+
+        # Check that the comment has been updated appropriately
+        self.check_first_comment_text(updated_comment)
+
+    def test_delete_comment(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        datarequest_title = "Data Request 1"
+        datarequest_description = "Example Description"
+        datarequest_id = self.create_datarequest(datarequest_title,
+                                                 datarequest_description)
+
+        self.comment_datarequest(datarequest_id, "sample comment")
+
+        # Delete the comment
+        self.driver.find_element_by_css_selector("i.icon-remove").click()
+        self.driver.find_element_by_css_selector("button.btn.btn-primary").click()
+
+        # Check that the comment has been deleted
+        self.assertEqual("This data request has not been commented yet",
+                         self.driver.find_element_by_css_selector("p.empty").text)
+        self.assertTrue("Your comment has been deleted" in self.driver.find_element_by_xpath(
+                        "//div[@id='content']/div/div").text)
+
+    def test_new_comments_always_visible(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        datarequest_title = 'Data Request 1'
+        datarequest_description = 'Example Description'
+        datarequest_id = self.create_datarequest(datarequest_title,
+                                                 datarequest_description)
+
+        for i in range(10):
+            self.comment_datarequest(datarequest_id, 'comment {0}'.format(i))
+
+            # Last comment should be visible
+            comments = self.driver.find_elements_by_xpath("//div[@class='comment-content ']")
+            self.assertTrue(self.check_element_optically_displayed(comments[-1]))
+
+        # After creating ten comments, the first one should not be visible
+        self.assertFalse(self.check_element_optically_displayed(comments[0]))
