@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -22,6 +22,7 @@ import sqlalchemy as sa
 import uuid
 
 from sqlalchemy import func
+from sqlalchemy.sql.expression import or_
 
 DataRequest = None
 Comment = None
@@ -53,10 +54,28 @@ def init_db(model):
                 return query.filter(func.lower(cls.title) == func.lower(title)).first() is not None
 
             @classmethod
-            def get_ordered_by_date(cls, **kw):
+            def get_ordered_by_date(cls, organization_id=None, user_id=None, closed=None, q=None, desc=False):
                 '''Personalized query'''
                 query = model.Session.query(cls).autoflush(False)
-                return query.filter_by(**kw).order_by(cls.open_time.desc()).all()
+
+                params = {}
+
+                if organization_id is not None:
+                    params['organization_id'] = organization_id
+
+                if user_id is not None:
+                    params['user_id'] = user_id
+
+                if closed is not None:
+                    params['closed'] = closed
+
+                if q is not None:
+                    search_expr = '%{0}%'.format(q)
+                    query = query.filter(or_(cls.title.ilike(search_expr), cls.description.ilike(search_expr)))
+
+                order_by_filter = cls.open_time.desc() if desc else cls.open_time.asc()
+
+                return query.filter_by(**params).order_by(order_by_filter).all()
 
             @classmethod
             def get_open_datarequests_number(cls):
@@ -94,10 +113,11 @@ def init_db(model):
                 return query.filter_by(**kw).all()
 
             @classmethod
-            def get_ordered_by_date(cls, **kw):
+            def get_ordered_by_date(cls, datarequest_id, desc=False):
                 '''Personalized query'''
                 query = model.Session.query(cls).autoflush(False)
-                return query.filter_by(**kw).order_by(cls.time.desc()).all()
+                order_by_filter = cls.time.desc() if desc else cls.time.asc()
+                return query.filter_by(datarequest_id=datarequest_id).order_by(order_by_filter).all()
 
             @classmethod
             def get_datarequest_comments_number(cls, **kw):

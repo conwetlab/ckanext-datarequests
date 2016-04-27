@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -20,7 +20,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2.13'
+version = '0.3.0'
 
 setup(
     name='ckanext-datarequests',
@@ -47,13 +47,22 @@ setup(
     ],
     tests_require=[
         'nose_parameterized==0.3.3',
-        'selenium==2.42.1'
+        'selenium==2.53'
     ],
     test_suite='nosetests',
     entry_points='''
+
         [ckan.plugins]
-        # Add plugins here, e.g.
-        # myplugin=ckanext.datarequests.plugin:PluginClass
         datarequests=ckanext.datarequests.plugin:DataRequestsPlugin
+
+        [babel.extractors]
+        ckan = ckan.lib.extract:extract_ckan
     ''',
+    message_extractors={
+        'ckanext': [
+            ('**.py', 'python', None),
+            ('**.js', 'javascript', None),
+            ('**/templates/**.html', 'ckan', None),
+        ],
+    }
 )

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -121,7 +121,7 @@ def _undictize_comment_basic(comment, data_dict):
 
 def datarequest_create(context, data_dict):
     '''
-    Action to create a new dara request. The function checks the access rights
+    Action to create a new data request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
@@ -135,8 +135,8 @@ def datarequest_create(context, data_dict):
     :param description: A brief description for your data request
     :type description: string
 
-    :param organiztion_id: If you want to create the data request in a specific
-        organization.
+    :param organiztion_id: The ID of the organization you want to asign the
+        data request (optional).
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
@@ -172,7 +172,7 @@ def datarequest_show(context, data_dict):
     '''
     Action to retrieve the information of a data request. The only required
     parameter is the id of the data request. A NotFound exception will be
-    risen if the id is not found.
+    risen if the given id is not found.
 
     Access rights will be checked before returning the information and an
     exception will be risen (NotAuthorized) if the user is not authorized.
@@ -180,7 +180,7 @@ def datarequest_show(context, data_dict):
     :param id: The id of the data request to be shown
     :type id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -189,7 +189,7 @@ def datarequest_show(context, data_dict):
     datarequest_id = data_dict.get('id', '')
 
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -200,7 +200,7 @@ def datarequest_show(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
     data_dict = _dictize_datarequest(data_req)
@@ -210,15 +210,15 @@ def datarequest_show(context, data_dict):
 
 def datarequest_update(context, data_dict):
     '''
-    Action to update a dara request. The function checks the access rights of
+    Action to update a data request. The function checks the access rights of
     the user before updating the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
     In addition, you should note that the parameters will be checked and an
     exception (ValidationError) will be risen if some of these parameters are
-    not valid.
+    invalid.
 
-    :param id: The id of the data request to be updated
+    :param id: The ID of the data request to be updated
     :type id: string
 
     :param title: The title of the data request
@@ -227,11 +227,11 @@ def datarequest_update(context, data_dict):
     :param description: A brief description for your data request
     :type description: string
 
-    :param organiztion_id: If you want to create the data request in a specific
-        organization.
+    :param organiztion_id: The ID of the organization you want to asign the
+        data request.
     :type organization_id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -241,7 +241,7 @@ def datarequest_update(context, data_dict):
     datarequest_id = data_dict.get('id', '')
 
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -252,7 +252,7 @@ def datarequest_update(context, data_dict):
     # Get the initial data
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
 
@@ -273,9 +273,9 @@ def datarequest_update(context, data_dict):
 
 def datarequest_index(context, data_dict):
     '''
-    Returns a list with the existing data requests. Rights access will be checked
-    before returning the results. If the user is not allowed, a NotAuthorized 
-    exception will be risen.
+    Returns a list with the existing data requests. Rights access will be
+    checked before returning the results. If the user is not allowed, a
+    NotAuthorized exception will be risen.
 
     :param organization_id: This parameter is optional and allows users
         to filter the results by organization
@@ -283,17 +283,29 @@ def datarequest_index(context, data_dict):
 
     :param user_id: This parameter is optional and allows users
         to filter the results by user
-    :type organization_id: string
+    :type user_id: string
 
-    :param closed: This parameter is optional and allos users to filter
+    :param closed: This parameter is optional and allows users to filter
         the result by the data request status (open or closed)
     :type closed: bool
+
+    :param q: This parameter is optional and allows users to filter
+        datarequests based on a free text
+    :type q: string
+
+    :param sort: This parameter is optional and allows users to sort
+        data requests. You can choose 'desc' for retrieving data requests
+        in descending order or 'asc' for retrieving data requests in
+        ascending order. Data Requests are returned in ascending order
+        by default.
+    :type sort: string
 
     :param offset: The first element to be returned (0 by default)
     :type offset: int
 
-    :param limit: The max number of data requests to be returned (10 by default)
-    :type limit: init
+    :param limit: The max number of data requests to be returned (10 by
+        default)
+    :type limit: int
 
     :returns: A dict with three fields: result (a list of data requests),
         facets (a list of the facets that can be used) and count (the total
@@ -313,34 +325,37 @@ def datarequest_index(context, data_dict):
 
     # Get the organization
     organization_id = data_dict.get('organization_id', None)
-    params = {}
     if organization_id:
-        # Get organization ID (in some cases the organization name is received)
+        # Get organization ID (organization name is received sometimes)
         organization_id = organization_show({'ignore_auth': True}, {'id': organization_id}).get('id')
-
-        # Include organization ID into the parameters to filter the database query
-        params['organization_id'] = organization_id
 
     user_id = data_dict.get('user_id', None)
     if user_id:
-        # Get user ID (the user name is received)
+        # Get user ID (user name is received sometimes)
         user_id = user_show({'ignore_auth': True}, {'id': user_id}).get('id')
-
-        # Include user ID into the parameters to filter the database query
-        params['user_id'] = user_id
 
     # Filter by state
     closed = data_dict.get('closed', None)
-    if closed is not None:
-        params['closed'] = closed
+
+    # Free text filter
+    q = data_dict.get('q', None)
+
+    # Sort. By default, data requests are returned in the order they are created
+    # This is something new in version 0.3.0. In previous versions, requests were
+    # returned in inverse order
+    desc = False
+    if data_dict.get('sort', None) == 'desc':
+        desc = True
 
     # Call the function
-    db_datarequests = db.DataRequest.get_ordered_by_date(**params)
+    db_datarequests = db.DataRequest.get_ordered_by_date(organization_id=organization_id,
+                                                         user_id=user_id, closed=closed,
+                                                         q=q, desc=desc)
 
     # Dictize the results
+    datarequests = []
     offset = data_dict.get('offset', 0)
     limit = data_dict.get('limit', constants.DATAREQUESTS_PER_PAGE)
-    datarequests = []
     for data_req in db_datarequests[offset:offset + limit]:
         datarequests.append(_dictize_datarequest(data_req))
 
@@ -348,7 +363,7 @@ def datarequest_index(context, data_dict):
     no_processed_organization_facet = {}
     CLOSED = 'Closed'
     OPEN = 'Open'
-    no_processed_state_facet = {CLOSED:0 , OPEN: 0}
+    no_processed_state_facet = {CLOSED: 0, OPEN: 0}
     for data_req in db_datarequests:
         if data_req.organization_id:
             # Facets
@@ -357,7 +372,7 @@ def datarequest_index(context, data_dict):
             else:
                 no_processed_organization_facet[data_req.organization_id] = 1
 
-        no_processed_state_facet[CLOSED if data_req.closed else OPEN] +=1
+        no_processed_state_facet[CLOSED if data_req.closed else OPEN] += 1
 
     # Format facets
     organization_facet = []
@@ -377,7 +392,7 @@ def datarequest_index(context, data_dict):
         if no_processed_state_facet[state]:
             state_facet.append({
                 'name': state.lower(),
-                'display_name': state,
+                'display_name': tk._(state),
                 'count': no_processed_state_facet[state]
             })
 
@@ -399,14 +414,14 @@ def datarequest_index(context, data_dict):
 
 def datarequest_delete(context, data_dict):
     '''
-    Action to delete a new dara request. The function checks the access rights
+    Action to delete a new data request. The function checks the access rights
     of the user before deleting the data request. If the user is not allowed
     a NotAuthorized exception will be risen.
 
-    :param id: The id of the data request to be updated
+    :param id: The ID of the data request to be deleted
     :type id: string
 
-    :returns: A dict with the data request (id, user_id, title, description, 
+    :returns: A dict with the data request (id, user_id, title, description,
         organization_id, open_time, accepted_dataset, close_time, closed)
     :rtype: dict
     '''
@@ -417,7 +432,7 @@ def datarequest_delete(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -428,7 +443,7 @@ def datarequest_delete(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     data_req = result[0]
     session.delete(data_req)
@@ -439,14 +454,15 @@ def datarequest_delete(context, data_dict):
 
 def datarequest_close(context, data_dict):
     '''
-    Action to close a data request. Access rights will be checked before closing the
-    data request. If the user is not allowed, a NotAuthorized exception will be risen.
+    Action to close a data request. Access rights will be checked before
+    closing the data request. If the user is not allowed, a NotAuthorized
+    exception will be risen.
 
-    :param id: The id of the data request to be closed
+    :param id: The ID of the data request to be closed
     :type id: string
 
-    :param accepted_dataset_id: The ID of the dataset accepted as solution for this
-        data request
+    :param accepted_dataset_id: The ID of the dataset accepted as solution
+        for this data request
     :type accepted_dataset_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
@@ -461,7 +477,7 @@ def datarequest_close(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
@@ -472,7 +488,7 @@ def datarequest_close(context, data_dict):
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
     if not result:
-        raise tk.ObjectNotFound('Data Request %s not found in the data base' % datarequest_id)
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
 
     # Validate data
     validator.validate_datarequest_closing(context, data_dict)
@@ -481,7 +497,7 @@ def datarequest_close(context, data_dict):
 
     # Was the data request previously closed?
     if data_req.closed:
-        raise tk.ValidationError(['This Data Request is already closed'])
+        raise tk.ValidationError([tk._('This Data Request is already closed')])
 
     data_req.closed = True
     data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
@@ -495,9 +511,9 @@ def datarequest_close(context, data_dict):
 
 def datarequest_comment(context, data_dict):
     '''
-    Action to create a comment in a data request. Access rights will be checked before
-    creating the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to create the comment
+    Action to create a comment in a data request. Access rights will be checked
+    before creating the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to create the comment
 
     :param datarequest_id: The ID of the datarequest to be commented
     :type id: string
@@ -505,8 +521,8 @@ def datarequest_comment(context, data_dict):
     :param comment: The comment to be added to the data request
     :type comment: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+       time and comment)
     :rtype: dict
 
     '''
@@ -517,7 +533,7 @@ def datarequest_comment(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError(['Data Request ID has not been included'])
+        raise tk.ValidationError([tk._('Data Request ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -542,15 +558,15 @@ def datarequest_comment(context, data_dict):
 
 def datarequest_comment_show(context, data_dict):
     '''
-    Action to retrieve a comment. Access rights will be checked before getting the
-    comment and a NotAuthorized exception will be risen if the user is not allowed
-    to get the comment
+    Action to retrieve a comment. Access rights will be checked before getting
+    the comment and a NotAuthorized exception will be risen if the user is not
+    allowed to get the comment
 
     :param id: The ID of the comment to be retrieved
     :type id: string
 
-    :returns: A dict with the following fields: id, user_id, datarequest_id, time
-        and comment
+    :returns: A dict with the following fields: id, user_id, datarequest_id,
+        time and comment
     :rtype: dict
     '''
 
@@ -559,7 +575,7 @@ def datarequest_comment_show(context, data_dict):
 
     # Check id
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -570,22 +586,33 @@ def datarequest_comment_show(context, data_dict):
     # Get comments
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     return _dictize_comment(result[0])
 
 
 def datarequest_comment_list(context, data_dict):
     '''
-    Action to retrieve all the comments of a data request. Access rights will be checked before
-    getting the comments and a NotAuthorized exception will be risen if the user is not
-    allowed to read the comments
+    Action to retrieve all the comments of a data request. Access rights will
+    be checked before getting the comments and a NotAuthorized exception will
+    be risen if the user is not allowed to read the comments
 
-    :param datarequest_id: The ID of the datarequest whose comments want to be retrieved
+    :param datarequest_id: The ID of the datarequest whose comments want to be
+        retrieved
     :type id: string
 
-    :returns: A list with all the comments of a data request. Every comment is a dict with the
-    following fields: id, user_id, datarequest_id, time and comment
+    :param sort: This parameter is optional and allows users to sort
+        comments. You can choose 'desc' for retrieving comments in
+        descending order or 'asc' for retrieving comments in ascending
+        order. Comments are returned in ascending order by default.
+    :type sort: string
+
+    :param sort: The ID of the datarequest whose comments want to be retrieved
+    :type sort: string
+
+    :returns: A list with all the comments of a data request. Every comment is
+        a dict with the following fields: id, user_id, datarequest_id, time and
+        comment
     :rtype: list
     '''
 
@@ -594,16 +621,23 @@ def datarequest_comment_list(context, data_dict):
 
     # Check id
     if not datarequest_id:
-        raise tk.ValidationError('Data Request ID has not been included')
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
 
     # Init the data base
     db.init_db(model)
+
+    # Sort. By default, comments are returned in the order they are created
+    # This is something new in version 0.3.0. In previous versions, comments
+    # were returned in inverse order
+    desc = False
+    if data_dict.get('sort', None) == 'desc':
+        desc = True
 
     # Check access
     tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict)
 
     # Get comments
-    comments_db = db.Comment.get_ordered_by_date(datarequest_id=datarequest_id)
+    comments_db = db.Comment.get_ordered_by_date(datarequest_id=datarequest_id, desc=desc)
 
     comments_list = []
     for comment in comments_db:
@@ -614,18 +648,18 @@ def datarequest_comment_list(context, data_dict):
 
 def datarequest_comment_update(context, data_dict):
     '''
-    Action to update a comment of a data request. Access rights will be checked before
-    updating the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to update the comment
+    Action to update a comment of a data request. Access rights will be checked
+    before updating the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to update the comment
 
     :param id: The ID of the comment to be updated
     :type id: string
 
-    :param comment: The comment to be added to the data request
+    :param comment: The updated comment
     :type comment: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+        time and comment)
     :rtype: dict
     '''
 
@@ -634,7 +668,7 @@ def datarequest_comment_update(context, data_dict):
     comment_id = data_dict.get('id', '')
 
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -645,7 +679,7 @@ def datarequest_comment_update(context, data_dict):
     # Get the data request
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     comment = result[0]
 
@@ -663,15 +697,15 @@ def datarequest_comment_update(context, data_dict):
 
 def datarequest_comment_delete(context, data_dict):
     '''
-    Action to delete a comment of a data request. Access rights will be checked before
-    deleting the comment and a NotAuthorized exception will be risen if the user is not
-    allowed to delete the comment
+    Action to delete a comment of a data request. Access rights will be checked
+    before deleting the comment and a NotAuthorized exception will be risen if
+    the user is not allowed to delete the comment
 
     :param id: The ID of the comment to be deleted
     :type id: string
 
-    :returns: A dict with the data request comment (id, user_id, datarequest_id, time
-        and comment)
+    :returns: A dict with the data request comment (id, user_id, datarequest_id,
+        time and comment)
     :rtype: dict
     '''
 
@@ -680,7 +714,7 @@ def datarequest_comment_delete(context, data_dict):
     comment_id = data_dict.get('id', '')
 
     if not comment_id:
-        raise tk.ValidationError(['Comment ID has not been included'])
+        raise tk.ValidationError([tk._('Comment ID has not been included')])
 
     # Init the data base
     db.init_db(model)
@@ -691,7 +725,7 @@ def datarequest_comment_delete(context, data_dict):
     # Get the data request
     result = db.Comment.get(id=comment_id)
     if not result:
-        raise tk.ObjectNotFound('Comment %s not found in the data base' % comment_id)
+        raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
 
     comment = result[0]
 

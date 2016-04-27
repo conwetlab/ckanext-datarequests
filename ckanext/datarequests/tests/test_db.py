@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -26,6 +26,9 @@ from nose_parameterized import parameterized
 
 class DBTest(unittest.TestCase):
 
+    EXAMPLE_UUID = 'example_uuid_v4'
+    FREE_TEXT_QUERY = 'free-text'
+
     def setUp(self):
         # Restart databse initial status
         db.DataRequest = None
@@ -38,11 +41,15 @@ class DBTest(unittest.TestCase):
         self._func = db.func
         db.func = MagicMock()
 
+        self._or_ = db.or_
+        db.or_ = MagicMock()
+
     def tearDown(self):
         db.Comment = None
         db.DataRequest = None
         db.sa = self._sa
         db.func = self._func
+        db.or_ = self._or_
 
     def _test_get(self, table):
         '''
@@ -77,7 +84,8 @@ class DBTest(unittest.TestCase):
         self.assertEquals(db_response, result)
         final_query.filter_by.assert_called_once_with(**params)
 
-    def _test_get_ordered_by_date(self, table, time_column):
+    def _test_get_ordered_by_date(self, table, time_column, params):
+
         db_response = [MagicMock(), MagicMock(), MagicMock()]
 
         query_result = MagicMock()
@@ -87,6 +95,7 @@ class DBTest(unittest.TestCase):
         no_ordered.order_by.return_value = query_result
 
         final_query = MagicMock()
+        final_query.filter.return_value = final_query
         final_query.filter_by.return_value = no_ordered
 
         query = MagicMock()
@@ -101,19 +110,41 @@ class DBTest(unittest.TestCase):
         # Mapping
         table = getattr(db, table)
         time_column_value = MagicMock()
+        title_column_value = MagicMock()
+        description_column_value = MagicMock()
         setattr(table, time_column, time_column_value)
+        setattr(table, 'title', title_column_value)
+        setattr(table, 'description', description_column_value)
 
         # Call the method
-        params = {
-            'title': 'Default Title',
-            'organization_id': 'example_uuid_v4'
-        }
         result = table.get_ordered_by_date(**params)
+
+        # Calculate expected filter parameters
+        expected_filter_by_params = params.copy()
+
+        if 'q' in expected_filter_by_params:
+            expected_filter_by_params.pop('q')
+
+        if 'desc' in expected_filter_by_params:
+            expected_filter_by_params.pop('desc')
+
+        query = '%{0}%'.format(params['q']) if 'q' in params else None
+        desc = True if 'desc' in params and params['desc'] is True else False
 
         # Assertions
         self.assertEquals(db_response, result)
-        no_ordered.order_by.assert_called_once_with(time_column_value.desc())
-        final_query.filter_by.assert_called_once_with(**params)
+        order = time_column_value.desc() if desc else time_column_value.asc()
+        no_ordered.order_by.assert_called_once_with(order)
+        final_query.filter_by.assert_called_once_with(**expected_filter_by_params)
+
+        # This only happens with the table of data requests
+        if query:
+            title_column_value.ilike.assert_called_once_with(query)
+            description_column_value.ilike.assert_called_once_with(query)
+            db.or_.assert_called_once_with(title_column_value.ilike.return_value,
+                                           description_column_value.ilike.return_value)
+
+            final_query.filter.assert_called_once_with(db.or_.return_value)
 
     def test_initdb_not_initialized(self):
 
@@ -195,8 +226,17 @@ class DBTest(unittest.TestCase):
         # equalization of these results must be True
         final_query.filter.assert_called_once_with(expected_result)
 
-    def test_datarequest_get_ordered_by_date(self):
-        self._test_get_ordered_by_date('DataRequest', 'open_time')
+    @parameterized.expand([
+        ({'organization_id': EXAMPLE_UUID},),
+        ({'user_id': EXAMPLE_UUID},),
+        ({'closed': True},),
+        ({'closed': False},),
+        ({'desc': True},),
+        ({'desc': False},),
+        ({'q': 'free-text'},)
+    ])
+    def test_datarequest_get_ordered_by_date(self, params):
+        self._test_get_ordered_by_date('DataRequest', 'open_time', params)
 
     def test_get_open_datarequests_number(self):
 
@@ -232,8 +272,13 @@ class DBTest(unittest.TestCase):
     def test_comment_get(self):
         self._test_get('Comment')
 
-    def test_comment_get_ordered_by_date(self):
-        self._test_get_ordered_by_date('Comment', 'time')
+    @parameterized.expand([
+        ({'datarequest_id': 'example_uuid_v4'},),
+        ({'datarequest_id': 'example_uuid_v4', 'desc': False},),
+        ({'datarequest_id': 'example_uuid_v4', 'desc': True},),
+    ])
+    def test_comment_get_ordered_by_date(self, params):
+        self._test_get_ordered_by_date('Comment', 'time', params)
 
     def test_get_datarequests_comments(self):
 

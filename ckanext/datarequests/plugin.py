@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -23,7 +23,10 @@ import auth
 import actions
 import constants
 import helpers
+import os
+import sys
 
+from ckan.lib.plugins import DefaultTranslation
 from functools import partial
 from pylons import config
 
@@ -34,17 +37,19 @@ def get_config_bool_value(config_name, default_value=False):
     return value
 
 
-class DataRequestsPlugin(p.SingletonPlugin):
+class DataRequestsPlugin(p.SingletonPlugin, DefaultTranslation):
 
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
     p.implements(p.IConfigurer)
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.ITranslation)
 
     def __init__(self, name=None):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
+        self.name = 'datarequests'
 
     ######################################################################
     ############################## IACTIONS ##############################

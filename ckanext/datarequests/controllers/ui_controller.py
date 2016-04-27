@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -36,16 +36,6 @@ _link = re.compile(r'(?:(https?://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[
 log = logging.getLogger(__name__)
 tk = plugins.toolkit
 c = tk.c
-
-
-def convert_links(text):
-    def replace(match):
-        groups = match.groups()
-        protocol = groups[0] or ''  # may be None
-        www_lead = groups[1] or ''  # may be None
-        return '<a href="{0}{1}{2}" target="_blank">{0}{1}{2}</a>{3}{4}'.format(
-            protocol, www_lead, *groups[2:])
-    return _link.sub(replace, text)
 
 
 def _get_errors_summary(errors):
@@ -93,9 +83,18 @@ class DataRequestsUI(base.BaseController):
 
     def _show_index(self, user_id, organization_id, include_organization_facet, url_func, file_to_render):
 
-        def pager_url(q=None, page=None):
+        def pager_url(state=None, sort=None, q=None, page=None):
             params = list()
+
+            if q:
+                params.append(('q', q))
+
+            if state is not None:
+                params.append(('state', state))
+
+            params.append(('sort', sort))
             params.append(('page', page))
+
             return url_func(params)
 
         try:
@@ -109,21 +108,36 @@ class DataRequestsUI(base.BaseController):
             if state:
                 data_dict['closed'] = True if state == 'closed' else False
 
+            q = request.GET.get('q', '')
+            if q:
+                data_dict['q'] = q
+
             if organization_id:
                 data_dict['organization_id'] = organization_id
 
             if user_id:
                 data_dict['user_id'] = user_id
 
+            sort = request.GET.get('sort', 'desc')
+            sort = sort if sort in ['asc', 'desc'] else 'desc'
+            if sort is not None:
+                data_dict['sort'] = sort
+
             tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
             datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
+
+            c.filters = [(tk._('Newest'), 'desc'), (tk._('Oldest'), 'asc')]
+            c.sort = sort
+            c.q = q
+            c.organization = organization_id
+            c.state = state
             c.datarequest_count = datarequests_list['count']
             c.datarequests = datarequests_list['result']
             c.search_facets = datarequests_list['facets']
             c.page = helpers.Page(
                 collection=datarequests_list['result'],
                 page=page,
-                url=pager_url,
+                url=functools.partial(pager_url, state, sort),
                 item_count=datarequests_list['count'],
                 items_per_page=limit
             )
@@ -160,9 +174,8 @@ class DataRequestsUI(base.BaseController):
 
             try:
                 result = tk.get_action(action)(context, data_dict)
-                tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH,
-                                                   result['id'])
+                base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', 
+                                              action='show', id=result['id']))
 
             except tk.ValidationError as e:
                 log.warn(e)
@@ -245,9 +258,8 @@ class DataRequestsUI(base.BaseController):
         try:
             tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
             datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
-            tk.response.status_int = 302
-            tk.response.location = '/%s' % constants.DATAREQUESTS_MAIN_PATH
-            helpers.flash_notice(tk._('Data Request %s deleted correctly') % datarequest.get('title', ''))
+            helpers.flash_notice(tk._('Your Data Request %s has been deleted') % datarequest.get('title', ''))
+            base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
@@ -308,8 +320,8 @@ class DataRequestsUI(base.BaseController):
                 data_dict['id'] = id
 
                 tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
-                tk.response.status_int = 302
-                tk.response.location = '/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, data_dict['id'])
+                base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                              action='show', id=data_dict['id']))
             else:   # GET
                 return _return_page()
 
@@ -335,7 +347,7 @@ class DataRequestsUI(base.BaseController):
             # Raises 404 Not Found if the data request does not exist
             c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
 
-            comment = request.POST.get('comment', '')
+            comment_text = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
 
             if request.POST:
@@ -347,8 +359,16 @@ class DataRequestsUI(base.BaseController):
                     action_text = 'update comment'
 
                 try:
-                    comment_data_dict = {'datarequest_id': id, 'comment': comment, 'id': comment_id}
-                    comment = tk.get_action(action)(context, comment_data_dict)
+                    comment_data_dict = {'datarequest_id': id, 'comment': comment_text, 'id': comment_id}
+                    updated_comment = tk.get_action(action)(context, comment_data_dict)
+
+                    if not comment_id:
+                        flash_message = tk._('Your comment has been published')
+                    else:
+                        flash_message = tk._('Your comment has been updated')
+
+                    helpers.flash_notice(flash_message)
+
                 except tk.NotAuthorized as e:
                     log.warn(e)
                     tk.abort(403, tk._('You are not authorized to %s' % action_text))
@@ -356,21 +376,23 @@ class DataRequestsUI(base.BaseController):
                     log.warn(e)
                     c.errors = e.error_dict
                     c.errors_summary = _get_errors_summary(c.errors)
-                    c.comment = comment
                 except tk.ObjectNotFound as e:
                     log.warn(e)
                     tk.abort(404, tk._(str(e)))
                 # Other exceptions are not expected. Otherwise, the request will fail.
 
+                # This is required to scroll the user to the appropriate comment
+                if 'updated_comment' in locals():
+                    c.updated_comment = updated_comment
+                else:
+                    c.updated_comment = {
+                        'id': comment_id,
+                        'comment': comment_text
+                    }
+
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
             c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
-
-            # Replace URLs by links
-            # Replace new lines by HTML line break
-            for comment in c.comments:
-                comment['comment'] = convert_links(comment['comment'])
-                comment['comment'] = comment['comment'].replace('\n', '<br/>')
 
             return tk.render('datarequests/comment.html')
 
@@ -389,8 +411,9 @@ class DataRequestsUI(base.BaseController):
             data_dict = {'id': comment_id}
             tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
             tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
-            tk.response.status_int = 302
-            tk.response.location = '/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id)
+            helpers.flash_notice(tk._('Your comment has been deleted'))
+            base.redirect(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                          action='comment', id=datarequest_id))
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Comment %s not found') % comment_id)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2015-2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
 # This file is part of CKAN Data Requests Extension.
 
@@ -58,6 +58,9 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
+        self._base = controller.base
+        controller.base = MagicMock()
+
         self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
 
         self.expected_context = {
@@ -77,6 +80,7 @@ class UIControllerTest(unittest.TestCase):
         controller.model = self._model
         controller.request = self._request
         controller.helpers = self._helpers
+        controller.base = self._base
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
 
@@ -207,9 +211,10 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
-                self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                                  controller.tk.response.location)
+                controller.helpers.url_for.assert_called_once_with(
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                    action='show', id=datarequest_id)
+                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
@@ -419,9 +424,10 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
-                self.assertEquals(302, controller.tk.response.status_int)
-                self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                                  controller.tk.response.location)
+                controller.helpers.url_for.assert_called_once_with(
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                    action='show', id=datarequest_id)
+                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
@@ -440,7 +446,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.index()
 
         # Assertions
-        expected_data_req = {'organization_id': organization_name, 'limit': 10, 'offset': 0}
+        expected_data_req = {'organization_id': organization_name, 'limit': 10, 'offset': 0, 'sort': 'desc'}
         controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_req)
         controller.tk.abort.assert_called_once_with(403, 'Unauthorized to list Data Requests')
         self.assertEquals(0, controller.tk.get_action.call_count)
@@ -468,28 +474,47 @@ class UIControllerTest(unittest.TestCase):
         (INDEX_FUNCTION, '2', 'conwet', '', 25,   25, 25),
         (INDEX_FUNCTION, '7', 'conwet', '', 150,  25, 25),
         (INDEX_FUNCTION, '5', None,     '', 40,   10),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'asc'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'desc'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, 'invalid'),
+        (INDEX_FUNCTION, '1', None,     '', 0,    10, 10, None,   'free-text'),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     10,   10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     60,   10),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    25, 25),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '2', 'conwet', '',     25,   25, 25),
         (ORGANIZATION_DATAREQUESTS_FUNCTION, '7', 'conwet', '',     150,  25, 25),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'asc'),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'desc'),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, 'invalid', ''),
+        (ORGANIZATION_DATAREQUESTS_FUNCTION, '1', 'conwet', '',     0,    10, 10, None,      'free-text'),
         (USER_DATAREQUESTS_FUNCTION,         '1', 'conwet', 'ckan', 0,    10),
         (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10),
         (USER_DATAREQUESTS_FUNCTION,         '7', 'conwet', 'ckan', 60,   10),
         (USER_DATAREQUESTS_FUNCTION,         '7', '',       'ckan', 150,  25, 25),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'asc'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'desc'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, 'invalid'),
+        (USER_DATAREQUESTS_FUNCTION,         '1', '',       'ckan', 0,    10, 10, None,      'free-text'),
     ])
-    def test_index_organization_user_dr(self, func, page, organization, user, expected_offset, expected_limit, datarequests_per_page=10):
+    def test_index_organization_user_dr(self, func, page, organization, user, expected_offset,
+                                        expected_limit, datarequests_per_page=10, sort=None,
+                                        query=None):
         params = {}
         user_show_action = 'user_show'
         organization_show_action = 'organization_show'
         base_url = 'http://someurl.com/somepath/otherpath'
+        expected_sort = sort if sort and sort in ['asc', 'desc'] else 'desc'
 
         # Expected data_dict
         expected_data_dict = {
             'offset': expected_offset,
-            'limit': expected_limit
+            'limit': expected_limit,
+            'sort': expected_sort
         }
+
+        if query:
+            expected_data_dict['q'] = query
 
         # Set datarequests_per_page
         constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
@@ -514,6 +539,12 @@ class UIControllerTest(unittest.TestCase):
                 controller.request.GET['organization'] = organization
                 expected_data_dict['organization_id'] = organization
 
+        if sort:
+            controller.request.GET['sort'] = sort
+
+        if query:
+            controller.request.GET['q'] = query
+
         # Mocking
         user_show = MagicMock()
         organization_show = MagicMock()
@@ -535,7 +566,9 @@ class UIControllerTest(unittest.TestCase):
         result = function(**params)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX, self.expected_context, expected_data_dict)
+        controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_INDEX,
+                                                           self.expected_context,
+                                                           expected_data_dict)
 
         # Specific assertions depending on the function called
         if func == INDEX_FUNCTION:
@@ -572,7 +605,9 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_response['count'], page_arguments['item_count'])
         self.assertEquals(expected_response['result'], page_arguments['collection'])
         silly_page = 72
-        self.assertEquals("%s?page=%d" % (base_url, silly_page), page_arguments['url'](page=silly_page))
+        query_param = 'q={0}&'.format(query) if query else ''
+        self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
+                          page_arguments['url'](q=query,page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
@@ -580,7 +615,7 @@ class UIControllerTest(unittest.TestCase):
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.helpers.url_for.assert_once_with(
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='organization_datarequests', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
@@ -634,11 +669,13 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(constants.DATAREQUEST_DELETE, self.expected_context, expected_data_dict)
         datarequest_delete.assert_called_once_with(self.expected_context, expected_data_dict)
         controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
-            'Data Request %s deleted correctly' % datarequest.get('title')))
+            'Your Data Request %s has been deleted' % datarequest.get('title')))
 
         # Redirection
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s' % constants.DATAREQUESTS_MAIN_PATH, controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='index')
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
 
 
     ######################################################################
@@ -728,9 +765,10 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.close(datarequest_id)
 
         # Checks
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                          controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='show', id=datarequest_id)
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
         self.assertIsNone(result)
 
     @parameterized.expand([
@@ -791,16 +829,18 @@ class UIControllerTest(unittest.TestCase):
     ])
     def test_comment_list(self, new_comment=False, update_comment=False,
                           comment_or_update_exception=None):
+
         controller.request.POST = {}
         datarequest_id = 'example_uuidv4'
         comment_id = 'comment_uuidv4'
         comment = 'example comment'
+        new_comment_id = 'another_uuidv4'
 
         if new_comment or update_comment:
             controller.request.POST = {
                 'datarequest_id': datarequest_id,
                 'comment': comment,
-                'comment-id': comment_id if update_comment else None
+                'comment-id': comment_id if update_comment else ''
             }
 
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -812,21 +852,14 @@ class UIControllerTest(unittest.TestCase):
             {'comment': 'Coment\nwith http://fiware.org\nhttp://fiware.eu'}
         ]
 
-        expected_comment_list = [
-            {'comment': 'Comment 1<br/>with new line'},
-            {'comment': 'Commnet 2<br/>with two<br/>new lines'},
-            {'comment': 'Comment 3 with link <a href="https://fiware.org/some/path?param1=1&param2=2" target="_blank">'
-                        + 'https://fiware.org/some/path?param1=1&param2=2</a>'},
-            {'comment': 'Comment 4 with two links <a href="https://fiware.org/some/path?param1=1&param2=2" target="_blank">'
-                        + 'https://fiware.org/some/path?param1=1&param2=2</a> and <a href="https://google.es" '
-                        + 'target="_blank">https://google.es</a>'},
-            {'comment': 'Coment<br/>with <a href="http://fiware.org" target="_blank">http://fiware.org</a><br/><a '
-                        + 'href="http://fiware.eu" target="_blank">http://fiware.eu</a>'}
-        ]
+        default_action_return = {
+            'id': new_comment_id if new_comment else comment_id,
+            'comment': comment
+        }
 
         datarequest_show = MagicMock(return_value=datarequest)
         datarequest_comment_list = MagicMock(return_value=comments_list)
-        default_action = MagicMock(side_effect=comment_or_update_exception)
+        default_action = MagicMock(side_effect=comment_or_update_exception, return_value=default_action_return)
 
         def _get_action(action):
             if action == constants.DATAREQUEST_SHOW:
@@ -836,6 +869,8 @@ class UIControllerTest(unittest.TestCase):
             else:
                 return default_action
 
+        delattr(controller.c, 'updated_comment')
+        delattr(controller.c, 'errors')
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
@@ -847,7 +882,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Verify comments and data request
         self.assertEquals(controller.c.datarequest, datarequest)
-        self.assertEquals(controller.c.comments, expected_comment_list)
+        self.assertEquals(controller.c.comments, comments_list)
 
         # Check calls
         datarequest_show.assert_called_once_with(self.expected_context, {'id': datarequest_id})
@@ -860,7 +895,7 @@ class UIControllerTest(unittest.TestCase):
 
         if new_comment or update_comment:
             default_action.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else None})
+                    'comment': comment, 'id': comment_id if update_comment else ''})
 
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
@@ -874,7 +909,6 @@ class UIControllerTest(unittest.TestCase):
             self.assertEquals(0, controller.tk.abort.call_count)
 
             # Check controller.c values
-            self.assertEquals(comment, controller.c.comment)
             self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
 
             errors_summary = {}
@@ -882,6 +916,19 @@ class UIControllerTest(unittest.TestCase):
                     errors_summary[key] = ', '.join(error)
 
             self.assertEquals(errors_summary, controller.c.errors_summary)
+
+        if new_comment or update_comment:
+
+            # self.assertEquals(comment, controller.c.updated_comment['comment'])
+
+            if new_comment:
+                if comment_or_update_exception:
+                    self.assertEquals('', controller.c.updated_comment['id'])
+                else:
+                    self.assertEquals(new_comment_id, controller.c.updated_comment['id'])
+
+            if update_comment:
+                self.assertEquals(comment_id, controller.c.updated_comment['id'])
 
 
     ######################################################################
@@ -929,6 +976,7 @@ class UIControllerTest(unittest.TestCase):
         datarequest_comment_delete.assert_called_once_with(self.expected_context, {'id': comment_id})
 
         # Check redirection
-        self.assertEquals(302, controller.tk.response.status_int)
-        self.assertEquals('/%s/comment/%s' % (constants.DATAREQUESTS_MAIN_PATH, datarequest_id),
-                          controller.tk.response.location)
+        controller.helpers.url_for.assert_called_once_with(
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='comment', id=datarequest_id)
+        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
