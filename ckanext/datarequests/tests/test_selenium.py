@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014 CoNWeT Lab., Universidad Politécnica de Madrid
+# Copyright (c) 2016 CoNWeT Lab., Universidad Politécnica de Madrid
 
-# This file is part of CKAN Private Dataset Extension.
+# This file is part of CKAN Data Requests Extension.
 
-# CKAN Private Dataset Extension is free software: you can redistribute it and/or
+# CKAN Data Requests Extension is free software: you can redistribute it and/or
 # modify it under the terms of the GNU Affero General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CKAN Private Dataset Extension is distributed in the hope that it will be useful,
+# CKAN Data Requests Extension is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
 # You should have received a copy of the GNU Affero General Public License
-# along with CKAN Private Dataset Extension.  If not, see <http://www.gnu.org/licenses/>.
+# along with CKAN Data Requests Extension.  If not, see <http://www.gnu.org/licenses/>.
 
 from nose_parameterized import parameterized
 from selenium import webdriver
@@ -233,11 +233,11 @@ class TestSelenium(unittest.TestCase):
 
         driver.find_element_by_name('add').click()
 
-    def edit_first_comment(self, datarequest_id, updated_comment):
+    def edit_comment(self, datarequest_id, comment_pos, updated_comment):
         driver = self.driver
         driver.get(self.base_url + "datarequest/comment/" + datarequest_id)
 
-        driver.find_element(by=By.CSS_SELECTOR, value="i.icon-pencil").click()
+        driver.find_elements(by=By.CSS_SELECTOR, value="i.icon-pencil")[comment_pos].click()
         driver.find_element_by_name("comment").clear()
         driver.find_element_by_name("comment").send_keys(updated_comment)
         driver.find_element_by_name("update").click()
@@ -327,11 +327,11 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
-        # Create the comment
-        comment = _generate_random_string(description_length)
+        # Create the description
+        description = _generate_random_string(description_length)
 
-        # Create the datarequest
-        self.create_datarequest(title, comment)
+        # Check the returned error message
+        self.create_datarequest(title, description)
         self.check_form_error(expected_error)
 
     def test_create_datarequest_same_name(self):
@@ -364,6 +364,7 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
+        # Create the data request
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
@@ -371,8 +372,11 @@ class TestSelenium(unittest.TestCase):
 
         new_description = _generate_random_string(new_description_length)
 
+        # Update the data request
         self.edit_datarequest(datarequest_id, new_title, new_description)
 
+        # If the data request is updated, we have to check the new status
+        # Otherwise, we have to check if the error is arised
         if not expected_error:
             self.check_datarequest(datarequest_id, new_title, new_description, True, True)
         else:
@@ -406,16 +410,20 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
+        # Create the data request
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
                                                  datarequest_description)
 
+        # Delete the data request
         self.delete_datarequest(datarequest_id)
 
+        # Check that there are not more data requests in the system
         self.assertTrue("There are currently no Data Requests for this site."
                         in self.driver.find_element_by_css_selector("p.empty").text)
 
+        # Check flash message
         self.assertTrue("Your Data Request " + datarequest_title + " has been deleted"
                         in self.driver.find_element_by_xpath("//div[@id='content']/div/div").text)
 
@@ -426,13 +434,16 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
+        # Create data request
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
                                                  datarequest_description)
 
+        # Close data request
         self.close_datarequest(datarequest_id)
 
+        # Check data request status
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True)
 
@@ -582,7 +593,11 @@ class TestSelenium(unittest.TestCase):
         _check_is_editable(False)
         self.check_first_comment_text(comment)
 
-    def test_update_comment(self):
+    @parameterized.expand([
+        (),
+        (1001, "Comment: Comments must be a maximum of 1000 characters long")
+    ])
+    def test_update_comment(self, comment_length=10, expected_error=None):
 
         user = 'user1'
 
@@ -597,11 +612,16 @@ class TestSelenium(unittest.TestCase):
         comment = 'this is a sample comment'
         self.comment_datarequest(datarequest_id, comment)
 
-        updated_comment = 'this is an updated comment'
-        self.edit_first_comment(datarequest_id, updated_comment)
+        updated_comment = _generate_random_string(comment_length)
+        self.edit_comment(datarequest_id, 0, updated_comment)
 
-        # Check that the comment has been updated appropriately
-        self.check_first_comment_text(updated_comment)
+        if not expected_error:
+            # Check that the comment has been updated appropriately
+            self.check_first_comment_text(updated_comment)
+        else:
+            # Check the error
+            self.assertEqual(expected_error, self.driver.find_element_by_xpath(
+                             "//div[@id='content']/div[3]/div/article/div/div/div/form/div/ul/li").text)
 
     def test_delete_comment(self):
 
@@ -642,9 +662,28 @@ class TestSelenium(unittest.TestCase):
         for i in range(10):
             self.comment_datarequest(datarequest_id, 'comment {0}'.format(i))
 
-            # Last comment should be visible
+            # Last comment should be always visible
             comments = self.driver.find_elements_by_xpath("//div[@class='comment-content ']")
             self.assertTrue(self.check_element_optically_displayed(comments[-1]))
 
         # After creating ten comments, the first one should not be visible
         self.assertFalse(self.check_element_optically_displayed(comments[0]))
+
+    def test_create_invalid_comment(self):
+
+        user = 'user1'
+
+        self.default_register(user)
+        self.login(user, user)
+
+        # Create Data Request
+        datarequest_title = 'Data Request 1'
+        datarequest_description = 'Example Description'
+        datarequest_id = self.create_datarequest(datarequest_title,
+                                                 datarequest_description)
+
+        # Check that an error is raised
+        comment = _generate_random_string(1001)
+        self.comment_datarequest(datarequest_id, comment)
+        self.assertEqual("Comment: Comments must be a maximum of 1000 characters long",
+                         self.driver.find_element_by_xpath("//form[@id='comment-form']/div[2]/ul/li").text)
