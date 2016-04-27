@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Private Dataset Extension.  If not, see <http://www.gnu.org/licenses/>.
 
-from nose_parameterized import parameterized
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -27,15 +26,8 @@ from subprocess import Popen
 import ckan.lib.search.index as search_index
 import ckan.model as model
 import ckanext.datarequests.db as db
-import json
 import os
 import unittest
-import re
-import requests
-
-
-def normalize_title(title):
-    return title.replace(' ', '-').lower()
 
 
 class TestSelenium(unittest.TestCase):
@@ -224,6 +216,10 @@ class TestSelenium(unittest.TestCase):
 
         driver.find_element_by_name("close").click()
 
+    def check_n_datarequests(self, expected_number):
+        self.assertEqual(len(self.driver.find_elements_by_xpath(
+                         "//li[@class='dataset-item']")), expected_number)
+
     def check_datarequest(self, datarequest_id, title, description, open, owner, 
                           organization="None", accepted_dataset="None"):
         driver = self.driver
@@ -271,6 +267,12 @@ class TestSelenium(unittest.TestCase):
         self.login(users[1], users[1])
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, True, False)
+
+        # Get user profile and check that user1 has one attached datarequest
+        self.driver.get(self.base_url + 'user/datarequest/' + users[0])
+        self.check_n_datarequests(1)
+        self.driver.get(self.base_url + 'user/datarequest/' + users[1])
+        self.check_n_datarequests(0)
 
     def test_update(self):
 
@@ -337,10 +339,12 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
-        organization_name = 'conwet'
+        organization_1_name = 'conwet'
+        organization_2_name = 'upm'
         dataset_name = 'example'
 
-        self.create_organization(organization_name, 'example description')
+        self.create_organization(organization_1_name, 'example description')
+        self.create_organization(organization_2_name, 'example description')
         self.create_dataset(dataset_name, 'description', 'http://fiware.org',
                             'resource_name', 'resource_description', 'html')
 
@@ -348,13 +352,19 @@ class TestSelenium(unittest.TestCase):
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
                                                  datarequest_description,
-                                                 organization_name)
+                                                 organization_1_name)
 
         self.close_datarequest(datarequest_id, dataset_name)
 
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True,
-                               organization_name, dataset_name)
+                               organization_1_name, dataset_name)
+
+        # Get user profile and check that user1 has one attached datarequest
+        self.driver.get(self.base_url + 'organization/datarequest/' + organization_1_name)
+        self.check_n_datarequests(1)
+        self.driver.get(self.base_url + 'organization/datarequest/' + organization_2_name)
+        self.check_n_datarequests(0)
 
     def test_search(self):
 
@@ -366,10 +376,6 @@ class TestSelenium(unittest.TestCase):
 
             self.assertFalse(self.is_element_present(
                              By.LINK_TEXT, "{0}".format(last_available + 1)))
-
-        def _check_n_datarequests(expected_number):
-            self.assertEqual(len(self.driver.find_elements_by_xpath(
-                             "//li[@class='dataset-item']")), expected_number)
 
         user = 'user1'
         n_datarequests = 11
@@ -396,7 +402,7 @@ class TestSelenium(unittest.TestCase):
         # There must be two pages (10 + 1). One page contains 10 items as a
         # maximum.
         _check_pages(2)
-        _check_n_datarequests(10)
+        self.check_n_datarequests(10)
 
         # The latest data request is in the second page
         self.driver.find_element_by_link_text("2").click()
@@ -413,7 +419,7 @@ class TestSelenium(unittest.TestCase):
         # There must be three pages (10 + 10 + 2). One page contains 10 items
         # as a maximum.
         _check_pages(3)
-        _check_n_datarequests(10)
+        self.check_n_datarequests(10)
 
         # Search by base name
         self.driver.find_element_by_xpath("(//input[@name='q'])[2]").clear()
@@ -422,12 +428,12 @@ class TestSelenium(unittest.TestCase):
 
         # There should be two pages
         _check_pages(2)
-        _check_n_datarequests(10)
+        self.check_n_datarequests(10)
 
         # Filter by open (there should be 5 data requests open with the given
         # base name)
         self.driver.find_element_by_link_text("Open (5)").click()
-        _check_n_datarequests(5)
+        self.check_n_datarequests(5)
 
         # Pages selector is not available when there are less than 10 items
         self.assertFalse(self.is_element_present(By.LINK_TEXT, "1"))
