@@ -7,9 +7,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ckanext-datarequests 0.3.0\n"
+"Project-Id-Version: ckanext-datarequests 0.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-25 10:19+0200\n"
+"POT-Creation-Date: 2016-04-28 11:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -168,7 +168,7 @@ msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:261
 #, python-format
-msgid "Your Data Request %s has been deleted"
+msgid "Data Request %s has been deleted"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:268
@@ -186,11 +186,11 @@ msgid "You are not authorized to close the Data Request %s"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:366
-msgid "Your comment has been published"
+msgid "Comment has been published"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:368
-msgid "Your comment has been updated"
+msgid "Comment has been updated"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:374
@@ -204,7 +204,7 @@ msgid "You are not authorized to list the comments of the Data Request %s"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:414
-msgid "Your comment has been deleted"
+msgid "Comment has been deleted"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:419
@@ -407,7 +407,7 @@ msgid "No Data Requests found"
 msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:14
-msgid "There are currently no Data Requests for this site"
+msgid "No Data Requests found with the given criteria"
 msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:16
@@ -469,6 +469,6 @@ msgstr ""
 
 #: ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
-msgid "Data Request %s deleted correctly"
+msgid "Your Data Request %s has been deleted"
 msgstr ""
 

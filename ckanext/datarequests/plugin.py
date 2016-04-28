@@ -26,7 +26,6 @@ import helpers
 import os
 import sys
 
-from ckan.lib.plugins import DefaultTranslation
 from functools import partial
 from pylons import config
 
@@ -37,14 +36,19 @@ def get_config_bool_value(config_name, default_value=False):
     return value
 
 
-class DataRequestsPlugin(p.SingletonPlugin, DefaultTranslation):
+class DataRequestsPlugin(p.SingletonPlugin):
 
     p.implements(p.IActions)
     p.implements(p.IAuthFunctions)
     p.implements(p.IConfigurer)
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.ITemplateHelpers)
-    p.implements(p.ITranslation)
+
+    # ITranslation only available in 2.5+
+    try:
+        p.implements(p.ITranslation)
+    except AttributeError:
+        pass
 
     def __init__(self, name=None):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
@@ -184,3 +188,42 @@ class DataRequestsPlugin(p.SingletonPlugin, DefaultTranslation):
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge)
         }
+
+    ######################################################################
+    ########################### ITRANSLATION #############################
+    ######################################################################
+
+    # The following methods are copied from ckan.lib.plugins.DefaultTranslation
+    # and have been modified to fix a bug in CKAN 2.5.1 that prevents CKAN from
+    # starting. In addition by copying these methods, it is ensured that Data
+    # Requests can be used even if Itranslation isn't available (less than 2.5)
+
+    def i18n_directory(self):
+        '''Change the directory of the *.mo translation files
+        The default implementation assumes the plugin is
+        ckanext/myplugin/plugin.py and the translations are stored in
+        i18n/
+        '''
+        # assume plugin is called ckanext.<myplugin>.<...>.PluginClass
+        extension_module_name = '.'.join(self.__module__.split('.')[:3])
+        module = sys.modules[extension_module_name]
+        return os.path.join(os.path.dirname(module.__file__), 'i18n')
+
+    def i18n_locales(self):
+        '''Change the list of locales that this plugin handles
+        By default the will assume any directory in subdirectory in the
+        directory defined by self.directory() is a locale handled by this
+        plugin
+        '''
+        directory = self.i18n_directory()
+        return [ d for
+                 d in os.listdir(directory)
+                 if os.path.isdir(os.path.join(directory, d))
+        ]
+
+    def i18n_domain(self):
+        '''Change the gettext domain handled by this plugin
+        This implementation assumes the gettext domain is
+        ckanext-{extension name}, hence your pot, po and mo files should be
+        named ckanext-{extension name}.mo'''
+        return 'ckanext-{name}'.format(name=self.name)

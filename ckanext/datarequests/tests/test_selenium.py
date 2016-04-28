@@ -420,11 +420,11 @@ class TestSelenium(unittest.TestCase):
         self.delete_datarequest(datarequest_id)
 
         # Check that there are not more data requests in the system
-        self.assertTrue("There are currently no Data Requests for this site."
+        self.assertTrue("No Data Requests found with the given criteria."
                         in self.driver.find_element_by_css_selector("p.empty").text)
 
         # Check flash message
-        self.assertTrue("Your Data Request " + datarequest_title + " has been deleted"
+        self.assertTrue("Data Request " + datarequest_title + " has been deleted"
                         in self.driver.find_element_by_xpath("//div[@id='content']/div/div").text)
 
     def test_close_datarequest(self):
@@ -644,7 +644,7 @@ class TestSelenium(unittest.TestCase):
         # Check that the comment has been deleted
         self.assertEqual("This data request has not been commented yet",
                          self.driver.find_element_by_css_selector("p.empty").text)
-        self.assertTrue("Your comment has been deleted" in self.driver.find_element_by_xpath(
+        self.assertTrue("Comment has been deleted" in self.driver.find_element_by_xpath(
                         "//div[@id='content']/div/div").text)
 
     def test_new_comments_always_visible(self):
