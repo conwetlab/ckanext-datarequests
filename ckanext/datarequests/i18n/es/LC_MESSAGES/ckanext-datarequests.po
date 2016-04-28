@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.0\n"
 "Report-Msgid-Bugs-To: amagan@conwet.com\n"
-"POT-Creation-Date: 2016-04-28 11:43+0200\n"
+"POT-Creation-Date: 2016-04-28 14:45+0200\n"
 "PO-Revision-Date: 2016-04-19 11:43+0200\n"
 "Last-Translator: Aitor Magán <amagan@conwet.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -141,6 +141,7 @@ msgid "You are not authorized to update the Data Request %s"
 msgstr "No estás autorizado a actualizar la Solicitud de Datos %s"
 
 #: ckanext/datarequests/controllers/ui_controller.py:261
+#: ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
 msgid "Data Request %s has been deleted"
 msgstr "La Solicitud de Datos %s ha sido borrada"
@@ -374,3 +375,23 @@ msgstr "¿Quieres crear una?"
 #: ckanext/datarequests/templates/datarequests/snippets/edit_datarequest_form.html:4
 msgid "Update Data Request"
 msgstr "Actualizar Solicitud de Datos"
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:6
+msgid "{number} data request found for \"{query}\""
+msgid_plural "{number} data requests found for \"{query}\""
+msgstr[0] "{number} solicitud de datos encontrada para \"{query}\""
+msgstr[1] "{number} solicitudes de datos encontradas para \"{query}\""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:7
+msgid "No data requests found for \"{query}\""
+msgstr "No se han encontrado solicitudes de datos para \"{query}\""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:8
+msgid "{number} data request found"
+msgid_plural "{number} data requests found"
+msgstr[0] "{number} solicitud de datos encontrada"
+msgstr[1] "{number} solicitudes de datos encontradas"
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:9
+msgid "No data requests found"
+msgstr "No se han encontrado solicitudes de datos"

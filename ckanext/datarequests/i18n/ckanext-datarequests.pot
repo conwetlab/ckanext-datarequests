@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-04-28 11:43+0200\n"
+"POT-Creation-Date: 2016-04-28 14:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,6 +167,7 @@ msgid "You are not authorized to update the Data Request %s"
 msgstr ""
 
 #: ckanext/datarequests/controllers/ui_controller.py:261
+#: ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
 msgid "Data Request %s has been deleted"
 msgstr ""
@@ -467,8 +468,23 @@ msgstr ""
 msgid "Activity Stream"
 msgstr ""
 
-#: ckanext/datarequests/tests/test_ui_controller.py:672
-#, python-format
-msgid "Your Data Request %s has been deleted"
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:6
+msgid "{number} data request found for \"{query}\""
+msgid_plural "{number} data requests found for \"{query}\""
+msgstr[0] ""
+msgstr[1] ""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:7
+msgid "No data requests found for \"{query}\""
+msgstr ""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:8
+msgid "{number} data request found"
+msgid_plural "{number} data requests found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:9
+msgid "No data requests found"
 msgstr ""
 
