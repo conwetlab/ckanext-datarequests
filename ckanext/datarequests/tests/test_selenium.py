@@ -177,22 +177,22 @@ class TestSelenium(unittest.TestCase):
     def complete_datarequest_form(self, title, description, organization_name=None):
         driver = self.driver
 
-        driver.find_element_by_id("field-title").clear()
-        driver.find_element_by_id("field-title").send_keys(title)
-        driver.find_element_by_id("field-description").clear()
-        driver.find_element_by_id("field-description").send_keys(description)
+        driver.find_element_by_id('field-title').clear()
+        driver.find_element_by_id('field-title').send_keys(title)
+        driver.find_element_by_id('field-description').clear()
+        driver.find_element_by_id('field-description').send_keys(description)
 
         if organization_name:
             Select(driver.find_element_by_id('field-organizations')).select_by_visible_text(organization_name)
 
-        driver.find_element_by_name("save").click()
+        driver.find_element_by_name('save').click()
 
     def create_datarequest(self, title, description, organization_name=None):
         driver = self.driver
 
         driver.get(self.base_url)
-        driver.find_element_by_xpath("//a[contains(@href, '/datarequest')]").click()
-        driver.find_element_by_link_text("Add Data Request").click()
+        driver.find_element_by_xpath('//a[contains(@href, \'/datarequest\')]').click()
+        driver.find_element_by_link_text('Add Data Request').click()
 
         self.complete_datarequest_form(title, description, organization_name)
 
@@ -201,33 +201,33 @@ class TestSelenium(unittest.TestCase):
     def edit_datarequest(self, datarequest_id, title, description):
         driver = self.driver
         driver.get(self.base_url + 'datarequest/' + datarequest_id)
-        driver.find_element_by_link_text("Manage").click()
+        driver.find_element_by_link_text('Manage').click()
         self.complete_datarequest_form(title, description)
 
     def delete_datarequest(self, datarequest_id):
         driver = self.driver
-        driver.get(self.base_url + "datarequest/" + datarequest_id)
+        driver.get(self.base_url + 'datarequest/' + datarequest_id)
 
-        driver.find_element_by_link_text("Manage").click()
-        driver.find_element_by_link_text("Delete").click()
-        driver.find_element_by_css_selector("div.modal-footer > button.btn.btn-primary").click()
+        driver.find_element_by_link_text('Manage').click()
+        driver.find_element_by_link_text('Delete').click()
+        driver.find_element_by_css_selector('div.modal-footer > button.btn.btn-primary').click()
 
     def close_datarequest(self, datarequest_id, dataset_name=None):
         driver = self.driver
-        driver.get(self.base_url + "datarequest/" + datarequest_id)
+        driver.get(self.base_url + 'datarequest/' + datarequest_id)
 
-        driver.find_element_by_link_text("Close").click()
+        driver.find_element_by_link_text('Close').click()
 
         if dataset_name:
             Select(driver.find_element_by_id('field-accepted_dataset_id')).select_by_visible_text(dataset_name)
 
-        driver.find_element_by_name("close").click()
+        driver.find_element_by_name('close').click()
 
     def comment_datarequest(self, datarequest_id, comment):
         driver = self.driver
-        driver.get(self.base_url + "datarequest/comment/" + datarequest_id)
+        driver.get(self.base_url + 'datarequest/comment/' + datarequest_id)
 
-        new_comment_form = driver.find_elements_by_name("comment")[-1]
+        new_comment_form = driver.find_elements_by_name('comment')[-1]
         new_comment_form.clear()
         new_comment_form.send_keys(comment)
 
@@ -235,47 +235,47 @@ class TestSelenium(unittest.TestCase):
 
     def edit_comment(self, datarequest_id, comment_pos, updated_comment):
         driver = self.driver
-        driver.get(self.base_url + "datarequest/comment/" + datarequest_id)
+        driver.get(self.base_url + 'datarequest/comment/' + datarequest_id)
 
-        driver.find_elements(by=By.CSS_SELECTOR, value="i.icon-pencil")[comment_pos].click()
-        driver.find_element_by_name("comment").clear()
-        driver.find_element_by_name("comment").send_keys(updated_comment)
-        driver.find_element_by_name("update").click()
+        driver.find_elements(by=By.CSS_SELECTOR, value='i.icon-pencil')[comment_pos].click()
+        driver.find_element_by_name('comment').clear()
+        driver.find_element_by_name('comment').send_keys(updated_comment)
+        driver.find_element_by_name('update').click()
 
     def check_n_datarequests(self, expected_number):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
-                         "//li[@class='dataset-item']")), expected_number)
+                         '//li[@class=\'dataset-item\']')), expected_number)
 
     def check_datarequest(self, datarequest_id, title, description, open, owner, 
-                          organization="None", accepted_dataset="None"):
+                          organization='None', accepted_dataset='None'):
         driver = self.driver
-        driver.get(self.base_url + "datarequest/" + datarequest_id)
+        driver.get(self.base_url + 'datarequest/' + datarequest_id)
 
-        self.assertEqual(title, driver.find_element_by_css_selector("h1.page-heading").text)
-        self.assertEqual(description, driver.find_element_by_css_selector("p").text)
+        self.assertEqual(title, driver.find_element_by_css_selector('h1.page-heading').text)
+        self.assertEqual(description, driver.find_element_by_css_selector('p').text)
 
-        self.assertEqual("OPEN" if open else "CLOSED",
-                         driver.find_element_by_xpath("//div[@id='content']/div[3]/div/article/div/span").text)
+        self.assertEqual('OPEN' if open else 'CLOSED',
+                         driver.find_element_by_xpath('//div[@id=\'content\']/div[3]/div/article/div/span').text)
 
         if open:
-            self.assertEqual(owner, self.is_element_present(By.LINK_TEXT, "Close"))
+            self.assertEqual(owner, self.is_element_present(By.LINK_TEXT, 'Close'))
 
         self.assertEqual(organization, driver.find_element_by_xpath(
-                         "//div[@id='content']/div[3]/div/article/div/section/table/tbody/tr[2]/td").text)
+                         '//div[@id=\'content\']/div[3]/div/article/div/section/table/tbody/tr[2]/td').text)
 
         if not open:
             self.assertEqual(accepted_dataset, driver.find_element_by_xpath(
-                             "//div[@id='content']/div[3]/div/article/div/section/table/tbody/tr[5]/td").text)
+                             '//div[@id=\'content\']/div[3]/div/article/div/section/table/tbody/tr[5]/td').text)
 
-        self.assertEqual(owner, self.is_element_present(By.LINK_TEXT, "Manage"))
+        self.assertEqual(owner, self.is_element_present(By.LINK_TEXT, 'Manage'))
 
     def check_form_error(self, expected_message):
         self.assertEqual(expected_message, self.driver.find_element_by_xpath(
-                         "//div[@id='content']/div[3]/div/article/div/form/div/ul/li").text)
+                         '//div[@id=\'content\']/div[3]/div/article/div/form/div/ul/li').text)
 
     def check_first_comment_text(self, expected_text):
         self.assertEqual(self.driver.find_element_by_xpath(
-                         "//div[@class='comment-content ']").text,
+                         '//div[@class=\'comment-content \']').text,
                          expected_text)
 
     def check_element_optically_displayed(self, element):
@@ -317,8 +317,8 @@ class TestSelenium(unittest.TestCase):
         self.check_n_datarequests(0)
 
     @parameterized.expand([
-        ("", 0, "Title: Title cannot be empty"),
-        ("Title", 1001, "Description: Description must be a maximum of 1000 characters long")
+        ('', 0, 'Title: Title cannot be empty'),
+        ('Title', 1001, 'Description: Description must be a maximum of 1000 characters long')
     ])
     def test_create_invalid_datarequest(self, title, description_length, expected_error):
 
@@ -350,12 +350,12 @@ class TestSelenium(unittest.TestCase):
 
         # Create another data request with the same name (it should fail)
         self.create_datarequest(title, comment)
-        self.check_form_error("Title: That title is already in use")
+        self.check_form_error('Title: That title is already in use')
 
     @parameterized.expand([
-        ("Cool DR", 10),
-        ("", 10, "Title: Title cannot be empty"),
-        ("Updated Title", 1001, "Description: Description must be a maximum of 1000 characters long")
+        ('Cool DR', 10),
+        ('', 10, 'Title: Title cannot be empty'),
+        ('Updated Title', 1001, 'Description: Description must be a maximum of 1000 characters long')
     ])
     def test_update_datarequest(self, new_title, new_description_length, expected_error=None):
 
@@ -401,7 +401,7 @@ class TestSelenium(unittest.TestCase):
 
         # Create another data request with the same name (it should fail)
         self.edit_datarequest(second_dr_id, title, comment)
-        self.check_form_error("Title: That title is already in use")
+        self.check_form_error('Title: That title is already in use')
 
     def test_delete_datarequest(self):
 
@@ -420,12 +420,12 @@ class TestSelenium(unittest.TestCase):
         self.delete_datarequest(datarequest_id)
 
         # Check that there are not more data requests in the system
-        self.assertTrue("No Data Requests found with the given criteria."
-                        in self.driver.find_element_by_css_selector("p.empty").text)
+        self.assertTrue('No Data Requests found with the given criteria.'
+                        in self.driver.find_element_by_css_selector('p.empty').text)
 
         # Check flash message
-        self.assertTrue("Data Request " + datarequest_title + " has been deleted"
-                        in self.driver.find_element_by_xpath("//div[@id='content']/div/div").text)
+        self.assertTrue('Data Request ' + datarequest_title + ' has been deleted'
+                        in self.driver.find_element_by_xpath('//div[@id=\'content\']/div/div').text)
 
     def test_close_datarequest(self):
 
@@ -487,10 +487,10 @@ class TestSelenium(unittest.TestCase):
 
             for i in range(1, last_available + 1):
                 self.assertTrue(self.is_element_present(
-                                By.LINK_TEXT, "{0}".format(i)))
+                                By.LINK_TEXT, '{0}'.format(i)))
 
             self.assertFalse(self.is_element_present(
-                             By.LINK_TEXT, "{0}".format(last_available + 1)))
+                             By.LINK_TEXT, '{0}'.format(last_available + 1)))
 
         user = 'user1'
         n_datarequests = 11
@@ -511,7 +511,7 @@ class TestSelenium(unittest.TestCase):
         # If ordered in ascending way, the first data request should be present
         # in the first page
         self.driver.get(self.base_url + 'datarequest')
-        Select(self.driver.find_element_by_id("field-order-by")).select_by_visible_text("Oldest")
+        Select(self.driver.find_element_by_id('field-order-by')).select_by_visible_text('Oldest')
         self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, 0)))
 
         # There must be two pages (10 + 1). One page contains 10 items as a
@@ -520,7 +520,7 @@ class TestSelenium(unittest.TestCase):
         self.check_n_datarequests(10)
 
         # The latest data request is in the second page
-        self.driver.find_element_by_link_text("2").click()
+        self.driver.find_element_by_link_text('2').click()
         self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, n_datarequests - 1)))
         self.check_n_datarequests(1)
 
@@ -538,9 +538,9 @@ class TestSelenium(unittest.TestCase):
         self.check_n_datarequests(10)
 
         # Search by base name
-        self.driver.find_element_by_xpath("(//input[@name='q'])[2]").clear()
-        self.driver.find_element_by_xpath("(//input[@name='q'])[2]").send_keys(base_name)
-        self.driver.find_element_by_xpath("//button[@value='search']").click()
+        self.driver.find_element_by_xpath('(//input[@name=\'q\'])[2]').clear()
+        self.driver.find_element_by_xpath('(//input[@name=\'q\'])[2]').send_keys(base_name)
+        self.driver.find_element_by_xpath('//button[@value=\'search\']').click()
 
         # There should be two pages
         _check_pages(2)
@@ -548,17 +548,17 @@ class TestSelenium(unittest.TestCase):
 
         # Filter by open (there should be 5 data requests open with the given
         # base name)
-        self.driver.find_element_by_link_text("Open (5)").click()
+        self.driver.find_element_by_link_text('Open (5)').click()
         self.check_n_datarequests(5)
 
         # Pages selector is not available when there are less than 10 items
-        self.assertFalse(self.is_element_present(By.LINK_TEXT, "1"))
+        self.assertFalse(self.is_element_present(By.LINK_TEXT, '1'))
 
     def test_create_comment_and_check_permissions(self):
 
         def _check_is_editable(editable):
-            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, "i.icon-pencil"))
-            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, "i.icon-remove"))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.icon-pencil'))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.icon-remove'))
 
         users = ['user1', 'user2']
 
@@ -587,7 +587,7 @@ class TestSelenium(unittest.TestCase):
         self.logout()
         self.login(users[0], users[0])
 
-        self.driver.get(self.base_url + "datarequest/comment/" +
+        self.driver.get(self.base_url + 'datarequest/comment/' +
                         datarequest_id)
 
         _check_is_editable(False)
@@ -595,7 +595,7 @@ class TestSelenium(unittest.TestCase):
 
     @parameterized.expand([
         (),
-        (1001, "Comment: Comments must be a maximum of 1000 characters long")
+        (1001, 'Comment: Comments must be a maximum of 1000 characters long')
     ])
     def test_update_comment(self, comment_length=10, expected_error=None):
 
@@ -621,7 +621,7 @@ class TestSelenium(unittest.TestCase):
         else:
             # Check the error
             self.assertEqual(expected_error, self.driver.find_element_by_xpath(
-                             "//div[@id='content']/div[3]/div/article/div/div/div/form/div/ul/li").text)
+                             '//div[@id=\'content\']/div[3]/div/article/div/div/div/form/div/ul/li').text)
 
     def test_delete_comment(self):
 
@@ -630,22 +630,22 @@ class TestSelenium(unittest.TestCase):
         self.default_register(user)
         self.login(user, user)
 
-        datarequest_title = "Data Request 1"
-        datarequest_description = "Example Description"
+        datarequest_title = 'Data Request 1'
+        datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
                                                  datarequest_description)
 
-        self.comment_datarequest(datarequest_id, "sample comment")
+        self.comment_datarequest(datarequest_id, 'sample comment')
 
         # Delete the comment
-        self.driver.find_element_by_css_selector("i.icon-remove").click()
-        self.driver.find_element_by_css_selector("button.btn.btn-primary").click()
+        self.driver.find_element_by_css_selector('i.icon-remove').click()
+        self.driver.find_element_by_css_selector('button.btn.btn-primary').click()
 
         # Check that the comment has been deleted
-        self.assertEqual("This data request has not been commented yet",
-                         self.driver.find_element_by_css_selector("p.empty").text)
-        self.assertTrue("Comment has been deleted" in self.driver.find_element_by_xpath(
-                        "//div[@id='content']/div/div").text)
+        self.assertEqual('This data request has not been commented yet',
+                         self.driver.find_element_by_css_selector('p.empty').text)
+        self.assertTrue('Comment has been deleted' in self.driver.find_element_by_xpath(
+                        '//div[@id=\'content\']/div/div').text)
 
     def test_new_comments_always_visible(self):
 
@@ -663,7 +663,7 @@ class TestSelenium(unittest.TestCase):
             self.comment_datarequest(datarequest_id, 'comment {0}'.format(i))
 
             # Last comment should be always visible
-            comments = self.driver.find_elements_by_xpath("//div[@class='comment-content ']")
+            comments = self.driver.find_elements_by_xpath('//div[@class=\'comment-content \']')
             self.assertTrue(self.check_element_optically_displayed(comments[-1]))
 
         # After creating ten comments, the first one should not be visible
@@ -685,5 +685,5 @@ class TestSelenium(unittest.TestCase):
         # Check that an error is raised
         comment = _generate_random_string(1001)
         self.comment_datarequest(datarequest_id, comment)
-        self.assertEqual("Comment: Comments must be a maximum of 1000 characters long",
-                         self.driver.find_element_by_xpath("//form[@id='comment-form']/div[2]/ul/li").text)
+        self.assertEqual('Comment: Comments must be a maximum of 1000 characters long',
+                         self.driver.find_element_by_xpath('//form[@id=\'comment-form\']/div[2]/ul/li').text)
