@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.0\n"
 "Report-Msgid-Bugs-To: amagan@conwet.com\n"
-"POT-Creation-Date: 2016-04-25 10:19+0200\n"
+"POT-Creation-Date: 2016-04-28 11:43+0200\n"
 "PO-Revision-Date: 2016-04-19 11:43+0200\n"
 "Last-Translator: Aitor Magán <amagan@conwet.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -142,8 +142,8 @@ msgstr "No estás autorizado a actualizar la Solicitud de Datos %s"
 
 #: ckanext/datarequests/controllers/ui_controller.py:261
 #, python-format
-msgid "Your Data Request %s has been deleted"
-msgstr "Tu Solicitud de Datos %s ha sido borrada"
+msgid "Data Request %s has been deleted"
+msgstr "La Solicitud de Datos %s ha sido borrada"
 
 #: ckanext/datarequests/controllers/ui_controller.py:268
 #, python-format
@@ -160,12 +160,12 @@ msgid "You are not authorized to close the Data Request %s"
 msgstr "No estás autorizado a cerrar la Solicitud de Datos %s"
 
 #: ckanext/datarequests/controllers/ui_controller.py:366
-msgid "Your comment has been published"
-msgstr "Tu comentario ha sido publicado"
+msgid "Comment has been published"
+msgstr "El comentario ha sido publicado"
 
 #: ckanext/datarequests/controllers/ui_controller.py:368
-msgid "Your comment has been updated"
-msgstr "Tu comentario ha sido actualizado"
+msgid "Comment has been updated"
+msgstr "El comentario ha sido actualizado"
 
 #: ckanext/datarequests/controllers/ui_controller.py:374
 #, python-format
@@ -178,8 +178,8 @@ msgid "You are not authorized to list the comments of the Data Request %s"
 msgstr "No estás autorizado a ver los comentarios de la Solicitud de Datos %s"
 
 #: ckanext/datarequests/controllers/ui_controller.py:414
-msgid "Your comment has been deleted"
-msgstr "Tu comentario ha sido borrado"
+msgid "Comment has been deleted"
+msgstr "El comentario ha sido borrado"
 
 #: ckanext/datarequests/controllers/ui_controller.py:419
 #, python-format
@@ -364,8 +364,8 @@ msgid "No Data Requests found"
 msgstr "No hay Solicitudes de Datos"
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:14
-msgid "There are currently no Data Requests for this site"
-msgstr "Actualmente no hay Solicitudes de Datos para este sitio"
+msgid "No Data Requests found with the given criteria"
+msgstr "No se han encontrado Solicitudes de Datos para los criterios dados"
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:16
 msgid "How about creating one?"
@@ -374,9 +374,3 @@ msgstr "¿Quieres crear una?"
 #: ckanext/datarequests/templates/datarequests/snippets/edit_datarequest_form.html:4
 msgid "Update Data Request"
 msgstr "Actualizar Solicitud de Datos"
-
-#: ckanext/datarequests/tests/test_ui_controller.py:672
-#, python-format
-msgid "Data Request %s deleted correctly"
-msgstr "Solicitud de Datos %s borrada correctamente"
-

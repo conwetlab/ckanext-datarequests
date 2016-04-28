@@ -10,8 +10,9 @@
 
   {% snippet "datarequests/snippets/comments.html", comments=c.comments, datarequest=c.datarequest, errors=c.errors, errors_summary=c.errors_summary, updated_comment=c.updated_comment %}
 
-  <div class="comment-new">
-    {% if h.check_access('datarequest_comment', {'id':c.datarequest.id }) %}
+  {% if h.check_access('datarequest_comment', {'id':c.datarequest.id }) %}
+    <div class="comment-new">
+
       {% set create_comment_error = c.updated_comment is defined and c.updated_comment.id == '' %}
       
       {% if create_comment_error %}
@@ -19,7 +20,7 @@
       {% endif %}
       
       {% snippet "datarequests/snippets/comment_form.html", datarequest=c.datarequest, errors=c.errors, errors_summary=c.errors_summary, offering=c.offering, initial_text=c.updated_comment.comment if create_comment_error, focus=create_comment_error, current_user=c.userobj %}
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 
 {% endblock %}
