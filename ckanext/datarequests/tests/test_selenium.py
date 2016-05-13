@@ -242,6 +242,22 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_name('comment').send_keys(updated_comment)
         driver.find_element_by_name('update').click()
 
+    def check_datarequests_counter(self, n_datarequests, search=None):
+
+        text = None
+
+        if n_datarequests == 0:
+            text = 'No data requests found'
+        elif n_datarequests == 1:
+            text = '1 data request found'
+        else:
+            text = '%d data requests found' % n_datarequests
+
+        if search:
+            text += ' for "%s"' % search
+
+        self.assertEqual(text, self.driver.find_element_by_css_selector("h2").text)
+
     def check_n_datarequests(self, expected_number):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
                          '//li[@class=\'dataset-item\']')), expected_number)
@@ -313,6 +329,7 @@ class TestSelenium(unittest.TestCase):
         # Get user profile and check that user1 has one attached datarequest
         self.driver.get(self.base_url + 'user/datarequest/' + users[0])
         self.check_n_datarequests(1)
+        self.check_datarequests_counter(1)
         self.driver.get(self.base_url + 'user/datarequest/' + users[1])
         self.check_n_datarequests(0)
 
@@ -475,11 +492,16 @@ class TestSelenium(unittest.TestCase):
                                datarequest_description, False, True,
                                organization_1_name, dataset_name)
 
-        # Get user profile and check that user1 has one attached datarequest
+        self.driver.get(self.base_url + 'datarequest')
+        self.check_datarequests_counter(1)
+
+        # Get organization and check that organization 1 has one attached datarequest
         self.driver.get(self.base_url + 'organization/datarequest/' + organization_1_name)
         self.check_n_datarequests(1)
+        self.check_datarequests_counter(1)
         self.driver.get(self.base_url + 'organization/datarequest/' + organization_2_name)
         self.check_n_datarequests(0)
+        self.check_datarequests_counter(0)
 
     def test_search_datarequests(self):
 
@@ -513,6 +535,7 @@ class TestSelenium(unittest.TestCase):
         self.driver.get(self.base_url + 'datarequest')
         Select(self.driver.find_element_by_id('field-order-by')).select_by_visible_text('Oldest')
         self.assertTrue(self.is_element_present(By.LINK_TEXT, '{0} {1}'.format(base_name, 0)))
+        self.check_datarequests_counter(n_datarequests)
 
         # There must be two pages (10 + 1). One page contains 10 items as a
         # maximum.
@@ -536,6 +559,7 @@ class TestSelenium(unittest.TestCase):
         # as a maximum.
         _check_pages(3)
         self.check_n_datarequests(10)
+        self.check_datarequests_counter(n_datarequests * 2)
 
         # Search by base name
         self.driver.find_element_by_xpath('(//input[@name=\'q\'])[2]').clear()
@@ -545,11 +569,13 @@ class TestSelenium(unittest.TestCase):
         # There should be two pages
         _check_pages(2)
         self.check_n_datarequests(10)
+        self.check_datarequests_counter(n_datarequests, base_name)
 
         # Filter by open (there should be 5 data requests open with the given
         # base name)
         self.driver.find_element_by_link_text('Open (5)').click()
         self.check_n_datarequests(5)
+        self.check_datarequests_counter(5, base_name)
 
         # Pages selector is not available when there are less than 10 items
         self.assertFalse(self.is_element_present(By.LINK_TEXT, '1'))
