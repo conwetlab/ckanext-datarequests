@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block page_primary_action %}
-  {% snippet 'snippets/search_form.html', query=c.q, fields=(('state', c.state),), sorting=c.filters, sorting_selected=c.sort, placeholder=_('Search Data Requests...'), no_bottom_border=true, count=c.datarequest_count, no_title=True %}
+  {% snippet 'snippets/custom_search_form.html', query=c.q, fields=(('state', c.state),), sorting=c.filters, sorting_selected=c.sort, placeholder=_('Search Data Requests...'), no_bottom_border=true, count=c.datarequest_count, no_title=True %}
   {{ h.snippet('datarequests/snippets/datarequest_list.html', datarequest_count=c.datarequest_count, datarequests=c.datarequests, page=c.page, q=c.q)}}
 {% endblock %}
 
