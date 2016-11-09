@@ -14,10 +14,10 @@ If you prefer to use the graphical interface, you should click on the "Data Requ
 * **Description**: a long description for your data request. You should include as much details as you can in order to allow others to understand you needs and upload a dataset that fulfil your requeriments.
 * **Organization**: in some cases, you want to ask specific data to an specific organization. If you are in such situation, you should complete this field.
 
-Once that you have created your data request, you can view it by clicking on the link provided when you created it. When you are the owner of a data request, you will also be able of:
-* **Closing the data request** if you consider that there is a new dataset that fulfil your needs
-* **Updating the data request** if you can to add/remove some information
-* **Deleting the data request** if you do not want it to be available any more
+Once that you have created your data request, you can view it by clicking on the link provided when you created it. When you are the owner of a data request, you will also be able to:
+* **Close the data request** if you consider that there is a new dataset that fulfil your needs
+* **Update the data request** if you can to add/remove some information
+* **Delete the data request** if you do not want it to be available any more
 
 ### API
 On the other hand, you can also use the API. To access this API, you should POST the following URL (as you do for other actions):
