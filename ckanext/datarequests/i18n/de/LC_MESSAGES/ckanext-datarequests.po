@@ -99,11 +99,11 @@ msgstr "Datensatz nicht gefunden"
 #: ckanext/datarequests/templates/datarequests/show.html:25
 #: ckanext/datarequests/validator.py:75
 msgid "Data Request"
-msgstr ""
+msgstr "Datenanfrage"
 
 #: ckanext/datarequests/validator.py:75
 msgid "Data Request not found"
-msgstr ""
+msgstr "Datenanfrage nicht gefunden"
 
 #: ckanext/datarequests/validator.py:78 ckanext/datarequests/validator.py:81
 msgid "Comment"
@@ -275,13 +275,13 @@ msgstr ""
 #: ckanext/datarequests/templates/datarequests/index.html:9
 #: ckanext/datarequests/templates/organization/datarequests.html:10
 msgid "Add Data Request"
-msgstr ""
+msgstr "Neue Datenanfrage"
 
 #: ckanext/datarequests/templates/datarequests/index.html:12
 #: ckanext/datarequests/templates/organization/datarequests.html:13
 #: ckanext/datarequests/templates/user/datarequests.html:9
 msgid "Search Data Requests..."
-msgstr ""
+msgstr "Datenanfragen durchsuchen…"
 
 #: ckanext/datarequests/templates/datarequests/new.html:3
 #: ckanext/datarequests/templates/datarequests/new.html:7
@@ -346,7 +346,7 @@ msgstr ""
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:22
 msgid "Add a new Comment"
-msgstr ""
+msgstr "Neuen Kommentar hinzufügen"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
 #, python-format
@@ -363,19 +363,19 @@ msgstr "Abbrechen"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:29
 msgid "Update Comment"
-msgstr ""
+msgstr "Kommentar aktualisieren"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:31
 msgid "Add Comment"
-msgstr ""
+msgstr "Kommentar hinzufügen"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:18
 msgid "Are you sure you want to delete this comment?"
-msgstr ""
+msgstr "Sind Sie sicher, dass Sie diesen Kommentar löschen möchten?"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:29
 msgid "commented"
-msgstr ""
+msgstr "kommentiert"
 
 #: ckanext/datarequests/templates/datarequests/snippets/comments.html:3
 msgid "Current Discussion"
@@ -415,7 +415,7 @@ msgstr "Es wurden keine Datenanfragen gefunden"
 
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:16
 msgid "How about creating one?"
-msgstr "Wie wäre es, wenn du eine erstellst?"
+msgstr "Möchten Sie eine erstellen?"
 
 #: ckanext/datarequests/templates/datarequests/snippets/edit_datarequest_form.html:4
 msgid "Update Data Request"
@@ -459,11 +459,11 @@ msgstr ""
 
 #: ckanext/datarequests/templates/home/snippets/stats.html:34
 msgid "data request"
-msgstr ""
+msgstr "Datenanfrage"
 
 #: ckanext/datarequests/templates/home/snippets/stats.html:34
 msgid "data requests"
-msgstr ""
+msgstr "Datenanfragen"
 
 #: ckanext/datarequests/templates/organization/read_base.html:5
 #: ckanext/datarequests/templates/user/read_base.html:5
