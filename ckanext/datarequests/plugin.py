@@ -134,7 +134,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Show a Data Request
         m.connect('datarequest_show', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                  action='show', conditions=dict(method=['GET']), ckan_icon='question-sign')
+                  action='show', conditions=dict(method=['GET']), ckan_icon='question-circle')
 
         # Update a Data Request
         m.connect('/%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
@@ -155,13 +155,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
         m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='organization_datarequests', conditions=dict(method=['GET']),
-                  ckan_icon='question-sign')
+                  ckan_icon='question-circle')
 
         # Data Request that belongs to an user
         m.connect('user_datarequests', '/user/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='user_datarequests', conditions=dict(method=['GET']),
-                  ckan_icon='question-sign')
+                  ckan_icon='question-circle')
 
         if self.comments_enabled:
             # Comment, update and view comments (of) a Data Request
