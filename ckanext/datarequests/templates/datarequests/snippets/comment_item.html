@@ -27,7 +27,9 @@
         <div class="comment-header-text">
           <a href="{{ h.url_for(controller='user', action='read', id=comment.user.get('name')) }}" class="author">{{ comment.user.get('display_name') }}</a>
           {% trans %}commented{% endtrans %}
-          <span title="{{comment.time}}">{{ h.time_ago_from_timestamp(comment.time).lower() }}</span>
+          <span title="{{comment.time}}">
+            {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=comment.time %}
+          </span>
         </div>
       </div>
     </div>

@@ -21,21 +21,6 @@ then itself be extended to add/remove blocks of functionality. #}
     {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description']) }}
   {% endblock %}
 
-  <div class="control-group">
-    <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
-    <div class="controls">
-      <select id="field-organizations" name="organization_id" data-module="autocomplete">
-        {% if h.check_config_permission('create_unowned_dataset') %}
-           <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
-        {% endif %}
-        {% for organization in organizations_available %}
-          {% set selected_org = (organization.id == organization_id)  %}
-          <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
   {% block form_actions %}
     <div class="form-actions">
       {% block delete_button %}

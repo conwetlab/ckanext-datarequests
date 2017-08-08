@@ -8,10 +8,6 @@
           <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else _('None') }}</td>
         </tr>
         <tr>
-          <th scope="row" class="dataset-label">{{ _('Organization') }}</th>
-          <td class="dataset-details">{{ datarequest.organization['display_name'] if datarequest.organization else _('None') }}</td>
-        </tr>
-        <tr>
           <th scope="row" class="dataset-label">{{ _('Created') }}</th>
           <td class="dataset-details" title="{{ datarequest.open_time }}">
             {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=datarequest.open_time %}
