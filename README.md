@@ -1,10 +1,9 @@
-CKAN Data Requests [![Build Status](https://build.conwet.fi.upm.es/jenkins/buildStatus/icon?job=ckan_datarequests)](https://build.conwet.fi.upm.es/jenkins/job/ckan_datarequests/)
-=====================
+# CKAN Data Requests [![Build Status](https://build.conwet.fi.upm.es/jenkins/buildStatus/icon?job=ckan_datarequests)](https://build.conwet.fi.upm.es/jenkins/job/ckan_datarequests/)
 
 CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance. In this way we can set up a Data Market, not only with data supplies but also with data demands.
 
-How it works
-------------
+## How it works
+
 You have two ways for creating, updating, deleting, viewing and closing a datarequest: you can use the graphical interface or the programatic API.
 
 ### User Interface
@@ -156,8 +155,8 @@ Action to delete a comment of a data request. Access rights will be checked befo
 ##### Returns:
 A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
 
-Installation
-------------
+## Installation
+
 Install this extension in your CKAN instance is as easy as intall any other CKAN extension.
 
 * Activate your virtual environment
@@ -193,8 +192,8 @@ sudo service apache2 restart
 ```
 * That's All!
 
-Translations
-------------
+## Translations
+
 Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English and Spanish. If you want to contribute with your translation, the first step is to close this repo. Then, create the locale for your translation by executing:
 
 ```
@@ -216,10 +215,17 @@ python setup.py compile_catalog
 
 This will generate the required `mo` file. Once this file has been generated, commit your changes and create a Pull Request. 
 
-Tests
------
+## Tests
+
 This sofware contains a set of test to detect errors and failures. You can run this tests by running the following command (this command will generate coverage reports):
 ```
 python setup.py nosetests
 ```
 **Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
+
+## Changelog
+
+### v0.3.3
+
+* New: German Translation (thanks to @kvlahrosch)
+
