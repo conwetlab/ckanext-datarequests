@@ -8,18 +8,18 @@
           <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else _('None') }}</td>
         </tr>
         <tr>
-          <th scope="row" class="dataset-label">{{ _('Organization') }}</th>
-          <td class="dataset-details">{{ datarequest.organization['display_name'] if datarequest.organization else _('None') }}</td>
-        </tr>
-        <tr>
           <th scope="row" class="dataset-label">{{ _('Created') }}</th>
-          <td class="dataset-details" title="{{ datarequest.open_time }}">{{ h.time_ago_from_timestamp(datarequest.open_time) }}</td>
-        </tr>
-        <tr>
-          <th scope="row" class="dataset-label">{{ _('Closed') }}</th>
-          <td class="dataset-details" title="{{ datarequest.close_time }}">{{ h.time_ago_from_timestamp(datarequest.close_time) if datarequest.close_time else _('Not closed yet') }}</td>
+          <td class="dataset-details" title="{{ datarequest.open_time }}">
+            {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=datarequest.open_time %}
+          </td>
         </tr>
         {% if datarequest.closed %}
+          <tr>
+            <th scope="row" class="dataset-label">{{ _('Closed') }}</th>
+            <td class="dataset-details" title="{{ datarequest.close_time }}">
+              {% snippet 'snippets/local_friendly_datetime.html', datetime_obj=datarequest.close_time %}
+            </td>
+          </tr>
           <tr>
             <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
             <td class="dataset-details">
