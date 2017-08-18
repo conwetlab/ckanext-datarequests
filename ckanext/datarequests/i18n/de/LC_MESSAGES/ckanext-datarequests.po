@@ -33,7 +33,7 @@ msgstr "Die Datenanfrage %s wurde nicht in der Datenbank gefunden."
 
 #: ckanext/datarequests/actions.py:500
 msgid "This Data Request is already closed"
-msgstr "Diese Datenanfrage ist bereits geschlossen."
+msgstr "Diese Datenanfrage ist bereits abgeschlossen."
 
 #: ckanext/datarequests/actions.py:578 ckanext/datarequests/actions.py:671
 #: ckanext/datarequests/actions.py:717
@@ -180,7 +180,7 @@ msgstr "Sie sind nicht berechtigt die Datenanfrage %s zu löschen."
 
 #: ckanext/datarequests/controllers/ui_controller.py:316
 msgid "This data request is already closed"
-msgstr "Diese Datenanfrage ist bereits geschlossen."
+msgstr "Diese Datenanfrage ist bereits abgeschlossen."
 
 #: ckanext/datarequests/controllers/ui_controller.py:337
 #, python-format
@@ -258,7 +258,7 @@ msgstr "Sie haben die gewünschten Daten nicht gefunden? Dann können Sie hier e
 #: ckanext/datarequests/templates/datarequests/close.html:12
 #: ckanext/datarequests/templates/datarequests/snippets/close_datarequest_form.html:25
 msgid "Close Data Request"
-msgstr "Datenanfrage schließen"
+msgstr "Datenanfrage abschließen"
 
 #: ckanext/datarequests/templates/datarequests/comment.html:5
 #: ckanext/datarequests/templates/datarequests/show.html:28
@@ -280,7 +280,7 @@ msgstr "Neue Datenanfrage"
 #: ckanext/datarequests/templates/organization/datarequests.html:13
 #: ckanext/datarequests/templates/user/datarequests.html:9
 msgid "Search Data Requests..."
-msgstr "Datenanfragen durchsuchen…"
+msgstr "Datenanfragen suchen…"
 
 #: ckanext/datarequests/templates/datarequests/new.html:3
 #: ckanext/datarequests/templates/datarequests/new.html:7
@@ -304,13 +304,13 @@ msgstr "Bearbeiten"
 
 #: ckanext/datarequests/templates/datarequests/show.html:19
 msgid "Close"
-msgstr "Schließen"
+msgstr "Abchließen"
 
 #: ckanext/datarequests/templates/datarequests/show.html:45
 #: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:19
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_item.html:12
 msgid "Closed"
-msgstr "Status"
+msgstr "Abgeschlossen"
 
 #: ckanext/datarequests/templates/datarequests/show.html:50
 #: ckanext/datarequests/templates/datarequests/snippets/datarequest_item.html:16
@@ -337,7 +337,7 @@ msgstr "Erstellt"
 
 #: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:20
 msgid "Not closed yet"
-msgstr "Noch nicht geschlossen"
+msgstr "Noch nicht abgeschlossen"
 
 #: ckanext/datarequests/templates/datarequests/snippets/close_datarequest_form.html:11
 msgid "Accep. Dataset"
@@ -469,7 +469,7 @@ msgstr "Aktivitätsanzeige"
 msgid "{number} data request found for \"{query}\""
 msgid_plural "{number} data requests found for \"{query}\""
 msgstr[0] "{number} Datenanfrage gefunden zu \"{query}\""
-msgstr[1] " Datenanfragen gefunden zu \"{query}\""
+msgstr[1] "{number} Datenanfragen gefunden zu \"{query}\""
 
 #: ckanext/datarequests/templates/snippets/custom_search_form.html:7
 msgid "No data requests found for \"{query}\""
@@ -478,8 +478,8 @@ msgstr "Keine Datenanfragen gefunden zu \"{query}\""
 #: ckanext/datarequests/templates/snippets/custom_search_form.html:8
 msgid "{number} data request found"
 msgid_plural "{number} data requests found"
-msgstr[0] "Datenanfrage gefunden"
-msgstr[1] "Datenanfragen gefunden"
+msgstr[0] "{number} Datenanfrage gefunden"
+msgstr[1] "{number} Datenanfragen gefunden"
 
 #: ckanext/datarequests/templates/snippets/custom_search_form.html:9
 msgid "No data requests found"
