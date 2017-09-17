@@ -9,6 +9,8 @@ env:
 services:
     - redis-server
     - postgresql
+addons:
+    firefox: "46.0"
 install:
     - bash bin/travis-build.bash
 before_script:
