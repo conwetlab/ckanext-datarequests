@@ -214,7 +214,7 @@ class UIControllerTest(unittest.TestCase):
                 controller.helpers.url_for.assert_called_once_with(
                     controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                     action='show', id=datarequest_id)
-                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
@@ -427,7 +427,7 @@ class UIControllerTest(unittest.TestCase):
                 controller.helpers.url_for.assert_called_once_with(
                     controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                     action='show', id=datarequest_id)
-                controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
@@ -675,7 +675,7 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers.url_for.assert_called_once_with(
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index')
-        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
 
     ######################################################################
@@ -768,7 +768,7 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers.url_for.assert_called_once_with(
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='show', id=datarequest_id)
-        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         self.assertIsNone(result)
 
     @parameterized.expand([
@@ -979,4 +979,4 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers.url_for.assert_called_once_with(
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='comment', id=datarequest_id)
-        controller.base.redirect.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
