@@ -225,6 +225,11 @@ python setup.py nosetests
 
 ## Changelog
 
+### v0.4.0
+
+* New: Move CI to Travis
+* New: Compatibility with CKAN 2.6 and 2.7
+
 ### v0.3.3
 
 * New: German Translation (thanks to @kvlahrosch)
