@@ -584,7 +584,7 @@ class TestSelenium(unittest.TestCase):
 
         def _check_is_editable(editable):
             self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-pencil'))
-            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-remove'))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-times'))
 
         users = ['user1', 'user2']
 
@@ -664,7 +664,7 @@ class TestSelenium(unittest.TestCase):
         self.comment_datarequest(datarequest_id, 'sample comment')
 
         # Delete the comment
-        self.driver.find_element_by_css_selector('i.fa-remove').click()
+        self.driver.find_element_by_css_selector('i.fa-times').click()
         self.driver.find_element_by_css_selector('button.btn.btn-primary').click()
 
         # Check that the comment has been deleted
