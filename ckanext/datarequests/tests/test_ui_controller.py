@@ -615,7 +615,7 @@ class UIControllerTest(unittest.TestCase):
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_once_with(
+            controller.helpers.url_for.assert_called_once_with(
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='organization_datarequests', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
