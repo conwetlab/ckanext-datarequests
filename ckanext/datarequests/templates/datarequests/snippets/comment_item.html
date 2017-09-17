@@ -16,12 +16,12 @@
         {% if h.check_access('datarequest_comment_delete', {'id':comment.id }) %}
           <div class="comment-action">
             {% set locale = h.dump_json({'content': _('Are you sure you want to delete this comment?')}) %}
-            <a class="subtle-btn" id="delete-comment-{{ comment.id }}" href="{% url_for controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='delete_comment', datarequest_id=datarequest.id, comment_id=comment.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}"><i class="icon-remove"></i></a>
+            <a class="subtle-btn" id="delete-comment-{{ comment.id }}" href="{% url_for controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='delete_comment', datarequest_id=datarequest.id, comment_id=comment.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}"><i class="fa fa-times"></i></a>
           </div>
         {% endif %}
         {% if can_update %}
           <div class="comment-action" id="edit-button">
-            <button class="subtle-btn" id="update-comment-{{ comment.id }}" href=""><i class="icon-pencil"></i></button>
+            <button class="subtle-btn" id="update-comment-{{ comment.id }}" href=""><i class="fa fa-pencil"></i></button>
           </div>          
         {% endif %}
         <div class="comment-header-text">
