@@ -21,4 +21,4 @@ script:
   - sh bin/travis-run.sh
 branches:
   only:
-    - travis
+    - develop
