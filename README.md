@@ -228,7 +228,7 @@ python setup.py nosetests
 ### v0.4.0
 
 * New: Move CI to Travis
-* New: Compatibility with CKAN 2.6 and 2.7
+* New: Compatibility with CKAN 2.7 (controller adapted by @owl17)
 
 ### v0.3.3
 
