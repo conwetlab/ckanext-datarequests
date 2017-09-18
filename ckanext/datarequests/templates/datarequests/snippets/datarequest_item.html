@@ -9,11 +9,11 @@
       <h3 class="dataset-heading">
         {% if datarequest.get('closed', False) %}
           <span class="uppercase label label-closed">
-            <i class="fa fa-lock"></i> {% trans %}Closed{% endtrans %}
+            <i class="icon-lock fa fa-lock"></i> {% trans %}Closed{% endtrans %}
           </span>
         {% else %}
           <span class="uppercase label label-open">
-            <i class="fa fa-unlock"></i> {% trans %}Open{% endtrans %}
+            <i class="icon-unlock fa fa-unlock"></i> {% trans %}Open{% endtrans %}
           </span>
         {% endif %}
         {{ h.link_to(h.truncate(title, truncate_title), h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=datarequest.get('id', ''))) }}
@@ -23,7 +23,7 @@
       {% endif %}
       <div class="datarequest-properties">
         {% if h.show_comments_tab() %}
-          <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest.get('id','')) }}" class="label"><i class="fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
+          <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest.get('id','')) }}" class="label"><i class="icon-comment fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
         {% endif %}
         <div class="divider"/>
         <span class="date-datarequests">{{ h.time_ago_from_timestamp(datarequest.open_time) }}</span>

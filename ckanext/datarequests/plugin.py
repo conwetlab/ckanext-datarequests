@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
+import ckan.lib.helpers as h
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import auth
@@ -34,6 +35,14 @@ def get_config_bool_value(config_name, default_value=False):
     value = config.get(config_name, default_value)
     value = value if type(value) == bool else value != 'False'
     return value
+
+def get_plus_icon():
+    ckan_version = float(h.ckan_version()[0:3])
+    return 'plus-square' if ckan_version >= 2.7 else 'plus-sign-alt'
+
+def get_question_icon():
+    ckan_version = float(h.ckan_version()[0:3])
+    return 'question-circle' if ckan_version >= 2.7 else 'question-sign'
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
@@ -134,7 +143,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Show a Data Request
         m.connect('datarequest_show', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                  action='show', conditions=dict(method=['GET']), ckan_icon='question-circle')
+                  action='show', conditions=dict(method=['GET']), ckan_icon=get_question_icon())
 
         # Update a Data Request
         m.connect('/%s/edit/{id}' % constants.DATAREQUESTS_MAIN_PATH,
@@ -155,13 +164,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
         m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='organization_datarequests', conditions=dict(method=['GET']),
-                  ckan_icon='question-circle')
+                  ckan_icon=get_question_icon())
 
         # Data Request that belongs to an user
         m.connect('user_datarequests', '/user/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='user_datarequests', conditions=dict(method=['GET']),
-                  ckan_icon='question-circle')
+                  ckan_icon=get_question_icon())
 
         if self.comments_enabled:
             # Comment, update and view comments (of) a Data Request
@@ -186,7 +195,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_comments_number': helpers.get_comments_number,
             'get_comments_badge': helpers.get_comments_badge,
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
-            'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge)
+            'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
+            'get_plus_icon': get_plus_icon
         }
 
     ######################################################################
