@@ -165,7 +165,7 @@ class DataRequestPluginTest(unittest.TestCase):
 
         mapa.connect.assert_any_call('datarequest_show', '/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']), ckan_icon='question-circle')
+            action='show', conditions=dict(method=['GET']), ckan_icon=plugin.get_question_icon())
 
         mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
@@ -183,13 +183,13 @@ class DataRequestPluginTest(unittest.TestCase):
             '/organization/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='organization_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon='question-circle')
+            ckan_icon=plugin.get_question_icon())
 
         mapa.connect.assert_any_call('user_datarequests',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='user_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon='question-circle')
+            ckan_icon=plugin.get_question_icon())
 
         if comments_enabled == 'True':
             mapa.connect.assert_any_call('datarequest_comment', '/%s/comment/{id}' % dr_basic_path,

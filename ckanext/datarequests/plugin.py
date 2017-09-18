@@ -36,13 +36,20 @@ def get_config_bool_value(config_name, default_value=False):
     value = value if type(value) == bool else value != 'False'
     return value
 
+def is_fontawesome_4():
+    if hasattr(h, 'ckan_version'):
+        ckan_version = float(h.ckan_version()[0:3])
+        return ckan_version >= 2.7
+    else:
+        return False
+
 def get_plus_icon():
-    ckan_version = float(h.ckan_version()[0:3])
-    return 'plus-square' if ckan_version >= 2.7 else 'plus-sign-alt'
+    ckan_version = get_ckan_version()
+    return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
 
 def get_question_icon():
-    ckan_version = float(h.ckan_version()[0:3])
-    return 'question-circle' if ckan_version >= 2.7 else 'question-sign'
+    ckan_version = get_ckan_version()
+    return 'question-circle' if is_fontawesome_4() else 'question-sign'
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
