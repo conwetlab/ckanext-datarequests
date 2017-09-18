@@ -1,4 +1,4 @@
-# CKAN Data Requests [![Build Status](https://build.conwet.fi.upm.es/jenkins/buildStatus/icon?job=ckan_datarequests)](https://build.conwet.fi.upm.es/jenkins/job/ckan_datarequests/)
+# CKAN Data Requests [![Build Status](https://travis-ci.org/conwetlab/ckanext-datarequests.svg?branch=develop)](https://travis-ci.org/conwetlab/ckanext-datarequests)
 
 CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance. In this way we can set up a Data Market, not only with data supplies but also with data demands.
 
@@ -224,6 +224,11 @@ python setup.py nosetests
 **Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
 
 ## Changelog
+
+### v0.4.0
+
+* New: Move CI to Travis
+* New: Compatibility with CKAN 2.7 (controller adapted by @owl17)
 
 ### v0.3.3
 

@@ -237,7 +237,7 @@ class TestSelenium(unittest.TestCase):
         driver = self.driver
         driver.get(self.base_url + 'datarequest/comment/' + datarequest_id)
 
-        driver.find_elements(by=By.CSS_SELECTOR, value='i.icon-pencil')[comment_pos].click()
+        driver.find_elements(by=By.CSS_SELECTOR, value='i.fa-pencil')[comment_pos].click()
         driver.find_element_by_name('comment').clear()
         driver.find_element_by_name('comment').send_keys(updated_comment)
         driver.find_element_by_name('update').click()
@@ -583,8 +583,8 @@ class TestSelenium(unittest.TestCase):
     def test_create_comment_and_check_permissions(self):
 
         def _check_is_editable(editable):
-            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.icon-pencil'))
-            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.icon-remove'))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-pencil'))
+            self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-times'))
 
         users = ['user1', 'user2']
 
@@ -664,7 +664,7 @@ class TestSelenium(unittest.TestCase):
         self.comment_datarequest(datarequest_id, 'sample comment')
 
         # Delete the comment
-        self.driver.find_element_by_css_selector('i.icon-remove').click()
+        self.driver.find_element_by_css_selector('i.fa-times').click()
         self.driver.find_element_by_css_selector('button.btn.btn-primary').click()
 
         # Check that the comment has been deleted
