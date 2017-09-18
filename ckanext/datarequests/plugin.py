@@ -44,11 +44,9 @@ def is_fontawesome_4():
         return False
 
 def get_plus_icon():
-    ckan_version = get_ckan_version()
     return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
 
 def get_question_icon():
-    ckan_version = get_ckan_version()
     return 'question-circle' if is_fontawesome_4() else 'question-sign'
 
 
