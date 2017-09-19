@@ -1,5 +1,5 @@
 # Translations template for ckanext-datarequests.
-# Copyright (C) 2016 OpenData Processor
+# Copyright (C) 2017 OpenData Processor
 # This file is distributed under the same license as the ckanext-datarequests
 # project.
 # Allyson Barros <allysonbarrosrn@gmail.com; allyson.barros@opendataprocessor.com>, 2017.
