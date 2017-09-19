@@ -21,7 +21,7 @@ import ckanext.datarequests.plugin as plugin
 import ckanext.datarequests.constants as constants
 import unittest
 
-from mock import MagicMock
+from mock import MagicMock, patch
 from nose_parameterized import parameterized
 
 TOTAL_ACTIONS = 11
@@ -32,25 +32,27 @@ ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 class DataRequestPluginTest(unittest.TestCase):
 
     def setUp(self):
-        self._actions = plugin.actions
-        plugin.actions = MagicMock()
+        self.actions_patch = patch('ckanext.datarequests.plugin.actions')
+        self.actions_mock = self.actions_patch.start()
 
-        self._auth = plugin.auth
-        plugin.auth = MagicMock()
+        self.auth_patch = patch('ckanext.datarequests.plugin.auth')
+        self.auth_mock = self.auth_patch.start()
 
-        self._tk = plugin.tk
-        plugin.tk = MagicMock()
+        self.tk_patch = patch('ckanext.datarequests.plugin.tk')
+        self.tk_mock = self.tk_patch.start()
 
-        self._config = plugin.config
-        plugin.config = MagicMock()
+        self.config_patch = patch('ckanext.datarequests.plugin.config')
+        self.config_mock = self.config_patch.start()
 
-        self._helpers = plugin.helpers
-        plugin.helpers = MagicMock()
+        self.helpers_patch = patch('ckanext.datarequests.plugin.helpers')
+        self.helpers_mock = self.helpers_patch.start()
 
-        self._partial = plugin.partial
-        plugin.partial = MagicMock()
+        self.partial_patch = patch('ckanext.datarequests.plugin.partial')
+        self.partial_mock = self.partial_patch.start()
 
-        # plg = plugin
+        self.h_patch = patch('ckanext.datarequests.plugin.h')
+        self.h_mock = self.h_patch.start()
+
         self.datarequest_create = constants.DATAREQUEST_CREATE
         self.datarequest_show = constants.DATAREQUEST_SHOW
         self.datarequest_update = constants.DATAREQUEST_UPDATE
@@ -63,11 +65,57 @@ class DataRequestPluginTest(unittest.TestCase):
         self.datarequest_comment_delete = constants.DATAREQUEST_COMMENT_DELETE
 
     def tearDown(self):
-        plugin.actions = self._actions
-        plugin.auth = self._auth
-        plugin.tk = self._tk
-        plugin.helpers = self._helpers
-        plugin.partial = self._partial
+        self.actions_patch.stop()
+        self.auth_patch.stop()
+        self.tk_patch.stop()
+        self.config_patch.stop()
+        self.helpers_patch.stop()
+        self.partial_patch.stop()
+        self.h_patch.stop()
+
+    def test_is_fontawesome_4_false_ckan_version_does_not_exist(self):
+        delattr(self.h_mock, 'ckan_version')
+        self.assertFalse(plugin.is_fontawesome_4())
+
+    def test_is_fontawesome_4_false_old_ckan_version(self):
+        self.h_mock.ckan_version.return_value = '2.6.0'
+        self.assertFalse(plugin.is_fontawesome_4())
+
+    def test_is_fontawesome_4_true_new_ckan_version(self):
+        self.h_mock.ckan_version.return_value = '2.7.0'
+        self.assertTrue(plugin.is_fontawesome_4())
+
+    def test_get_plus_icon_new(self):
+
+        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=True)
+        is_fontawesome_4_patch.start()
+        self.addCleanup(is_fontawesome_4_patch.stop)
+
+        self.assertEquals('plus-square', plugin.get_plus_icon())
+
+    def test_get_plus_icon_old(self):
+
+        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=False)
+        is_fontawesome_4_patch.start()
+        self.addCleanup(is_fontawesome_4_patch.stop)
+
+        self.assertEquals('plus-sign-alt', plugin.get_plus_icon())
+
+    def test_get_question_icon_new(self):
+
+        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=True)
+        is_fontawesome_4_patch.start()
+        self.addCleanup(is_fontawesome_4_patch.stop)
+
+        self.assertEquals('question-circle', plugin.get_question_icon())
+
+    def test_get_question_icon_old(self):
+
+        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=False)
+        is_fontawesome_4_patch.start()
+        self.addCleanup(is_fontawesome_4_patch.stop)
+
+        self.assertEquals('question-sign', plugin.get_question_icon())
 
     @parameterized.expand([
         ('True',),
@@ -149,6 +197,11 @@ class DataRequestPluginTest(unittest.TestCase):
         plugin.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
+        mock_icon = 'icon'
+        get_question_icon_patch = patch('ckanext.datarequests.plugin.get_question_icon', return_value=mock_icon)
+        get_question_icon_patch.start()
+        self.addCleanup(get_question_icon_patch.stop)
+
         # Test
         mapa = MagicMock()
         dr_basic_path = 'datarequest'
@@ -165,7 +218,7 @@ class DataRequestPluginTest(unittest.TestCase):
 
         mapa.connect.assert_any_call('datarequest_show', '/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']), ckan_icon=plugin.get_question_icon())
+            action='show', conditions=dict(method=['GET']), ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
@@ -183,13 +236,13 @@ class DataRequestPluginTest(unittest.TestCase):
             '/organization/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='organization_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon=plugin.get_question_icon())
+            ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call('user_datarequests',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='user_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon=plugin.get_question_icon())
+            ckan_icon=mock_icon)
 
         if comments_enabled == 'True':
             mapa.connect.assert_any_call('datarequest_comment', '/%s/comment/{id}' % dr_basic_path,
