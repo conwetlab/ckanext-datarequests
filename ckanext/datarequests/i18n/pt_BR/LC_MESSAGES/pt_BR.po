@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: ckanext-datarequests 0.3.1\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2016-04-28 14:45+0200\n"
-"PO-Revision-Date: 2017-09-19 08:13-0300\n"
+"PO-Revision-Date: 2017-09-19 09:44-0300\n"
 "Last-Translator: Allyson Barros <allysonbarrosrn@gmail.com; allyson.barros@opendataprocessor.com>\n"
 "Language-Team: Language pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.6\n"
 "Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: ckanext/datarequests/actions.py:192 ckanext/datarequests/actions.py:244
 #: ckanext/datarequests/actions.py:435 ckanext/datarequests/actions.py:480
@@ -93,8 +95,7 @@ msgstr "Conjunto de Dados Aceito"
 msgid "Dataset not found"
 msgstr "Conjunto de dados não encontrado"
 
-#: ckanext/datarequests/validator.py:75
-#: ckanext/datarequests/templates/datarequests/base.html:17
+#: ckanext/datarequests/validator.py:75 ckanext/datarequests/templates/datarequests/base.html:17
 #: ckanext/datarequests/templates/datarequests/show.html:25
 msgid "Data Request"
 msgstr "Solicitação de Dados"
@@ -124,13 +125,11 @@ msgstr "Mais novo"
 msgid "Oldest"
 msgstr "Mais velho"
 
-#: ckanext/datarequests/controllers/ui_controller.py:145
-#: ckanext/datarequests/tests/test_ui_controller.py:628
+#: ckanext/datarequests/controllers/ui_controller.py:145 ckanext/datarequests/tests/test_ui_controller.py:628
 msgid "State"
 msgstr "Estado"
 
-#: ckanext/datarequests/controllers/ui_controller.py:150
-#: ckanext/datarequests/templates/header.html:6
+#: ckanext/datarequests/controllers/ui_controller.py:150 ckanext/datarequests/templates/header.html:6
 #: ckanext/datarequests/tests/test_ui_controller.py:630
 msgid "Organizations"
 msgstr "Organizações"
@@ -166,11 +165,10 @@ msgstr "Você não está autorizado a visualizar a Solicitação de Dados %s"
 msgid "You are not authorized to update the Data Request %s"
 msgstr "Você não está autorizado a atualizar a Solicitação de Dados %s"
 
-#: ckanext/datarequests/controllers/ui_controller.py:261
-#: ckanext/datarequests/tests/test_ui_controller.py:672
+#: ckanext/datarequests/controllers/ui_controller.py:261 ckanext/datarequests/tests/test_ui_controller.py:672
 #, python-format
 msgid "Data Request %s has been deleted"
-msgstr "A Solicitação de dados foi excluída"
+msgstr "A Solicitação de dados %s foi excluída"
 
 #: ckanext/datarequests/controllers/ui_controller.py:268
 #, python-format
@@ -217,8 +215,7 @@ msgstr "O comentário %s não foi encontrado"
 msgid "You are not authorized to delete this comment"
 msgstr "Você não está autorizado a excluir este comentário"
 
-#: ckanext/datarequests/templates/header.html:5
-#: ckanext/datarequests/templates/organization/read_base.html:4
+#: ckanext/datarequests/templates/header.html:5 ckanext/datarequests/templates/organization/read_base.html:4
 #: ckanext/datarequests/templates/user/read_base.html:4
 msgid "Datasets"
 msgstr "Conjuntos de Dados"
@@ -227,8 +224,7 @@ msgstr "Conjuntos de Dados"
 msgid "Groups"
 msgstr "Grupos"
 
-#: ckanext/datarequests/templates/header.html:8
-#: ckanext/datarequests/templates/datarequests/base.html:8
+#: ckanext/datarequests/templates/header.html:8 ckanext/datarequests/templates/datarequests/base.html:8
 #: ckanext/datarequests/templates/datarequests/base.html:11
 #: ckanext/datarequests/templates/datarequests/close.html:6
 #: ckanext/datarequests/templates/datarequests/edit.html:6
@@ -239,22 +235,20 @@ msgstr "Grupos"
 msgid "Data Requests"
 msgstr "Solicitações de Dados"
 
-#: ckanext/datarequests/templates/header.html:9
-#: ckanext/datarequests/templates/organization/read_base.html:7
+#: ckanext/datarequests/templates/header.html:9 ckanext/datarequests/templates/organization/read_base.html:7
 msgid "About"
 msgstr "Sobre"
 
 #: ckanext/datarequests/templates/datarequests/base.html:20
 msgid ""
-"Data Requests allow users to ask for data that is not published in the "
-"platform yet. If you want some specific data and you are not able to find it "
-"among all the published datasets, you can create a new data request "
-"specifying the data than you want to get."
+"Data Requests allow users to ask for data that is not published in the platform yet. If you want some "
+"specific data and you are not able to find it among all the published datasets, you can create a new data "
+"request specifying the data than you want to get."
 msgstr ""
 "As solicitações de dados permitem aos usuários solicitar dados que ainda não foram publicados na "
-"plataforma. Se você necessita de alguns dados específicos e você não consegue encontrá-lo "
-"entre todos os conjuntos de dados publicados, você pode criar uma nova solicitação de dados "
-"especificando os dados que você deseja obter."
+"plataforma. Se você necessita de alguns dados específicos e você não consegue encontrá-lo entre todos os "
+"conjuntos de dados publicados, você pode criar uma nova solicitação de dados especificando os dados que "
+"você deseja obter."
 
 #: ckanext/datarequests/templates/datarequests/close.html:3
 #: ckanext/datarequests/templates/datarequests/close.html:8
@@ -295,15 +289,14 @@ msgstr "Cadastrar Solicitação de Dados"
 
 #: ckanext/datarequests/templates/datarequests/new.html:16
 msgid ""
-"To create a data request, fill the form and specify a title and a "
-"description for your request. Please, be as clear as you can in order to "
-"ease the task of accomplishing your request. You can also specify an "
+"To create a data request, fill the form and specify a title and a description for your request. Please, be "
+"as clear as you can in order to ease the task of accomplishing your request. You can also specify an "
 "organization if your data request is closely related with it. "
 msgstr ""
-"Para criar uma solicitação de dados, preencha o formulário e especifique um título e uma "
-"descrição para a sua solicitação. Por favor, seja tão claro quanto possível, a fim de "
-"facilitar a realização da sua solicitação. Você também pode especificar uma "
-"organização se a sua solicitação de dados estiver intimamente relacionada com ela. "
+"Para criar uma solicitação de dados, preencha o formulário e especifique um título e uma descrição para a "
+"sua solicitação. Por favor, seja tão claro quanto possível, a fim de facilitar a realização da sua "
+"solicitação. Você também pode especificar uma organização se a sua solicitação de dados estiver "
+"intimamente relacionada com ela. "
 
 #: ckanext/datarequests/templates/datarequests/show.html:15
 msgid "Manage"
@@ -357,13 +350,13 @@ msgstr "Adicionar um novo comentário"
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
 #, python-format
 msgid ""
-"You can use <a href=\"#markdown\" title=\"Markdown quick reference\" data-"
-"target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-html=\"true"
-"\">Markdown formatting</a> here. You can refer datasets by adding their URL."
+"You can use <a href=\"#markdown\" title=\"Markdown quick reference\" data-target=\"popover\" data-content="
+"\"%(markdown_tooltip)s\" data-html=\"true\">Markdown formatting</a> here. You can refer datasets by adding "
+"their URL."
 msgstr ""
-"Você pode utilizar <a href=\"#markdown\" title=\"Referência rápida do Markdown\" data-"
-"target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-html=\"true"
-"\">formatação Markdown</a> aqui. Você pode referenciar um conjunto de dados adicionando a URL para o mesmo."
+"Você pode utilizar <a href=\"#markdown\" title=\"Referência rápida do Markdown\" data-target=\"popover\" "
+"data-content=\"%(markdown_tooltip)s\" data-html=\"true\">formatação Markdown</a> aqui. Você pode "
+"referenciar um conjunto de dados adicionando a URL para o mesmo."
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:28
 msgid "Cancel"
