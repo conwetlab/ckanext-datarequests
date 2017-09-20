@@ -276,8 +276,8 @@ msgstr "Adicionar solicitação de dados"
 #: ckanext/datarequests/templates/datarequests/index.html:12
 #: ckanext/datarequests/templates/organization/datarequests.html:13
 #: ckanext/datarequests/templates/user/datarequests.html:9
-msgid "Pesquisar solicitações de dados..."
-msgstr ""
+msgid "Search Data Requests..."
+msgstr "Pesquisar solicitações de dados..."
 
 #: ckanext/datarequests/templates/datarequests/new.html:3
 #: ckanext/datarequests/templates/datarequests/new.html:7
