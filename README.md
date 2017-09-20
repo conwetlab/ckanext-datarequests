@@ -194,7 +194,7 @@ sudo service apache2 restart
 
 ## Translations
 
-Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German and Portuguese (BR). If you want to contribute with your translation, the first step is to close this repo. Then, create the locale for your translation by executing:
+Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German and Brazilian Portuguese. If you want to contribute with your translation, the first step is to clone this repo and move to the `develop` branch. Then, create the locale for your translation by executing:
 
 ```
 python setup.py init_catalog -l <YOUR_LOCALE>
@@ -224,6 +224,10 @@ python setup.py nosetests
 **Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
 
 ## Changelog
+
+### v0.4.1
+
+* New: Brazilian Portuguese (thanks to @allysonbarros)
 
 ### v0.4.0
 
