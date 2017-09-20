@@ -5,6 +5,11 @@ __pycache__/
 # C extensions
 *.so
 
+### OSX Stuff
+*.DS_Store
+.AppleDouble
+.LSOverride
+
 # Distribution / packaging
 .Python
 env/
