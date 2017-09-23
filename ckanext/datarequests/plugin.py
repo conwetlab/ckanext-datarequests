@@ -82,7 +82,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DELETE_DATAREQUEST: actions.delete_datarequest,
             constants.CLOSE_DATAREQUEST: actions.close_datarequest,
             constants.FOLLOW_DATAREQUEST: actions.follow_datarequest,
-            constants.UNFOLLOW_DATAREQUEST: actions.unfollw_datarequest,
+            constants.UNFOLLOW_DATAREQUEST: actions.unfollow_datarequest,
         }
 
         if self.comments_enabled:
