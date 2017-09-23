@@ -188,6 +188,10 @@ comment_delete_request_data = {
     'id': COMMENT_ID,
 }
 
+follow_data_request_data = {
+    'id': DATAREQUEST_ID
+}
+
 
 ######################################################################
 ########################### LIST_DATAREQUESTS ########################

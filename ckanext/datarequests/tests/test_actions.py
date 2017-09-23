@@ -798,3 +798,96 @@ class ActionsTest(unittest.TestCase):
         self.context['session'].commit.assert_called_once_with()
 
         self._check_comment(comment, result, default_user)
+
+    ######################################################################
+    ######################### FOLLOW DATAREQUEST #########################
+    ######################################################################
+
+    def test_follow_not_authorized(self):
+        self._test_not_authorized(actions.follow_datarequest, constants.FOLLOW_DATAREQUEST, test_data.follow_data_request_data)
+
+    def test_follow_no_id(self):
+        self._test_no_id(actions.follow_datarequest)
+
+    def test_follow_not_found(self):
+        self._test_not_found(actions.follow_datarequest, constants.FOLLOW_DATAREQUEST, test_data.follow_data_request_data)
+
+    def test_follow_already_following(self):
+        # Configure the mock
+        follower = MagicMock()
+        actions.db.DataRequestFollower.get.return_value = [follower]
+
+        with self.assertRaises(self._tk.ValidationError)
+            actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+
+        # Assertions
+        self.context['session'].add.assert_not_called(follower)
+        self.context['session'].commit.assert_not_called()
+
+    def test_follow(self):
+        # Configure the mock
+        current_time = self._datetime.datetime.now()
+        actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        actions.db.DataRequestFollower.get.return_value = []
+
+        # Call the function
+        result = actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+
+        # Assertions
+        follower = actions.db.DataRequestFollower.return_value
+
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.FOLLOW_DATAREQUEST, self.context, test_data.follow_data_request_data)
+        actions.db.DataRequestFollower.assert_called_once()
+
+        self.context['session'].add.assert_called_once_with(follower)
+        self.context['session'].commit.assert_called_once()
+
+        # Check the object stored in the database
+        self.assertEquals(self.context['auth_user_obj'].id, follower.user_id)
+        self.assertEquals(test_data.comment_request_data['datarequest_id'], follower.datarequest_id)
+        self.assertEquals(current_time, follower.time)
+
+        self.assertTrue(result)
+
+    ######################################################################
+    ######################## UNFOLLOW DATAREQUEST ########################
+    ######################################################################
+
+    def test_unfollow_not_authorized(self):
+        self._test_not_authorized(actions.unfollow_datarequest, constants.UNFOLLOW_DATAREQUEST, test_data.follow_data_request_data)
+
+    def test_follow_no_id(self):
+        self._test_no_id(actions.follow_datarequest)
+
+    def test_unfollow_not_found(self):
+        self._test_not_found(actions.unfollow_datarequest, constants.UNFOLLOW_DATAREQUEST, test_data.follow_data_request_data)
+
+    def test_unfollow_not_following(self):
+        # Configure the mock
+        actions.db.DataRequestFollower.get.return_value = []
+
+        with self.assertRaises(self._tk.ValidationError)
+            actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+
+        # Assertions
+        self.context['session'].delete.assert_not_called(follower)
+        self.context['session'].commit.assert_not_called()
+
+    def test_unfollow(self):
+        # Configure the mock
+        follower = MagicMock()
+        actions.db.DataRequestFollower.get.return_value = [follower]
+
+        # Call the function
+        result = actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+
+        # Assertions
+        actions.db.init_db.assert_called_once_with(self.context['model'])
+        actions.tk.check_access.assert_called_once_with(constants.UNFOLLOW_DATAREQUEST, self.context, test_data.follow_data_request_data)
+
+        self.context['session'].delete.assert_called_once_with(follower)
+        self.context['session'].commit.assert_called_once()
+
+        self.assertTrue(result)
+
