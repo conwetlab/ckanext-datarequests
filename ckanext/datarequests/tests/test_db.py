@@ -313,3 +313,41 @@ class DBTest(unittest.TestCase):
         query.filter_by.assert_called_once_with(**params)
         model.Session.query.assert_called_once_with(count)
         db.func.count.assert_called_once_with(db.Comment.id)
+
+    def test_datarequest_follower_get(self):
+        self._test_get('DataRequestFollower')
+
+    def test_get_datarequest_followers_number(self):
+
+        n_followers = 7
+        count = 'example'
+
+        db.func = MagicMock()
+        db.func.count.return_value = count
+
+        filter_by = MagicMock()
+        filter_by.scalar.return_value = n_followers
+
+        query = MagicMock()
+        query.filter_by = MagicMock(return_value=filter_by)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        params = {
+            'datarequest_id': 'example_uuid_v4'
+        }
+        db.DataRequestFollower.id = 'id'
+        result = db.DataRequestFollower.get_datarequest_followers_number(**params)
+
+        # Assertions
+        self.assertEquals(n_followers, result)
+        query.filter_by.assert_called_once_with(**params)
+        model.Session.query.assert_called_once_with(count)
+        db.func.count.assert_called_once_with(db.DataRequestFollower.id)
+
