@@ -15,7 +15,7 @@
         {% endblock %}
         {% block follow_button %}
           <div class="follow_button">
-            {%  h.check_access('follow_datarequest') %}
+            {% if h.check_access('follow_datarequest') %}
               {% if h.is_following_datarequest(datarequest.id) %}
                 <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='unfollow', id=datarequest.id) }}" class="{% block following_class %}btn btn-danger{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="unfollow">
                   <i class="fa fa-times-circle"></i>
