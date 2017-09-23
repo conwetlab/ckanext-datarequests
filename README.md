@@ -252,21 +252,21 @@ python setup.py nosetests
 
 * New: Option to follow data requests.
 * New: Email notifications:
-** An email will be sent to organization staff when a data request is created in a organization.
-** An email will be sent to followers, people that commented, datarequest creator and organization staff when a comment in a datarequest is created.
-** An email will be sent to followers, people that commented and datarequest creator when a data request is closed.
+ * An email will be sent to organization staff when a data request is created in a organization.
+ * An email will be sent to followers, people that commented, datarequest creator and organization staff when a comment in a datarequest is created.
+ * An email will be sent to followers, people that commented and datarequest creator when a data request is closed.
 * New: Major API changes:
-** `datarequest_create` :arrow_right: `create_datarequest`
-** `datarequest_show` :arrow_right: `show_datarequest`
-** `datarequest_update` :arrow_right: `update_datarequest`
-** `datarequest_index` :arrow_right: `list_datarequests`
-** `datarequest_delete` :arrow_right: `delete_datarequest`
-** `datarequest_close` :arrow_right: `close_datarequest`
-** `datarequest_comment` :arrow_right: `comment_datarequest`
-** `datarequest_comment_show` :arrow_right: `show_datarequest_comment`
-** `datarequest_comment_list` :arrow_right: `list_datarequest_comments`
-** `datarequest_comment_update` :arrow_right: `update_datarequest_comment`
-** `datarequest_comment_delete` :arrow_right: `delete_datarequest_comment`
+ * `datarequest_create` :arrow_right: `create_datarequest`
+ * `datarequest_show` :arrow_right: `show_datarequest`
+ * `datarequest_update` :arrow_right: `update_datarequest`
+ * `datarequest_index` :arrow_right: `list_datarequests`
+ * `datarequest_delete` :arrow_right: `delete_datarequest`
+ * `datarequest_close` :arrow_right: `close_datarequest`
+ * `datarequest_comment` :arrow_right: `comment_datarequest`
+ * `datarequest_comment_show` :arrow_right: `show_datarequest_comment`
+ * `datarequest_comment_list` :arrow_right: `list_datarequest_comments`
+ * `datarequest_comment_update` :arrow_right: `update_datarequest_comment`
+ * `datarequest_comment_delete` :arrow_right: `delete_datarequest_comment`
 
 ### v0.4.1
 
