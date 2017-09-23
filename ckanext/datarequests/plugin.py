@@ -181,6 +181,15 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   action='user_datarequests', conditions=dict(method=['GET']),
                   ckan_icon=get_question_icon())
 
+        # Follow & Unfollow
+        m.connect('/%s/follow/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='follow', conditions=dict(method=['POST']))
+
+        m.connect('/%s/unfollow/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='unfollow', conditions=dict(method=['POST']))
+
         if self.comments_enabled:
             # Comment, update and view comments (of) a Data Request
             m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
@@ -205,7 +214,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_comments_badge': helpers.get_comments_badge,
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
-            'get_plus_icon': get_plus_icon
+            'get_plus_icon': get_plus_icon,
+            'is_following_datarequest': helpers.is_following_datarequest
         }
 
     ######################################################################
