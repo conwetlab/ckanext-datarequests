@@ -26,6 +26,7 @@ from sqlalchemy.sql.expression import or_
 
 DataRequest = None
 Comment = None
+DataRequestFollower = None
 
 
 def uuid4():
@@ -36,6 +37,7 @@ def init_db(model):
 
     global DataRequest
     global Comment
+    global DataRequestFollower
 
     if DataRequest is None:
 
@@ -141,3 +143,35 @@ def init_db(model):
         comments_table.create(checkfirst=True)
 
         model.meta.mapper(Comment, comments_table,)
+
+    if DataRequestFollower is None:
+        class _DataRequestFollower(model.DomainObject):
+
+            @classmethod
+            def get(cls, **kw):
+                '''Finds all the instances required.'''
+                query = model.Session.query(cls).autoflush(False)
+                return query.filter_by(**kw).all()
+
+            @classmethod
+            def get_datarequest_followers_number(cls, **kw):
+                '''
+                Returned the number of followers of a data request
+                '''
+                return model.Session.query(func.count(cls.id)).filter_by(**kw).scalar()
+
+        DataRequestFollower = _DataRequestFollower
+
+        # FIXME: References to the other tables...
+        followers_table = sa.Table('datarequests_followers', model.meta.metadata,
+            sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+            sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
+            sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+            sa.Column('time', sa.types.DateTime, primary_key=True, default=u'')
+        )
+
+        # Create the table only if it does not exist
+        followers_table.create(checkfirst=True)
+
+        model.meta.mapper(DataRequestFollower, followers_table,)
+

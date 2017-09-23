@@ -80,7 +80,9 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_UPDATE: actions.datarequest_update,
             constants.DATAREQUEST_INDEX: actions.datarequest_index,
             constants.DATAREQUEST_DELETE: actions.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: actions.datarequest_close
+            constants.DATAREQUEST_CLOSE: actions.datarequest_close,
+            constants.DATAREQUEST_FOLLOW: actions.datarequest_follow,
+            constants.DATAREQUEST_UNFOLLOW: actions.datarequest_unfollow,
         }
 
         if self.comments_enabled:
@@ -104,6 +106,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.DATAREQUEST_INDEX: auth.datarequest_index,
             constants.DATAREQUEST_DELETE: auth.datarequest_delete,
             constants.DATAREQUEST_CLOSE: auth.datarequest_close,
+            constants.DATAREQUEST_FOLLOW: auth.datarequest_follow,
+            constants.DATAREQUEST_UNFOLLOW: auth.datarequest_unfollow,
         }
 
         if self.comments_enabled:
