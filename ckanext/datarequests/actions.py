@@ -83,7 +83,8 @@ def _dictize_datarequest(datarequest):
         'closed': datarequest.closed,
         'user': _get_user(datarequest.user_id),
         'organization': None,
-        'accepted_dataset': None
+        'accepted_dataset': None,
+        'followers': 0
     }
 
     if datarequest.organization_id:
@@ -91,6 +92,9 @@ def _dictize_datarequest(datarequest):
 
     if datarequest.accepted_dataset_id:
         data_dict['accepted_dataset'] = _get_package(datarequest.accepted_dataset_id)
+
+    data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
+        datarequest_id=datarequest.id)
 
     return data_dict
 
@@ -722,7 +726,7 @@ def datarequest_comment_delete(context, data_dict):
     # Check access
     tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
 
-    # Get the data request
+    # Get the comment
     result = db.Comment.get(id=comment_id)
     if not result:
         raise tk.ObjectNotFound(tk._('Comment %s not found in the data base') % comment_id)
@@ -733,3 +737,105 @@ def datarequest_comment_delete(context, data_dict):
     session.commit()
 
     return _dictize_comment(comment)
+
+def datarequest_follow(context, data_dict):
+    '''
+    Action to follow a data request. Access rights will be cheked before 
+    following a datarequest and a NotAuthorized exception will be risen if the
+    user is not allowed to follow the given datarequest.
+
+    :param id: The ID of the datarequest to be followed
+    :type id: string
+
+    :returns: True
+    :rtype: bool
+    '''
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict.get('id', '')
+
+    if not datarequest_id:
+        raise tk.ValidationError([tk._('Data Request ID has not been included')])
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_FOLLOW, context, data_dict)
+
+    # Get the data request
+    result = db.DataRequest.get(id=datarequest_id)
+    if not result:
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
+
+    # Is already following?
+    user_id = context['auth_user_obj'].id
+    result = db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=user_id)
+    if result:
+        raise tk.ValidationError([tk._('The user is already following the given Data Request')])
+
+    # Store the data
+    follower = db.DataRequestFollower()
+    follower.datarequest_id = datarequest_id
+    follower.user_id = user_id
+    follower.time = datetime.datetime.now()
+
+    session.add(follower)
+    session.commit()
+
+    return True
+
+def datarequest_unfollow(context, data_dict):
+    '''
+    Action to unfollow a data request. Access rights will be cheked before 
+    unfollowing a datarequest and a NotAuthorized exception will be risen if
+    the user is not allowed to unfollow the given datarequest.
+
+    :param id: The ID of the datarequest to be unfollowed
+    :type id: string
+
+    :returns: True
+    :rtype: bool
+    '''
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict.get('id', '')
+
+    if not datarequest_id:
+        raise tk.ValidationError([tk._('Data Request ID has not been included')])
+
+    # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.DATAREQUEST_UNFOLLOW, context, data_dict)
+
+    # Get the data request
+    result = db.DataRequest.get(id=datarequest_id)
+    if not result:
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
+
+    # Is already following?
+    user_id = context['auth_user_obj'].id
+    result = db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=user_id)
+    if not result:
+        raise tk.ValidationError([tk._('The user is not following the given Data Request')])
+
+    follower = result[0]
+
+    session.delete(follower)
+    session.commit()
+
+    return True
+
+
+
+
+
+
+
+
+
+
