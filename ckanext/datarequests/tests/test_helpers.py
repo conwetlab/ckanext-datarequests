@@ -43,7 +43,7 @@ class HelpersTest(unittest.TestCase):
     def test_get_comments_number(self):
         # Mocking
         n_comments = 3
-        helpers.db.Comment.get_datarequest_comments_number.return_value = n_comments
+        helpers.db.Comment.get_comment_datarequests_number.return_value = n_comments
 
         # Call the function
         datarequest_id = 'example_uuidv4'
@@ -51,13 +51,13 @@ class HelpersTest(unittest.TestCase):
 
         # Assertions
         helpers.db.init_db.assert_called_once_with(helpers.model)
-        helpers.db.Comment.get_datarequest_comments_number.assert_called_once_with(datarequest_id=datarequest_id)
+        helpers.db.Comment.get_comment_datarequests_number.assert_called_once_with(datarequest_id=datarequest_id)
         self.assertEquals(result, n_comments)
 
     def test_get_comments_badge(self):
         # Mocking
         n_comments = 3
-        helpers.db.Comment.get_datarequest_comments_number.return_value = n_comments
+        helpers.db.Comment.get_comment_datarequests_number.return_value = n_comments
 
         # Call the function
         datarequest_id = 'example_uuidv4'
@@ -65,7 +65,7 @@ class HelpersTest(unittest.TestCase):
 
         # Assertions
         helpers.db.init_db.assert_called_once_with(helpers.model)
-        helpers.db.Comment.get_datarequest_comments_number.assert_called_once_with(datarequest_id=datarequest_id)
+        helpers.db.Comment.get_comment_datarequests_number.assert_called_once_with(datarequest_id=datarequest_id)
         self.assertEquals(result, helpers.tk.render_snippet.return_value)
         helpers.tk.render_snippet.assert_called_once_with('datarequests/snippets/badge.html',
                                                           {'comments_count': n_comments})

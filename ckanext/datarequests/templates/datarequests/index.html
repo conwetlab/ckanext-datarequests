@@ -4,7 +4,7 @@
   <section class="module">
     <div class="module-content">
       {% block page_primary_action %}
-        {% if h.check_access('datarequest_create') %}
+        {% if h.check_access('create_datarequest') %}
           <div class="page_primary_action">
             {% link_for _('Add Data Request'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='new', class_='btn btn-primary', icon=h.get_plus_icon() %}
           </div>

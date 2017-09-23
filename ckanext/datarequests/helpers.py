@@ -21,11 +21,13 @@ import ckan.model as model
 import ckan.plugins.toolkit as tk
 import db
 
+from ckan.common import c
+
 
 def get_comments_number(datarequest_id):
     # DB should be intialized
     db.init_db(model)
-    return db.Comment.get_datarequest_comments_number(datarequest_id=datarequest_id)
+    return db.Comment.get_comment_datarequests_number(datarequest_id=datarequest_id)
 
 
 def get_comments_badge(datarequest_id):
@@ -37,6 +39,11 @@ def get_open_datarequests_number():
     # DB should be initialized
     db.init_db(model)
     return db.DataRequest.get_open_datarequests_number()
+
+def is_following_datarequest(datarequest_id):
+    # DB should be intialized
+    db.init_db(model)
+    return len(db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=c.userobj.id)) > 0
 
 
 def get_open_datarequests_badge(show_badge):

@@ -156,8 +156,8 @@ class ValidatorTest(unittest.TestCase):
         self.assertEquals({field: [message]}, c.exception.error_dict)
 
     def test_comment_invalid_datarequest(self):
-        datarequest_show = validator.tk.get_action.return_value
-        datarequest_show.side_effect = self._tk.ObjectNotFound('Store Not found')
+        show_datarequest = validator.tk.get_action.return_value
+        show_datarequest.side_effect = self._tk.ObjectNotFound('Store Not found')
 
         self.test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
                                   'Data Request not found')

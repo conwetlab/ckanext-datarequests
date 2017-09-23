@@ -75,20 +75,22 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def get_actions(self):
         additional_actions = {
-            constants.DATAREQUEST_CREATE: actions.datarequest_create,
-            constants.DATAREQUEST_SHOW: actions.datarequest_show,
-            constants.DATAREQUEST_UPDATE: actions.datarequest_update,
-            constants.DATAREQUEST_INDEX: actions.datarequest_index,
-            constants.DATAREQUEST_DELETE: actions.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: actions.datarequest_close
+            constants.CREATE_DATAREQUEST: actions.create_datarequest,
+            constants.SHOW_DATAREQUEST: actions.show_datarequest,
+            constants.UPDATE_DATAREQUEST: actions.update_datarequest,
+            constants.LIST_DATAREQUESTS: actions.list_datarequests,
+            constants.DELETE_DATAREQUEST: actions.delete_datarequest,
+            constants.CLOSE_DATAREQUEST: actions.close_datarequest,
+            constants.FOLLOW_DATAREQUEST: actions.datarequest_follow,
+            constants.UNFOLLOW_DATAREQUEST: actions.datarequest_unfollow,
         }
 
         if self.comments_enabled:
-            additional_actions[constants.DATAREQUEST_COMMENT] = actions.datarequest_comment
-            additional_actions[constants.DATAREQUEST_COMMENT_LIST] = actions.datarequest_comment_list
-            additional_actions[constants.DATAREQUEST_COMMENT_SHOW] = actions.datarequest_comment_show
-            additional_actions[constants.DATAREQUEST_COMMENT_UPDATE] = actions.datarequest_comment_update
-            additional_actions[constants.DATAREQUEST_COMMENT_DELETE] = actions.datarequest_comment_delete
+            additional_actions[constants.COMMENT_DATAREQUEST] = actions.comment_datarequest
+            additional_actions[constants.LIST_DATAREQUEST_COMMENTS] = actions.list_datarequest_comments
+            additional_actions[constants.SHOW_DATAREQUEST_COMMENT] = actions.show_datarequest_comment
+            additional_actions[constants.UPDATE_DATAREQUEST_COMMENT] = actions.update_datarequest_comment
+            additional_actions[constants.DELETE_DATAREQUEST_COMMENT] = actions.delete_datarequest_comment
 
         return additional_actions
 
@@ -98,20 +100,22 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def get_auth_functions(self):
         auth_functions = {
-            constants.DATAREQUEST_CREATE: auth.datarequest_create,
-            constants.DATAREQUEST_SHOW: auth.datarequest_show,
-            constants.DATAREQUEST_UPDATE: auth.datarequest_update,
-            constants.DATAREQUEST_INDEX: auth.datarequest_index,
-            constants.DATAREQUEST_DELETE: auth.datarequest_delete,
-            constants.DATAREQUEST_CLOSE: auth.datarequest_close,
+            constants.CREATE_DATAREQUEST: auth.create_datarequest,
+            constants.SHOW_DATAREQUEST: auth.show_datarequest,
+            constants.UPDATE_DATAREQUEST: auth.update_datarequest,
+            constants.LIST_DATAREQUESTS: auth.list_datarequests,
+            constants.DELETE_DATAREQUEST: auth.delete_datarequest,
+            constants.CLOSE_DATAREQUEST: auth.close_datarequest,
+            constants.FOLLOW_DATAREQUEST: auth.datarequest_follow,
+            constants.UNFOLLOW_DATAREQUEST: auth.datarequest_unfollow,
         }
 
         if self.comments_enabled:
-            auth_functions[constants.DATAREQUEST_COMMENT] = auth.datarequest_comment
-            auth_functions[constants.DATAREQUEST_COMMENT_LIST] = auth.datarequest_comment_list
-            auth_functions[constants.DATAREQUEST_COMMENT_SHOW] = auth.datarequest_comment_show
-            auth_functions[constants.DATAREQUEST_COMMENT_UPDATE] = auth.datarequest_comment_update
-            auth_functions[constants.DATAREQUEST_COMMENT_DELETE] = auth.datarequest_comment_delete
+            auth_functions[constants.COMMENT_DATAREQUEST] = auth.comment_datarequest
+            auth_functions[constants.LIST_DATAREQUEST_COMMENTS] = auth.list_datarequest_comments
+            auth_functions[constants.SHOW_DATAREQUEST_COMMENT] = auth.show_datarequest_comment
+            auth_functions[constants.UPDATE_DATAREQUEST_COMMENT] = auth.update_datarequest_comment
+            auth_functions[constants.DELETE_DATAREQUEST_COMMENT] = auth.delete_datarequest_comment
 
         return auth_functions
 
@@ -146,7 +150,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   action='new', conditions=dict(method=['GET', 'POST']))
 
         # Show a Data Request
-        m.connect('datarequest_show', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+        m.connect('show_datarequest', '/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='show', conditions=dict(method=['GET']), ckan_icon=get_question_icon())
 
@@ -177,9 +181,18 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   action='user_datarequests', conditions=dict(method=['GET']),
                   ckan_icon=get_question_icon())
 
+        # Follow & Unfollow
+        m.connect('/%s/follow/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='follow', conditions=dict(method=['POST']))
+
+        m.connect('/%s/unfollow/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='unfollow', conditions=dict(method=['POST']))
+
         if self.comments_enabled:
             # Comment, update and view comments (of) a Data Request
-            m.connect('datarequest_comment', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+            m.connect('comment_datarequest', '/%s/comment/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                       controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                       action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
 
@@ -201,7 +214,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_comments_badge': helpers.get_comments_badge,
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
-            'get_plus_icon': get_plus_icon
+            'get_plus_icon': get_plus_icon,
+            'is_following_datarequest': helpers.is_following_datarequest
         }
 
     ######################################################################
