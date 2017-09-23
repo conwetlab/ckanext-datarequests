@@ -20,25 +20,30 @@
 import ckanext.datarequests.helpers as helpers
 import unittest
 
-from mock import MagicMock
+from mock import MagicMock, patch
 
 
 class HelpersTest(unittest.TestCase):
 
     def setUp(self):
-        self._tk = helpers.tk
-        helpers.tk = MagicMock()
+        self.tk_patch = patch('ckanext.datarequests.helpers.tk')
+        self.tk_patch.start()
 
-        self._model = helpers.model
-        helpers.model = MagicMock()
+        self.model_patch = patch('ckanext.datarequests.helpers.model')
+        self.model_patch.start()
 
-        self._db = helpers.db
-        helpers.db = MagicMock()
+        self.db_patch = patch('ckanext.datarequests.helpers.db')
+        self.db_patch.start()
+
+        self.c_patch = patch('ckanext.datarequests.helpers.c')
+        self.c_patch.start()
+
 
     def tearDown(self):
-        helpers.tk = self._tk
-        helpers.model = self._model
-        helpers.db = self._db
+        self.tk_patch.stop()
+        self.model_patch.stop()
+        self.db_patch.stop()
+        self.c_patch.stop()
 
     def test_get_comments_number(self):
         # Mocking
@@ -100,3 +105,20 @@ class HelpersTest(unittest.TestCase):
 
     def test_get_open_datarequests_badge_false(self):
         self.assertEquals(helpers.get_open_datarequests_badge(False), '')
+
+    def test_is_following_datarequest_true(self):
+        follower = MagicMock()
+        datarequest_id = 'example_id'
+        helpers.db.DataRequestFollower.get.return_value = [follower]
+
+        self.assertTrue(helpers.is_following_datarequest(datarequest_id))
+
+        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=c.userobj.id)
+
+    def test_is_following_datarequest_false(self):
+        datarequest_id = 'example_id'
+        helpers.db.DataRequestFollower.get.return_value = []
+
+        self.assertFalse(helpers.is_following_datarequest(datarequest_id))
+
+        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=c.userobj.id)
