@@ -157,7 +157,7 @@ A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` 
 
 ## Installation
 
-Install this extension in your CKAN instance is as easy as intall any other CKAN extension.
+Install this extension in your CKAN instance is as easy as install any other CKAN extension.
 
 * Activate your virtual environment
 ```
@@ -222,6 +222,8 @@ This sofware contains a set of test to detect errors and failures. You can run t
 python setup.py nosetests
 ```
 **Note:** The `test.ini` file contains a link to the CKAN `test-core.ini` file. You will need to change that link to the real path of the file in your system (generally `/usr/lib/ckan/default/src/ckan/test-core.ini`).
+
+**Note 2:** When creating a PR that includes code changes, please, ensure your new code is tested. No PR will be merged until the Travis CI system marks it as valid.
 
 ## Changelog
 
