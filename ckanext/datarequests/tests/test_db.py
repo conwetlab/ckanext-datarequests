@@ -152,21 +152,24 @@ class DBTest(unittest.TestCase):
 
         table_data_request = MagicMock()
         table_comment = MagicMock()
+        table_datarequest_follower = MagicMock()
 
-        db.sa.Table = MagicMock(side_effect=[table_data_request, table_comment])
+        db.sa.Table = MagicMock(side_effect=[table_data_request, table_comment, table_datarequest_follower])
 
         # Call the function
         model = MagicMock()
         db.init_db(model)
 
         # Assert that table method has been called
-        self.assertEquals(2, db.sa.Table.call_count)
+        self.assertEquals(3, db.sa.Table.call_count)
         model.meta.mapper.assert_any_call(db.DataRequest, table_data_request)
         model.meta.mapper.assert_any_call(db.Comment, table_comment)
+        model.meta.mapper.assert_any_call(db.DataRequestFollower, table_datarequest_follower)
 
     def test_initdb_initialized(self):
         db.DataRequest = MagicMock()
         db.Comment = MagicMock()
+        db.DataRequestFollower = MagicMock()
 
         # Call the function
         model = MagicMock()
