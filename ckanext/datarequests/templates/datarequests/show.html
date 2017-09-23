@@ -30,9 +30,9 @@
 {% endblock %}
 
 {% block secondary_content %}
-  {{ super() }}
-
   {% snippet "datarequests/snippets/followers.html", datarequest=c.datarequest %}
+
+  {{ super() }}
 
   {% block package_social %}
     {% snippet "snippets/social.html" %}
