@@ -43,7 +43,7 @@ def get_open_datarequests_number():
 def is_following_datarequest(datarequest_id):
     # DB should be intialized
     db.init_db(model)
-    return db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=c.userobj.id) is not None
+    return len(db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=c.userobj.id)) > 0
 
 
 def get_open_datarequests_badge(show_badge):
