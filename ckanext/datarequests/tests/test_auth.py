@@ -45,6 +45,9 @@ request_data_comment = {
     'comment': 'This is an example comment'
 }
 
+request_follow = {
+       'datarequest_id': 'example_uuid_v4', 
+}
 
 class AuthTest(unittest.TestCase):
 
@@ -78,8 +81,17 @@ class AuthTest(unittest.TestCase):
         (auth.show_datarequest_comment,   context, None),
         (auth.show_datarequest_comment,   None,    request_data_comment),
         (auth.show_datarequest_comment,   context, request_data_comment),
-        (auth.list_datarequest_comments,   None,    request_data_comment),
-        (auth.list_datarequest_comments,   context, request_data_comment)
+        (auth.list_datarequest_comments,  None,    request_data_comment),
+        (auth.list_datarequest_comments,  context, request_data_comment),
+        # Follow/Unfollow
+        (auth.follow_datarequest,   None,    None),
+        (auth.follow_datarequest,   context, None),
+        (auth.follow_datarequest,   None,    request_follow),
+        (auth.follow_datarequest,   context, request_follow),
+        (auth.unfollow_datarequest, None,    None),
+        (auth.unfollow_datarequest, context, None),
+        (auth.unfollow_datarequest, None,    request_follow),
+        (auth.unfollow_datarequest, context, request_follow),
     ])
     def test_everyone_can_create_show_and_index(self, function, context, request_data):
         self.assertTrue(function(context, request_data).get('success', False))
