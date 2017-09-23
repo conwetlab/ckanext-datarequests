@@ -13,6 +13,22 @@
             </dl>
           </div>
         {% endblock %}
+        {% block follow_button %}
+          <div class="follow_button">
+            {% if following %}
+              <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='unfollow', id=datarequest.id) }}" class="{% block following_class %}btn btn-danger{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="unfollow">
+                <i class="fa fa-times-circle"></i>
+                {{ _('Unfollow') }}
+              </a>
+            {% else %}
+              <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='follow', id=datarequest.id) }}" class="{% block unfollowing_class %}btn btn-success{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="follow">
+                <i class="fa fa-plus-circle"></i>
+                {{ _('Follow') }}
+              </a>
+            {% endif %}
+          </div>
+        {% endblock %}
+
       </div>
     </div>
   </section>

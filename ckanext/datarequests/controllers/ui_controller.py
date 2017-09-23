@@ -417,3 +417,9 @@ class DataRequestsUI(base.BaseController):
         except tk.NotAuthorized as e:
             log.warn(e)
             tk.abort(403, tk._('You are not authorized to delete this comment'))
+
+    def follow(self, datarequest_id):
+        tk.abort(404, tk._('To be implemented') % comment_id)
+
+    def unfollow(self, datarequest_id):
+        tk.abort(404, tk._('To be implemented') % comment_id)
