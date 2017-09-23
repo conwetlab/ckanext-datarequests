@@ -36,8 +36,7 @@ class HelpersTest(unittest.TestCase):
         self.db_patch.start()
 
         self.c_patch = patch('ckanext.datarequests.helpers.c')
-        self.c_patch.start()
-
+        self.c = self.c_patch.start()
 
     def tearDown(self):
         self.tk_patch.stop()
@@ -113,7 +112,7 @@ class HelpersTest(unittest.TestCase):
 
         self.assertTrue(helpers.is_following_datarequest(datarequest_id))
 
-        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=c.userobj.id)
+        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=self.c.userobj.id)
 
     def test_is_following_datarequest_false(self):
         datarequest_id = 'example_id'
@@ -121,4 +120,4 @@ class HelpersTest(unittest.TestCase):
 
         self.assertFalse(helpers.is_following_datarequest(datarequest_id))
 
-        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=c.userobj.id)
+        helpers.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id, user_id=self.c.userobj.id)

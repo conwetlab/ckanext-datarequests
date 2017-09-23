@@ -817,7 +817,7 @@ class ActionsTest(unittest.TestCase):
         follower = MagicMock()
         actions.db.DataRequestFollower.get.return_value = [follower]
 
-        with self.assertRaises(self._tk.ValidationError)
+        with self.assertRaises(self._tk.ValidationError):
             actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
 
         # Assertions
@@ -867,7 +867,7 @@ class ActionsTest(unittest.TestCase):
         # Configure the mock
         actions.db.DataRequestFollower.get.return_value = []
 
-        with self.assertRaises(self._tk.ValidationError)
+        with self.assertRaises(self._tk.ValidationError):
             actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
 
         # Assertions
