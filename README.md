@@ -36,7 +36,7 @@ In addition, you should note that the parameters will be checked and an exceptio
 * **`organization_id`** (string): The ID of the organization you want to asign the data request (optional).
 
 ##### Returns:
-A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
 
 #### `show_datarequest(context, data_dict)`
@@ -48,7 +48,7 @@ Access rights will be checked before returning the information and an exception 
 * **`id`** (string): the ID of the datarequest to be returned.
 
 ##### Returns:
-A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
 
 #### `update_datarequest(context, data_dict)`
@@ -63,7 +63,7 @@ In addition, you should note that the parameters will be checked and an exceptio
 * **`organization_id`** (string): The ID of the organization you want to asign the data request (optional).
 
 ##### Returns:
-A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
 
 #### `list_datarequests(context, data_dict)`
@@ -89,7 +89,7 @@ Action to delete a new data request. The function checks the access rights of th
 * **`id`** (string): the ID of the datarequest to be deleted
 
 ##### Returns:
-A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
 
 #### `close_datarequest(context, data_dict)`
@@ -100,7 +100,7 @@ Action to close a data request. Access rights will be checked before closing the
 * **`accepted_dataset`** (string): The ID of the dataset accepted as solution for the data request
 
 ##### Returns:
-A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
+A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
 
 #### `comment_datarequest(context, data_dict)`
@@ -154,6 +154,27 @@ Action to delete a comment of a data request. Access rights will be checked befo
 
 ##### Returns:
 A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
+
+#### `follow_datarequest(context, data_dict)`
+
+Action to follow a data request. Access rights will be cheked before following a datarequest and a `NotAuthorized` exception will be risen if the user is not allowed to follow the given datarequest. `ValidationError` will be risen if the datarequest ID is not included or if the user is already following the datarequest. `ObjectNotFound` will be risen if the given datarequest does not exist.
+
+##### Parameters (included in `data_dict`):
+* **`id`** (string): The ID of the datarequest to be followed
+
+##### Returns:
+`True`
+
+#### `unfollow_datarequest(context, data_dict)`
+
+Action to unfollow a data request. Access rights will be cheked before unfollowing a datarequest and a NotAuthorized exception will be risen if the user is not allowed to unfollow the given datarequest. `ValidationError` will be risen if the datarequest ID is not included in the request. `ObjectNotFound` will be risen if the user is not following the given datarequest.
+
+##### Parameters (included in `data_dict`):
+* **`id`** (string): The ID of the datarequest to be unfollowed
+
+##### Returns:
+`True`
+
 
 ## Installation
 
@@ -226,6 +247,26 @@ python setup.py nosetests
 **Note 2:** When creating a PR that includes code changes, please, ensure your new code is tested. No PR will be merged until the Travis CI system marks it as valid.
 
 ## Changelog
+
+### v1.0.0
+
+* New: Option to follow data requests.
+* New: Email notifications:
+** An email will be sent to organization staff when a data request is created in a organization.
+** An email will be sent to followers, people that commented, datarequest creator and organization staff when a comment in a datarequest is created.
+** An email will be sent to followers, people that commented and datarequest creator when a data request is closed.
+* New: Major API changes:
+** `datarequest_create` :arrow_right: `create_datarequest`
+** `datarequest_show` :arrow_right: `show_datarequest`
+** `datarequest_update` :arrow_right: `update_datarequest`
+** `datarequest_index` :arrow_right: `list_datarequests`
+** `datarequest_delete` :arrow_right: `delete_datarequest`
+** `datarequest_close` :arrow_right: `close_datarequest`
+** `datarequest_comment` :arrow_right: `comment_datarequest`
+** `datarequest_comment_show` :arrow_right: `show_datarequest_comment`
+** `datarequest_comment_list` :arrow_right: `list_datarequest_comments`
+** `datarequest_comment_update` :arrow_right: `update_datarequest_comment`
+** `datarequest_comment_delete` :arrow_right: `delete_datarequest_comment`
 
 ### v0.4.1
 
