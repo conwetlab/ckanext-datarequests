@@ -123,7 +123,7 @@ def _undictize_comment_basic(comment, data_dict):
     comment.datarequest_id = data_dict.get('datarequest_id', '')
 
 
-def datarequest_create(context, data_dict):
+def create_datarequest(context, data_dict):
     '''
     Action to create a new data request. The function checks the access rights
     of the user before creating the data request. If the user is not allowed
@@ -155,7 +155,7 @@ def datarequest_create(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_CREATE, context, data_dict)
+    tk.check_access(constants.CREATE_DATAREQUEST, context, data_dict)
 
     # Validate data
     validator.validate_datarequest(context, data_dict)
@@ -172,7 +172,7 @@ def datarequest_create(context, data_dict):
     return _dictize_datarequest(data_req)
 
 
-def datarequest_show(context, data_dict):
+def show_datarequest(context, data_dict):
     '''
     Action to retrieve the information of a data request. The only required
     parameter is the id of the data request. A NotFound exception will be
@@ -199,7 +199,7 @@ def datarequest_show(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_SHOW, context, data_dict)
+    tk.check_access(constants.SHOW_DATAREQUEST, context, data_dict)
 
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
@@ -212,7 +212,7 @@ def datarequest_show(context, data_dict):
     return data_dict
 
 
-def datarequest_update(context, data_dict):
+def update_datarequest(context, data_dict):
     '''
     Action to update a data request. The function checks the access rights of
     the user before updating the data request. If the user is not allowed
@@ -251,7 +251,7 @@ def datarequest_update(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
+    tk.check_access(constants.UPDATE_DATAREQUEST, context, data_dict)
 
     # Get the initial data
     result = db.DataRequest.get(id=datarequest_id)
@@ -275,7 +275,7 @@ def datarequest_update(context, data_dict):
     return _dictize_datarequest(data_req)
 
 
-def datarequest_index(context, data_dict):
+def list_datarequests(context, data_dict):
     '''
     Returns a list with the existing data requests. Rights access will be
     checked before returning the results. If the user is not allowed, a
@@ -325,7 +325,7 @@ def datarequest_index(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
+    tk.check_access(constants.LIST_DATAREQUESTS, context, data_dict)
 
     # Get the organization
     organization_id = data_dict.get('organization_id', None)
@@ -416,7 +416,7 @@ def datarequest_index(context, data_dict):
     return result
 
 
-def datarequest_delete(context, data_dict):
+def delete_datarequest(context, data_dict):
     '''
     Action to delete a new data request. The function checks the access rights
     of the user before deleting the data request. If the user is not allowed
@@ -442,7 +442,7 @@ def datarequest_delete(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
+    tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
 
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
@@ -456,7 +456,7 @@ def datarequest_delete(context, data_dict):
     return _dictize_datarequest(data_req)
 
 
-def datarequest_close(context, data_dict):
+def close_datarequest(context, data_dict):
     '''
     Action to close a data request. Access rights will be checked before
     closing the data request. If the user is not allowed, a NotAuthorized
@@ -487,7 +487,7 @@ def datarequest_close(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_CLOSE, context, data_dict)
+    tk.check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
 
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
@@ -513,7 +513,7 @@ def datarequest_close(context, data_dict):
     return _dictize_datarequest(data_req)
 
 
-def datarequest_comment(context, data_dict):
+def comment_datarequest(context, data_dict):
     '''
     Action to create a comment in a data request. Access rights will be checked
     before creating the comment and a NotAuthorized exception will be risen if
@@ -543,7 +543,7 @@ def datarequest_comment(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_COMMENT, context, data_dict)
+    tk.check_access(constants.COMMENT_DATAREQUEST, context, data_dict)
 
     # Validate comment
     validator.validate_comment(context, data_dict)
@@ -560,7 +560,7 @@ def datarequest_comment(context, data_dict):
     return _dictize_comment(comment)
 
 
-def datarequest_comment_show(context, data_dict):
+def show_datarequest_comment(context, data_dict):
     '''
     Action to retrieve a comment. Access rights will be checked before getting
     the comment and a NotAuthorized exception will be risen if the user is not
@@ -585,7 +585,7 @@ def datarequest_comment_show(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_COMMENT_SHOW, context, data_dict)
+    tk.check_access(constants.SHOW_DATAREQUEST_COMMENT, context, data_dict)
 
     # Get comments
     result = db.Comment.get(id=comment_id)
@@ -595,7 +595,7 @@ def datarequest_comment_show(context, data_dict):
     return _dictize_comment(result[0])
 
 
-def datarequest_comment_list(context, data_dict):
+def list_datarequest_comments(context, data_dict):
     '''
     Action to retrieve all the comments of a data request. Access rights will
     be checked before getting the comments and a NotAuthorized exception will
@@ -638,7 +638,7 @@ def datarequest_comment_list(context, data_dict):
         desc = True
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict)
+    tk.check_access(constants.LIST_DATAREQUEST_COMMENTS, context, data_dict)
 
     # Get comments
     comments_db = db.Comment.get_ordered_by_date(datarequest_id=datarequest_id, desc=desc)
@@ -650,7 +650,7 @@ def datarequest_comment_list(context, data_dict):
     return comments_list
 
 
-def datarequest_comment_update(context, data_dict):
+def update_datarequest_comment(context, data_dict):
     '''
     Action to update a comment of a data request. Access rights will be checked
     before updating the comment and a NotAuthorized exception will be risen if
@@ -678,7 +678,7 @@ def datarequest_comment_update(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_COMMENT_UPDATE, context, data_dict)
+    tk.check_access(constants.UPDATE_DATAREQUEST_COMMENT, context, data_dict)
 
     # Get the data request
     result = db.Comment.get(id=comment_id)
@@ -699,7 +699,7 @@ def datarequest_comment_update(context, data_dict):
     return _dictize_comment(comment)
 
 
-def datarequest_comment_delete(context, data_dict):
+def delete_datarequest_comment(context, data_dict):
     '''
     Action to delete a comment of a data request. Access rights will be checked
     before deleting the comment and a NotAuthorized exception will be risen if
@@ -724,7 +724,7 @@ def datarequest_comment_delete(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
+    tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
 
     # Get the comment
     result = db.Comment.get(id=comment_id)
@@ -762,7 +762,7 @@ def datarequest_follow(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_FOLLOW, context, data_dict)
+    tk.check_access(constants.FOLLOW_DATAREQUEST, context, data_dict)
 
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)
@@ -810,7 +810,7 @@ def datarequest_unfollow(context, data_dict):
     db.init_db(model)
 
     # Check access
-    tk.check_access(constants.DATAREQUEST_UNFOLLOW, context, data_dict)
+    tk.check_access(constants.UNFOLLOW_DATAREQUEST, context, data_dict)
 
     # Get the data request
     result = db.DataRequest.get(id=datarequest_id)

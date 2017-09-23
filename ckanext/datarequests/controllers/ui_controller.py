@@ -123,8 +123,8 @@ class DataRequestsUI(base.BaseController):
             if sort is not None:
                 data_dict['sort'] = sort
 
-            tk.check_access(constants.DATAREQUEST_INDEX, context, data_dict)
-            datarequests_list = tk.get_action(constants.DATAREQUEST_INDEX)(context, data_dict)
+            tk.check_access(constants.LIST_DATAREQUESTS, context, data_dict)
+            datarequests_list = tk.get_action(constants.LIST_DATAREQUESTS)(context, data_dict)
 
             c.filters = [(tk._('Newest'), 'desc'), (tk._('Oldest'), 'asc')]
             c.sort = sort
@@ -169,7 +169,7 @@ class DataRequestsUI(base.BaseController):
             data_dict['description'] = request.POST.get('description', '')
             data_dict['organization_id'] = request.POST.get('organization_id', '')
 
-            if action == constants.DATAREQUEST_UPDATE:
+            if action == constants.UPDATE_DATAREQUEST:
                 data_dict['id'] = request.POST.get('id', '')
 
             try:
@@ -198,8 +198,8 @@ class DataRequestsUI(base.BaseController):
 
         # Check access
         try:
-            tk.check_access(constants.DATAREQUEST_CREATE, context, None)
-            self._process_post(constants.DATAREQUEST_CREATE, context)
+            tk.check_access(constants.CREATE_DATAREQUEST, context, None)
+            self._process_post(constants.CREATE_DATAREQUEST, context)
 
             # The form is always rendered
             return tk.render('datarequests/new.html')
@@ -213,8 +213,8 @@ class DataRequestsUI(base.BaseController):
         context = self._get_context()
 
         try:
-            tk.check_access(constants.DATAREQUEST_SHOW, context, data_dict)
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+            tk.check_access(constants.SHOW_DATAREQUEST, context, data_dict)
+            c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
 
             context_ignore_auth = context.copy()
             context_ignore_auth['ignore_auth'] = True
@@ -237,10 +237,10 @@ class DataRequestsUI(base.BaseController):
         c.errors_summary = {}
 
         try:
-            tk.check_access(constants.DATAREQUEST_UPDATE, context, data_dict)
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+            tk.check_access(constants.UPDATE_DATAREQUEST, context, data_dict)
+            c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
             c.original_title = c.datarequest.get('title')
-            self._process_post(constants.DATAREQUEST_UPDATE, context)
+            self._process_post(constants.UPDATE_DATAREQUEST, context)
             return tk.render('datarequests/edit.html')
         except tk.ObjectNotFound as e:
             log.warn(e)
@@ -255,8 +255,8 @@ class DataRequestsUI(base.BaseController):
         context = self._get_context()
 
         try:
-            tk.check_access(constants.DATAREQUEST_DELETE, context, data_dict)
-            datarequest = tk.get_action(constants.DATAREQUEST_DELETE)(context, data_dict)
+            tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
+            datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
             helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
             tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
         except tk.ObjectNotFound as e:
@@ -308,8 +308,8 @@ class DataRequestsUI(base.BaseController):
             return tk.render('datarequests/close.html')
 
         try:
-            tk.check_access(constants.DATAREQUEST_CLOSE, context, data_dict)
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict)
+            tk.check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
+            c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
 
             if c.datarequest.get('closed', False):
                 tk.abort(403, tk._('This data request is already closed'))
@@ -318,7 +318,7 @@ class DataRequestsUI(base.BaseController):
                 data_dict['accepted_dataset_id'] = request.POST.get('accepted_dataset_id', None)
                 data_dict['id'] = id
 
-                tk.get_action(constants.DATAREQUEST_CLOSE)(context, data_dict)
+                tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
                 tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=data_dict['id']))
             else:   # GET
                 return _return_page()
@@ -340,20 +340,20 @@ class DataRequestsUI(base.BaseController):
             context = self._get_context()
             data_dict_comment_list = {'datarequest_id': id}
             data_dict_dr_show = {'id': id}
-            tk.check_access(constants.DATAREQUEST_COMMENT_LIST, context, data_dict_comment_list)
+            tk.check_access(constants.LIST_DATAREQUEST_COMMENTS, context, data_dict_comment_list)
 
             # Raises 404 Not Found if the data request does not exist
-            c.datarequest = tk.get_action(constants.DATAREQUEST_SHOW)(context, data_dict_dr_show)
+            c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict_dr_show)
 
             comment_text = request.POST.get('comment', '')
             comment_id = request.POST.get('comment-id', '')
 
             if request.POST:
-                action = constants.DATAREQUEST_COMMENT
+                action = constants.COMMENT_DATAREQUEST
                 action_text = 'comment'
 
                 if comment_id:
-                    action = constants.DATAREQUEST_COMMENT_UPDATE
+                    action = constants.UPDATE_DATAREQUEST_COMMENT
                     action_text = 'update comment'
 
                 try:
@@ -390,7 +390,7 @@ class DataRequestsUI(base.BaseController):
 
             # Comments should be retrieved once that the comment has been created
             get_comments_data_dict = {'datarequest_id': id}
-            c.comments = tk.get_action(constants.DATAREQUEST_COMMENT_LIST)(context, get_comments_data_dict)
+            c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
 
             return tk.render('datarequests/comment.html')
 
@@ -407,8 +407,8 @@ class DataRequestsUI(base.BaseController):
         try:
             context = self._get_context()
             data_dict = {'id': comment_id}
-            tk.check_access(constants.DATAREQUEST_COMMENT_DELETE, context, data_dict)
-            tk.get_action(constants.DATAREQUEST_COMMENT_DELETE)(context, data_dict)
+            tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
+            tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
             helpers.flash_notice(tk._('Comment has been deleted'))
             tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest_id))
         except tk.ObjectNotFound as e:

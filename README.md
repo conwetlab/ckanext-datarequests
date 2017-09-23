@@ -25,7 +25,7 @@ On the other hand, you can also use the API. To access this API, you should POST
 
 Here you have a brief description of all the implemented actions:
 
-#### `datarequest_create(context, data_dict)`
+#### `create_datarequest(context, data_dict)`
 Action to create a new data request. This function checks the access rights of the user before creating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
@@ -39,7 +39,7 @@ In addition, you should note that the parameters will be checked and an exceptio
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
-#### `datarequest_show(context, data_dict)`
+#### `show_datarequest(context, data_dict)`
 Action to retrieve the information of a data request. The only required parameter is the `id` of the data request. A `NotFound` exception will be risen if the `id` is not found.
 
 Access rights will be checked before returning the information and an exception will be risen (`NotAuthorized`) if the user is not authorized.
@@ -51,7 +51,7 @@ Access rights will be checked before returning the information and an exception 
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
-#### `datarequest_update(context, data_dict)`
+#### `update_datarequest(context, data_dict)`
 Action to update a data request. The function checks the access rights of the user before updating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
 
 In addition, you should note that the parameters will be checked and an exception (`ValidationError`) will be risen if some of these parameters are not valid.
@@ -66,7 +66,7 @@ In addition, you should note that the parameters will be checked and an exceptio
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
-#### `datarequest_index(context, data_dict)`
+#### `list_datarequests(context, data_dict)`
 Returns a list with the existing data requests. Rights access will be checked before returning the results. If the user is not allowed, a `NotAuthorized` exception will be risen
 
 ##### Parameters (included in `data_dict`):
@@ -82,7 +82,7 @@ Returns a list with the existing data requests. Rights access will be checked be
 A dict with three fields: `result` (a list of data requests), `facets` (a list of the facets that can be used) and `count` (the total number of existing data requests)
 
 
-#### `datarequest_delete(context, data_dict)`
+#### `delete_datarequest(context, data_dict)`
 Action to delete a new data request. The function checks the access rights of the user before deleting the data request. If the user is not allowed, a `NotAuthorized` exception will be risen.
 
 ##### Parameters (included in `data_dict`):
@@ -92,7 +92,7 @@ Action to delete a new data request. The function checks the access rights of th
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
-#### `datarequest_close(context, data_dict)`
+#### `close_datarequest(context, data_dict)`
 Action to close a data request. Access rights will be checked before closing the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
 
 ##### Parameters (included in `data_dict`):
@@ -103,7 +103,7 @@ Action to close a data request. Access rights will be checked before closing the
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`).
 
 
-#### `datarequest_comment(context, data_dict)`
+#### `comment_datarequest(context, data_dict)`
 Action to create a comment in a data request. Access rights will be checked before creating the comment and a `NotAuthorized` exception will be risen if the user is not allowed to create the comment
 
 ##### Parameters (included in `data_dict`):
@@ -114,7 +114,7 @@ Action to create a comment in a data request. Access rights will be checked befo
 A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
 
 
-#### `datarequest_comment_show(context, data_dict)`
+#### `show_datarequest_comment(context, data_dict)`
 Action to retrieve a comment. Access rights will be checked before getting the comment and a `NotAuthorized` exception will be risen if the user is not allowed to get the comment
 
 ##### Parameters (included in `data_dict`):
@@ -124,7 +124,7 @@ Action to retrieve a comment. Access rights will be checked before getting the c
 A dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
 
 
-#### `datarequest_comment_list(context, data_dict)`
+#### `list_datarequest_comments(context, data_dict)`
 Action to retrieve all the comments of a data request. Access rights will be checked before getting the comments and a `NotAuthorized` exception will be risen if the user is not allowed to read the comments
 
 ##### Parameters (included in `data_dict`):
@@ -135,7 +135,7 @@ Action to retrieve all the comments of a data request. Access rights will be che
  A list with all the comments of a data request. Every comment is a dict with the following fields: `id`, `user_id`, `datarequest_id`, `time` and `comment`
 
 
-#### `datarequest_comment_update(context, data_dict)`
+#### `update_datarequest_comment(context, data_dict)`
 Action to update a comment of a data request. Access rights will be checked before updating the comment and a `NotAuthorized` exception will be risen if the user is not allowed to update the comment
 
 ##### Parameters (included in `data_dict`):
@@ -146,7 +146,7 @@ Action to update a comment of a data request. Access rights will be checked befo
 A dict with the data request comment (`id`, `user_id`, `datarequest_id`, `time` and `comment`)
 
 
-#### `datarequest_comment_delete(context, data_dict)`
+#### `delete_datarequest_comment(context, data_dict)`
 Action to delete a comment of a data request. Access rights will be checked before deleting the comment and a `NotAuthorized` exception will be risen if the user is not allowed to delete the comment
 
 ##### Parameters (included in `data_dict`):

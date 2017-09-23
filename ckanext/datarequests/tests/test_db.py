@@ -306,7 +306,7 @@ class DBTest(unittest.TestCase):
             'datarequest_id': 'example_uuid_v4'
         }
         db.Comment.id = 'id'
-        result = db.Comment.get_datarequest_comments_number(**params)
+        result = db.Comment.get_comment_datarequests_number(**params)
 
         # Assertions
         self.assertEquals(n_comments, result)

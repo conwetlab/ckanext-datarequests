@@ -27,7 +27,7 @@ from ckan.common import c
 def get_comments_number(datarequest_id):
     # DB should be intialized
     db.init_db(model)
-    return db.Comment.get_datarequest_comments_number(datarequest_id=datarequest_id)
+    return db.Comment.get_comment_datarequests_number(datarequest_id=datarequest_id)
 
 
 def get_comments_badge(datarequest_id):
