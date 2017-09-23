@@ -835,13 +835,3 @@ def unfollow_datarequest(context, data_dict):
     session.commit()
 
     return True
-
-
-
-
-
-
-
-
-
-
