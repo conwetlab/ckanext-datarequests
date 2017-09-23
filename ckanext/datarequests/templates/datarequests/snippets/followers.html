@@ -18,12 +18,12 @@
             {% if h.check_access('follow_datarequest') %}
               {% if h.is_following_datarequest(datarequest.id) %}
                 <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='unfollow', id=datarequest.id) }}" class="{% block following_class %}btn btn-danger{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="unfollow">
-                  <i class="fa fa-times-circle"></i>
+                  <i class="fa fa-times-circle icon-plus-sign"></i>
                   {{ _('Unfollow') }}
                 </a>
               {% else %}
                 <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='follow', id=datarequest.id) }}" class="{% block unfollowing_class %}btn btn-success{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="follow">
-                  <i class="fa fa-plus-circle"></i>
+                  <i class="fa fa-plus-circle icon-remove-sign"></i>
                   {{ _('Follow') }}
                 </a>
               {% endif %}
