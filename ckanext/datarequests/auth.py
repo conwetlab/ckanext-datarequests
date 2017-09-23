@@ -78,8 +78,8 @@ def update_datarequest_comment(context, data_dict):
 def delete_datarequest_comment(context, data_dict):
     return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST_COMMENT)
 
-def datarequest_follow(context, data_dict):
+def follow_datarequest(context, data_dict):
     return {'success': True}
 
-def datarequest_unfollow(context, data_dict):
+def unfollow_datarequest(context, data_dict):
     return {'success': True}

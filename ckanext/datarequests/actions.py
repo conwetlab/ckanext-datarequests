@@ -144,7 +144,8 @@ def create_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed)
+        organization_id, open_time, accepted_dataset, close_time, closed, 
+        followers)
     :rtype: dict
     '''
 
@@ -185,7 +186,8 @@ def show_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed)
+        organization_id, open_time, accepted_dataset, close_time, closed, 
+        followers)
     :rtype: dict
     '''
 
@@ -236,7 +238,8 @@ def update_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed)
+        organization_id, open_time, accepted_dataset, close_time, closed, 
+        followers)
     :rtype: dict
     '''
 
@@ -426,7 +429,8 @@ def delete_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed)
+        organization_id, open_time, accepted_dataset, close_time, closed, 
+        followers)
     :rtype: dict
     '''
 
@@ -470,7 +474,8 @@ def close_datarequest(context, data_dict):
     :type accepted_dataset_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed)
+        organization_id, open_time, accepted_dataset, close_time, closed, 
+        followers)
     :rtype: dict
 
     '''
@@ -738,11 +743,14 @@ def delete_datarequest_comment(context, data_dict):
 
     return _dictize_comment(comment)
 
-def datarequest_follow(context, data_dict):
+def follow_datarequest(context, data_dict):
     '''
     Action to follow a data request. Access rights will be cheked before 
     following a datarequest and a NotAuthorized exception will be risen if the
-    user is not allowed to follow the given datarequest.
+    user is not allowed to follow the given datarequest. ValidationError will
+    be risen if the datarequest ID is not included or if the user is already
+    following the datarequest. ObjectNotFound will be risen if the given 
+    datarequest does not exist.
 
     :param id: The ID of the datarequest to be followed
     :type id: string
@@ -786,11 +794,14 @@ def datarequest_follow(context, data_dict):
 
     return True
 
-def datarequest_unfollow(context, data_dict):
+def unfollow_datarequest(context, data_dict):
     '''
     Action to unfollow a data request. Access rights will be cheked before 
     unfollowing a datarequest and a NotAuthorized exception will be risen if
-    the user is not allowed to unfollow the given datarequest.
+    the user is not allowed to unfollow the given datarequest. ValidationError
+    will be risen if the datarequest ID is not included in the request. 
+    ObjectNotFound will be risen if the user is not following the given 
+    datarequest.
 
     :param id: The ID of the datarequest to be unfollowed
     :type id: string
@@ -812,16 +823,11 @@ def datarequest_unfollow(context, data_dict):
     # Check access
     tk.check_access(constants.UNFOLLOW_DATAREQUEST, context, data_dict)
 
-    # Get the data request
-    result = db.DataRequest.get(id=datarequest_id)
-    if not result:
-        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
-
     # Is already following?
     user_id = context['auth_user_obj'].id
     result = db.DataRequestFollower.get(datarequest_id=datarequest_id, user_id=user_id)
     if not result:
-        raise tk.ValidationError([tk._('The user is not following the given Data Request')])
+        raise tk.ObjectNotFound([tk._('The user is not following the given Data Request')])
 
     follower = result[0]
 
