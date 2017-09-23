@@ -33,6 +33,7 @@ class DBTest(unittest.TestCase):
         # Restart databse initial status
         db.DataRequest = None
         db.Comment = None
+        db.DataRequestFollower = None
 
         # Create mocks
         self._sa = db.sa
@@ -47,6 +48,7 @@ class DBTest(unittest.TestCase):
     def tearDown(self):
         db.Comment = None
         db.DataRequest = None
+        db.DataRequestFollower = None
         db.sa = self._sa
         db.func = self._func
         db.or_ = self._or_
