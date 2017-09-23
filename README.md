@@ -1,4 +1,4 @@
-# CKAN Data Requests [![Build Status](https://travis-ci.org/conwetlab/ckanext-datarequests.svg?branch=develop)](https://travis-ci.org/conwetlab/ckanext-datarequests)
+# CKAN Data Requests [![Build Status](https://travis-ci.org/conwetlab/ckanext-datarequests.svg?branch=develop)](https://travis-ci.org/conwetlab/ckanext-datarequests) [![Coverage Status](https://coveralls.io/repos/github/conwetlab/ckanext-datarequests/badge.svg?branch=develop)](https://coveralls.io/github/conwetlab/ckanext-datarequests?branch=develop)
 
 CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance. In this way we can set up a Data Market, not only with data supplies but also with data demands.
 
