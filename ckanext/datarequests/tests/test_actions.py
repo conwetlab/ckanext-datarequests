@@ -818,7 +818,7 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequestFollower.get.return_value = [follower]
 
         with self.assertRaises(self._tk.ValidationError):
-            actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+            actions.follow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
         self.context['session'].add.assert_not_called(follower)
@@ -831,7 +831,7 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequestFollower.get.return_value = []
 
         # Call the function
-        result = actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+        result = actions.follow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
         follower = actions.db.DataRequestFollower.return_value
@@ -868,7 +868,7 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequestFollower.get.return_value = []
 
         with self.assertRaises(self._tk.ValidationError):
-            actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+            actions.unfollow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
         self.context['session'].delete.assert_not_called(follower)
@@ -880,7 +880,7 @@ class ActionsTest(unittest.TestCase):
         actions.db.DataRequestFollower.get.return_value = [follower]
 
         # Call the function
-        result = actions.delete_datarequest_comment(self.context, test_data.follow_data_request_data)
+        result = actions.unfollow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
