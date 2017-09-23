@@ -393,6 +393,7 @@ class ActionsTest(unittest.TestCase):
 
         # Set the mocks
         actions.db.DataRequest.get_ordered_by_date.return_value = ddbb_response
+        actions.db.DataRequestFollower.get_datarequest_followers_number = test_actions_data.DEFAULT_FOLLOWERS
         default_pkg = {'pkg': 1}
         default_org = {'org': 2}
         default_user = {'user': 3, 'id': test_data.user_default_id}

@@ -25,6 +25,7 @@ from mock import MagicMock
 COMMENT_ID = 'comment_uuid4'
 DATAREQUEST_ID = 'example_uuidv4'
 FREE_TEXT = 'free-text'
+DEFAULT_FOLLOWERS = 3
 
 ######################################################################
 ############################## FUNCTIONS #############################
@@ -40,7 +41,8 @@ def dictice_ddbb_response(datarequest):
         'open_time': str(datarequest.open_time),
         'accepted_dataset_id': datarequest.accepted_dataset_id,
         'close_time': str(datarequest.close_time) if datarequest.close_time else datarequest.close_time,
-        'closed': datarequest.closed
+        'closed': datarequest.closed,
+        'followers': DEFAULT_FOLLOWERS
     }
 
 

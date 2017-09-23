@@ -24,7 +24,7 @@ import unittest
 from mock import MagicMock, patch
 from nose_parameterized import parameterized
 
-TOTAL_ACTIONS = 11
+TOTAL_ACTIONS = 13
 COMMENTS_ACTIONS = 5
 ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 
@@ -63,6 +63,8 @@ class DataRequestPluginTest(unittest.TestCase):
         self.show_datarequest_comment = constants.SHOW_DATAREQUEST_COMMENT
         self.update_datarequest_comment = constants.UPDATE_DATAREQUEST_COMMENT
         self.delete_datarequest_comment = constants.DELETE_DATAREQUEST_COMMENT
+        self.follow_datarequest = constants.FOLLOW_DATAREQUEST
+        self.unfollow_datarequest = constants.UNFOLLOW_DATAREQUEST
 
     def tearDown(self):
         self.actions_patch.stop()
@@ -138,6 +140,8 @@ class DataRequestPluginTest(unittest.TestCase):
         self.assertEquals(plugin.actions.update_datarequest, actions[self.update_datarequest])
         self.assertEquals(plugin.actions.list_datarequests, actions[self.list_datarequests])
         self.assertEquals(plugin.actions.delete_datarequest, actions[self.delete_datarequest])
+        self.assertEquals(plugin.actions.follow_datarequest, actions[self.follow_datarequest])
+        self.assertEquals(plugin.actions.unfollow_datarequest, actions[self.unfollow_datarequest])
 
         if comments_enabled == 'True':
             self.assertEquals(plugin.actions.comment_datarequest, actions[self.comment_datarequest])
@@ -167,6 +171,8 @@ class DataRequestPluginTest(unittest.TestCase):
         self.assertEquals(plugin.auth.update_datarequest, auth_functions[self.update_datarequest])
         self.assertEquals(plugin.auth.list_datarequests, auth_functions[self.list_datarequests])
         self.assertEquals(plugin.auth.delete_datarequest, auth_functions[self.delete_datarequest])
+        self.assertEquals(plugin.auth.follow_datarequest, auth_functions[self.follow_datarequest])
+        self.assertEquals(plugin.auth.unfollow_datarequest, auth_functions[self.unfollow_datarequest])
 
         if comments_enabled == 'True':
             self.assertEquals(plugin.auth.comment_datarequest, auth_functions[self.comment_datarequest])
@@ -190,7 +196,7 @@ class DataRequestPluginTest(unittest.TestCase):
     ])
     def test_before_map(self, comments_enabled):
 
-        urls_set = 10
+        urls_set = 12
         mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 2
 
         # Configure config and get instance
@@ -243,6 +249,20 @@ class DataRequestPluginTest(unittest.TestCase):
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='user_datarequests', conditions=dict(method=['GET']), 
             ckan_icon=mock_icon)
+
+        mapa.connect.assert_any_call('user_datarequests',
+            '/user/%s/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='user_datarequests', conditions=dict(method=['GET']), 
+            ckan_icon=mock_icon)
+
+        mapa.connect('/%s/follow/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='follow', conditions=dict(method=['POST']))
+
+        mapa.connect('/%s/unfollow/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='unfollow', conditions=dict(method=['POST']))
 
         if comments_enabled == 'True':
             mapa.connect.assert_any_call('comment_datarequest', '/%s/comment/{id}' % dr_basic_path,
