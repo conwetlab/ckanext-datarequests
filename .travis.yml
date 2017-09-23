@@ -19,6 +19,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 script: 
   - sh bin/travis-run.sh
+after_success: coveralls
 branches:
   only:
     - develop
