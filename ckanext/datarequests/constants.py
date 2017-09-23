@@ -18,19 +18,19 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 DATAREQUESTS_MAIN_PATH = 'datarequest'
-DATAREQUEST_CREATE = 'datarequest_create'
-DATAREQUEST_SHOW = 'datarequest_show'
-DATAREQUEST_UPDATE = 'datarequest_update'
-DATAREQUEST_INDEX = 'datarequest_index'
-DATAREQUEST_DELETE = 'datarequest_delete'
-DATAREQUEST_CLOSE = 'datarequest_close'
-DATAREQUEST_COMMENT = 'datarequest_comment'
-DATAREQUEST_COMMENT_LIST = 'datarequest_comment_list'
-DATAREQUEST_COMMENT_SHOW = 'datarequest_comment_show'
-DATAREQUEST_COMMENT_UPDATE = 'datarequest_comment_update'
-DATAREQUEST_COMMENT_DELETE = 'datarequest_comment_delete'
-DATAREQUEST_FOLLOW = 'follow_datarequest'
-DATAREQUEST_UNFOLLOW = 'unfollow_datarequest'
+CREATE_DATAREQUEST = 'create_datarequest'
+SHOW_DATAREQUEST = 'show_datarequest'
+UPDATE_DATAREQUEST = 'update_datarequest'
+LIST_DATAREQUESTS = 'list_datarequests'
+DELETE_DATAREQUEST = 'delete_datarequest'
+CLOSE_DATAREQUEST = 'close_datarequest'
+COMMENT_DATAREQUEST = 'comment_datarequest'
+LIST_DATAREQUEST_COMMENTS = 'list_datarequest_comments'
+SHOW_DATAREQUEST_COMMENT = 'show_datarequest_comment'
+UPDATE_DATAREQUEST_COMMENT = 'update_datarequest_comment'
+DELETE_DATAREQUEST_COMMENT = 'delete_datarequest_comment'
+FOLLOW_DATAREQUEST = 'follow_datarequest'
+UNFOLLOW_DATAREQUEST = 'unfollow_datarequest'
 NAME_MAX_LENGTH = 100
 DESCRIPTION_MAX_LENGTH = 1000
 COMMENT_MAX_LENGTH = DESCRIPTION_MAX_LENGTH

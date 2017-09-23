@@ -122,7 +122,7 @@ def init_db(model):
                 return query.filter_by(datarequest_id=datarequest_id).order_by(order_by_filter).all()
 
             @classmethod
-            def get_datarequest_comments_number(cls, **kw):
+            def get_comment_datarequests_number(cls, **kw):
                 '''
                 Returned the number of comments of a data request
                 '''
