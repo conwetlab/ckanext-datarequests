@@ -1,0 +1,8 @@
+Dear {{ user.fullname }},
+
+{{ datarequest['title'] }} datarequest is now closed. Check the accepted dataset in CKAN!
+
+--
+
+Best Regards,
+CKAN Team -- {{ site_url }}

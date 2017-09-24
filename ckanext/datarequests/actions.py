@@ -565,7 +565,13 @@ def close_datarequest(context, data_dict):
     session.add(data_req)
     session.commit()
 
-    return _dictize_datarequest(data_req)
+    datarequest_dict = _dictize_datarequest(data_req)
+
+    # Mailing
+    users = _get_datarequest_involved_users(context, datarequest_dict)
+    _send_mail(users, 'close_datarequest', datarequest_dict)
+
+    return datarequest_dict
 
 
 def comment_datarequest(context, data_dict):
