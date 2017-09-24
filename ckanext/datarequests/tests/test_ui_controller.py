@@ -980,3 +980,13 @@ class UIControllerTest(unittest.TestCase):
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='comment', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+
+    ######################################################################
+    ########################## FOLLOW/UNFOLLOW ###########################
+    ######################################################################
+
+    def test_follow(self):
+        self.controller.follow('example_uuidv4')
+
+    def test_unfollow(self):
+        self.controller.unfollow('example_uuidv4')

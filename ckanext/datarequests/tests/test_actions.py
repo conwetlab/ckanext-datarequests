@@ -270,6 +270,38 @@ class ActionsTest(unittest.TestCase):
             mailer_mock.mail_user.assert_any_call(get_users_side_effect[i], subject, body)
 
 
+    @patch('ckanext.datarequests.actions.config')
+    @patch('ckanext.datarequests.actions.mailer')
+    @patch('ckanext.datarequests.actions.base')
+    @patch('ckanext.datarequests.actions.model')
+    def test_send_mail_exception_no_risen(self, model_mock, base_mock, mailer_mock, config_mock):
+
+        subject = 'SUBJECT'
+        body = 'BODY'
+        user = MagicMock()
+        model_mock.User.get.return_value = user
+        config_mock.get.side_effect = lambda x: x
+        base_mock.render_jinja2.side_effect = lambda x, y: body if 'bodies' in x else subject
+        mailer_mock.mail_user.side_effect = Exception()
+
+        users = ['user1']
+        action_type = 'new_datarequest'
+        datarequest = MagicMock()
+
+        actions._send_mail(users, action_type, datarequest)
+
+        extra_args = {
+            'datarequest': datarequest,
+            'user': user,
+            'site_title': 'ckan.site_title',
+            'site_url': 'ckan.site_url'
+        }
+        base_mock.render_jinja2.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
+        base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
+
+        mailer_mock.mail_user.assert_any_call(user, subject, body)
+
+
     ######################################################################
     ################################# NEW ################################
     ######################################################################
