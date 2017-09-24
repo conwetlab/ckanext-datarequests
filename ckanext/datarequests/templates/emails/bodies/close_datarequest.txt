@@ -12,4 +12,4 @@ You are receiving this notifications because:
 --
 
 Best Regards,
-CKAN Team -- {{ site_url }}
+{{ site_title }} Team -- {{ site_url }}

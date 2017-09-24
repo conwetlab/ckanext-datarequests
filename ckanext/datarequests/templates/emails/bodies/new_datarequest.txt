@@ -9,5 +9,5 @@ You are receiving this notification because you are member of the mentioned orga
 --
 
 Best Regards,
-CKAN Team -- {{ site_url }}
+{{ site_title }} Team -- {{ site_url }}
 
