@@ -986,7 +986,7 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_follow(self):
-        self.controller.follow('example_uuidv4')
+        self.controller_instance.follow('example_uuidv4')
 
     def test_unfollow(self):
-        self.controller.unfollow('example_uuidv4')
+        self.controller_instance.unfollow('example_uuidv4')
