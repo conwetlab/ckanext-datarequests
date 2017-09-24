@@ -1,0 +1,11 @@
+_('Dear {{ user.fullname }},')
+
+_('The datarequest {{ datarequest['title'] }} has been created in the organization {{ datarequest['organization']['title'] }}.')
+
+_('Check if you can give it an answer by accessing the Data Request tab that you will find in CKAN.')
+
+--
+
+_('Best Regards,')
+_('CKAN Team')
+

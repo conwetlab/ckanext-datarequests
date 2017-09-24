@@ -18,6 +18,8 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
+import ckan.lib.base as base
+import ckan.model as model
 import ckan.plugins as plugins
 import constants
 import datetime
@@ -25,6 +27,9 @@ import cgi
 import db
 import logging
 import validator
+import ckan.lib.mailer as mailer
+
+from ckan.common import config
 
 c = plugins.toolkit.c
 log = logging.getLogger(__name__)
@@ -123,6 +128,27 @@ def _undictize_comment_basic(comment, data_dict):
     comment.datarequest_id = data_dict.get('datarequest_id', '')
 
 
+def _send_mail(user_ids, action_type, datarequest):
+
+    for user_id in user_ids:
+        try:
+            user_data = model.User.get(user_id)
+            extra_vars = {
+                'datarequest': datarequest,
+                'user': user_data,
+                'site_title': config.get('ckan.site_title'),
+                'site_url': config.get('ckan.site_url')
+            }
+
+            subject = base.render_jinja2('emails/subjects/{0}.txt'.format(action_type), extra_vars)
+            body = base.render_jinja2('emails/bodies/{0}.txt'.format(action_type), extra_vars)
+
+            mailer.mail_user(user_data, subject, body)
+
+        except Exception:
+            logging.exception("Error sending notification to {0}".format(user_id))
+
+
 def create_datarequest(context, data_dict):
     '''
     Action to create a new data request. The function checks the access rights
@@ -168,9 +194,16 @@ def create_datarequest(context, data_dict):
     data_req.open_time = datetime.datetime.now()
 
     session.add(data_req)
-    session.commit()
+    session.commit()    
 
-    return _dictize_datarequest(data_req)
+    datarequest_dict = _dictize_datarequest(data_req)
+
+    if 'organization' in datarequest_dict:
+        users = set([user['id'] for user in datarequest_dict['organization']['users']])
+        users.remove(context['auth_user_obj'].id)
+        _send_mail(users, 'new_datarequest', datarequest_dict)
+
+    return datarequest_dict
 
 
 def show_datarequest(context, data_dict):
