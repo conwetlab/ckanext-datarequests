@@ -133,14 +133,17 @@ def _get_datarequest_involved_users(context, datarequest_dict):
     datarequest_id = datarequest_dict['id']
     new_context = {'ignore_auth': True, 'model': context['model'] }
 
+    # Creator + Followers + People who has commented + Organization Staff
     users = set()
+    users.add(datarequest_dict['user_id'])
     users.update([follower.user_id for follower in db.DataRequestFollower.get(datarequest_id=datarequest_id)])
     users.update([comment['user_id'] for comment in list_datarequest_comments(new_context, {'datarequest_id': datarequest_id})])
 
     if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
     
-    users.remove(context['auth_user_obj'].id)   # Notifications are not sent to the user that performs the action
+    # Notifications are not sent to the user that performs the action
+    users.remove(context['auth_user_obj'].id)
 
     return users
 
