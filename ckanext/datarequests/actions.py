@@ -143,7 +143,7 @@ def _get_datarequest_involved_users(context, datarequest_dict):
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
     
     # Notifications are not sent to the user that performs the action
-    users.remove(context['auth_user_obj'].id)
+    users.discard(context['auth_user_obj'].id)
 
     return users
 
@@ -220,7 +220,7 @@ def create_datarequest(context, data_dict):
 
     if 'organization' in datarequest_dict:
         users = set([user['id'] for user in datarequest_dict['organization']['users']])
-        users.remove(context['auth_user_obj'].id)
+        users.discard(context['auth_user_obj'].id)
         _send_mail(users, 'new_datarequest', datarequest_dict)
 
     return datarequest_dict
