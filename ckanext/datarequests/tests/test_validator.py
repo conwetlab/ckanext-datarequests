@@ -163,9 +163,12 @@ class ValidatorTest(unittest.TestCase):
                                   'Data Request not found')
 
     def test_comment_valid(self):
+        show_datarequest = validator.tk.get_action.return_value
         request_data = {
             'datarequest_id': 'uuid4',
             'comment': 'Example comment'
         }
 
-        validator.validate_comment({}, request_data)
+        result = validator.validate_comment({}, request_data)
+
+        self.assertEquals(result, show_datarequest.return_value)
