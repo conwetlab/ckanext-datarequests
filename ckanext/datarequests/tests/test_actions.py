@@ -821,7 +821,7 @@ class ActionsTest(unittest.TestCase):
             actions.follow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
-        self.context['session'].add.assert_not_called(follower)
+        self.context['session'].add.assert_not_called()
         self.context['session'].commit.assert_not_called()
 
     def test_follow(self):
@@ -860,18 +860,15 @@ class ActionsTest(unittest.TestCase):
     def test_follow_no_id(self):
         self._test_no_id(actions.follow_datarequest)
 
-    def test_unfollow_not_found(self):
-        self._test_not_found(actions.unfollow_datarequest, constants.UNFOLLOW_DATAREQUEST, test_data.follow_data_request_data)
-
     def test_unfollow_not_following(self):
         # Configure the mock
         actions.db.DataRequestFollower.get.return_value = []
 
-        with self.assertRaises(self._tk.ValidationError):
+        with self.assertRaises(self._tk.ObjectNotFound):
             actions.unfollow_datarequest(self.context, test_data.follow_data_request_data)
 
         # Assertions
-        self.context['session'].delete.assert_not_called(follower)
+        self.context['session'].delete.assert_not_called()
         self.context['session'].commit.assert_not_called()
 
     def test_unfollow(self):
