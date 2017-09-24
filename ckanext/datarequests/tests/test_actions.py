@@ -150,6 +150,127 @@ class ActionsTest(unittest.TestCase):
 
 
     ######################################################################
+    ######################### GET INVOLVED USERS #########################
+    ######################################################################
+
+    @patch('ckanext.datarequests.actions.list_datarequest_comments')
+    def test_get_involved_users_no_org_and_current_user_must_be_discarded(self, list_comments_mock):
+
+        datarequest_id = 'dr1'
+        follower1 = MagicMock()
+        follower2 = MagicMock()
+        follower1.user_id = 'user-2'
+        follower2.user_id = 'user-3'
+
+        list_comments_mock.return_value = [{'user_id': 'user-1'}, {'user_id': 'user-2'}]
+        actions.db.DataRequestFollower.get.return_value = [follower1, follower2]
+
+        self.context['auth_user_obj'].id = 'user-1'
+        datarequest = {
+            'id': datarequest_id,
+            'user_id': 'user-1',
+            'organization': None
+        }
+
+        result = actions._get_datarequest_involved_users(self.context, datarequest)
+
+        self.assertEquals(set(['user-2', 'user-3']), result)
+
+        actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
+        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+
+    @patch('ckanext.datarequests.actions.list_datarequest_comments')
+    def test_get_involved_users_no_org_and_current_user_must_not_be_discarded(self, list_comments_mock):
+
+        datarequest_id = 'dr1'
+        follower1 = MagicMock()
+        follower2 = MagicMock()
+        follower1.user_id = 'user-2'
+        follower2.user_id = 'user-3'
+
+        list_comments_mock.return_value = [{'user_id': 'user-1'}, {'user_id': 'user-2'}]
+        actions.db.DataRequestFollower.get.return_value = [follower1, follower2]
+
+        self.context['auth_user_obj'].id = 'user-7'
+        datarequest = {
+            'id': datarequest_id,
+            'user_id': 'user-1',
+            'organization': None
+        }
+
+        result = actions._get_datarequest_involved_users(self.context, datarequest)
+
+        self.assertEquals(set(['user-1', 'user-2', 'user-3']), result)
+
+        actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
+        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+
+    @patch('ckanext.datarequests.actions.list_datarequest_comments')
+    def test_get_involved_users_org(self, list_comments_mock):
+
+        datarequest_id = 'dr1'
+        follower1 = MagicMock()
+        follower2 = MagicMock()
+        follower1.user_id = 'user-2'
+        follower2.user_id = 'user-3'
+
+        list_comments_mock.return_value = [{'user_id': 'user-1'}, {'user_id': 'user-2'}]
+        actions.db.DataRequestFollower.get.return_value = [follower1, follower2]
+
+        self.context['auth_user_obj'].id = 'user-7'
+        datarequest = {
+            'id': datarequest_id,
+            'user_id': 'user-1',
+            'organization': {'users': [{'id': 'user-3'}, {'id': 'user-4'}]}
+        }
+
+        result = actions._get_datarequest_involved_users(self.context, datarequest)
+
+        self.assertEquals(set(['user-1', 'user-2', 'user-3', 'user-4']), result)
+
+        actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
+        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+
+
+    ######################################################################
+    ############################# SEND MAIL ##############################
+    ######################################################################
+
+    @patch('ckanext.datarequests.actions.config')
+    @patch('ckanext.datarequests.actions.mailer')
+    @patch('ckanext.datarequests.actions.base')
+    @patch('ckanext.datarequests.actions.model')
+    def test_send_mail_two_users(self, model_mock, base_mock, mailer_mock, config_mock):
+
+        subject = 'SUBJECT'
+        body = 'BODY'
+        user1 = MagicMock()
+        user2 = MagicMock()
+        get_users_side_effect = [user1, user2]
+        model_mock.User.get.side_effect = get_users_side_effect
+        config_mock.get.side_effect = lambda x: x
+        base_mock.render_jinja2.side_effect = lambda x, y: body if 'bodies' in x else subject
+
+        users = ['user1', 'user2']
+        action_type = 'new_datarequest'
+        datarequest = MagicMock()
+
+        actions._send_mail(users, action_type, datarequest)
+
+        for i, user in enumerate(users):
+            extra_args = {
+                'datarequest': datarequest,
+                'user': get_users_side_effect[i],
+                'site_title': 'ckan.site_title',
+                'site_url': 'ckan.site_url'
+            }
+            base_mock.render_jinja2.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
+            base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
+
+            mailer_mock.mail_user.assert_any_call(get_users_side_effect[i], subject, body)
+
+
+    ######################################################################
     ################################# NEW ################################
     ######################################################################
 
