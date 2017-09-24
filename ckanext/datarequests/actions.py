@@ -128,18 +128,19 @@ def _undictize_comment_basic(comment, data_dict):
     comment.datarequest_id = data_dict.get('datarequest_id', '')
 
 
-def _get_datarequest_involved_users(current_user_id, datarequest_dict):
+def _get_datarequest_involved_users(context, datarequest_dict):
 
     datarequest_id = datarequest_dict['id']
+    new_context = {'ignore_auth': True, 'model': context['model'] }
 
     users = set()
     users.update([follower.user_id for follower in db.DataRequestFollower.get(datarequest_id=datarequest_id)])
-    users.update([comment['user_id'] for comment in list_datarequests_comments({'ignore_auth': True}, {'datarequest_id': datarequest_id})])
+    users.update([comment['user_id'] for comment in list_datarequest_comments(new_context, {'datarequest_id': datarequest_id})])
 
-    if datarequest['organization']:
+    if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
     
-    users.remove(current_user_id)   # Notifications are not sent to the user that performs the action
+    users.remove(context['auth_user_obj'].id)   # Notifications are not sent to the user that performs the action
 
     return users
 
@@ -612,7 +613,7 @@ def comment_datarequest(context, data_dict):
     session.commit()
 
     # Mailing
-    users = _get_datarequest_involved_users(context['auth_user_obj'].id, datarequest_dict)
+    users = _get_datarequest_involved_users(context, datarequest_dict)
     _send_mail(users, 'new_comment', datarequest_dict)
 
     return _dictize_comment(comment)
