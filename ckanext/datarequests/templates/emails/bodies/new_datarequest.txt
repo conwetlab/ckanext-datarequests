@@ -1,8 +1,10 @@
 Dear {{ user.fullname }},
 
-The datarequest {{ datarequest['title'] }} has been created in the organization {{ datarequest['organization']['title'] }}.
+The "{{ datarequest['title'] }}" data request has been created in the organization "{{ datarequest['organization']['title'] }}".
 
 Check if you can give it an answer by accessing the Data Request tab that you will find in your CKAN instance.
+
+You are receiving this notification because you are member of the mentioned organization.
 
 --
 
