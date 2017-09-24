@@ -29,7 +29,7 @@ import logging
 import validator
 import ckan.lib.mailer as mailer
 
-from ckan.common import config
+from pylons import config
 
 c = plugins.toolkit.c
 log = logging.getLogger(__name__)
