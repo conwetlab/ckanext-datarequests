@@ -1,0 +1,8 @@
+Dear {{ user.fullname }},
+
+A user has commented in the {{ datarequest['title'] }} datarequest. Check this new comment just in case you want to give it a reply.
+
+--
+
+Best Regards,
+CKAN Team -- {{ site_url }}

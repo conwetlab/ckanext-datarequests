@@ -70,7 +70,7 @@ def validate_comment(context, request_data):
 
     # Check if the data request exists
     try:
-        tk.get_action(constants.SHOW_DATAREQUEST)(context, {'id': request_data['datarequest_id']})
+        datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, {'id': request_data['datarequest_id']})
     except Exception:
         raise tk.ValidationError({tk._('Data Request'): [tk._('Data Request not found')]})
 
@@ -79,3 +79,5 @@ def validate_comment(context, request_data):
 
     if len(comment) > constants.COMMENT_MAX_LENGTH:
         raise tk.ValidationError({tk._('Comment'): [tk._('Comments must be a maximum of %d characters long') % constants.COMMENT_MAX_LENGTH]})
+
+    return datarequest
