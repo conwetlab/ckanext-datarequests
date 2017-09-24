@@ -185,14 +185,15 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(0, self.context['session'].add.call_count)
         self.assertEquals(0, self.context['session'].commit.call_count)
 
-    def test_create_datarequest_valid(self):
+    @patch('ckanext.datarequests.actions._send_mail')
+    def test_create_datarequest_valid(self, send_mail_mock):
         # Configure the mocks
         current_time = self._datetime.datetime.now()
         actions.datetime.datetime.now = MagicMock(return_value=current_time)
 
         # Mock actions
         default_user = {'user': 1}
-        default_org = {'org': 2}
+        default_org = {'org': 2, 'users': [{'id': 'user1'}, {'id': 'user_2'}]}
         default_pkg = None      # Accepted dataset cannot be different from None at this time
         test_data._initialize_basic_actions(actions, default_user, default_org, default_pkg)
 
@@ -209,6 +210,7 @@ class ActionsTest(unittest.TestCase):
 
         self.context['session'].add.assert_called_once_with(datarequest)
         self.context['session'].commit.assert_called_once()
+        send_mail_mock.assert_called_once_with(set(['user1', 'user2']), 'new_datarequest', datarequest)
 
         # Check the object stored in the database
         self.assertEquals(self.context['auth_user_obj'].id, datarequest.user_id)
@@ -357,7 +359,7 @@ class ActionsTest(unittest.TestCase):
 
 
     ######################################################################
-    ################################ INDEX ###############################
+    ################################ LIST ################################
     ######################################################################
 
     def test_list_datarequests_not_authorized(self):
@@ -545,6 +547,14 @@ class ActionsTest(unittest.TestCase):
         datarequest.accepted_dataset_id = None
         actions.db.DataRequest.get.return_value = [datarequest]
 
+        self.send_mail_patch = patch('ckanext.datarequests.actions._send_mail')
+        self.send_mail_mock = self.send_mail_patch.start()
+        self.addCleanup(self.send_mail_patch.stop)
+        
+        self.get_datarequest_involved_users_patch = patch('ckanext.datarequests.actions._get_datarequest_involved_users')
+        self.get_datarequest_involved_users_mock = self.get_datarequest_involved_users_patch.start()
+        self.addCleanup(self.get_datarequest_involved_users_patch.stop)
+
         # Mock actions
         default_pkg = {'pkg': 1}
         default_org = {'org': 2}
@@ -572,6 +582,9 @@ class ActionsTest(unittest.TestCase):
         org = default_org if organization_id else None
         pkg = default_pkg if expected_accepted_ds else None
         self._check_basic_response(datarequest, result, default_user, org, pkg)
+
+        self.send_mail_mock.assert_called_once_with(self.get_datarequest_involved_users_mock.return_value, 'close_datarequest', result)
+        self.get_datarequest_involved_users_mock.assert_called_once_with(self.context, result)
 
 
     ######################################################################
@@ -604,10 +617,14 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(0, self.context['session'].add.call_count)
         self.assertEquals(0, self.context['session'].commit.call_count)
 
-    def test_comment(self):
+    @patch('ckanext.datarequests.actions._send_mail')
+    @patch('ckanext.datarequests.actions._get_datarequest_involved_users')
+    def test_comment(self, get_datarequest_involved_users_mock, send_mail_mock):
         # Configure the mocks
         current_time = self._datetime.datetime.now()
+        datarequest_dict = MagicMock()
         actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        actions.validator.validate_comment.return_value = datarequest_dict
 
         # User
         default_user = {'user': 'value'}
@@ -635,6 +652,9 @@ class ActionsTest(unittest.TestCase):
 
         # Check that the response is OK
         self._check_comment(comment, result, default_user)
+
+        self.send_mail_mock.assert_called_once_with(self.get_datarequest_involved_users_mock.return_value, 'new_comment', datarequest_dict)
+        self.get_datarequest_involved_users_mock.assert_called_once_with(self.context, datarequest_dict)
 
 
     ######################################################################
