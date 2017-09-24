@@ -218,7 +218,7 @@ def create_datarequest(context, data_dict):
 
     datarequest_dict = _dictize_datarequest(data_req)
 
-    if 'organization' in datarequest_dict:
+    if datarequest_dict['organization']:
         users = set([user['id'] for user in datarequest_dict['organization']['users']])
         users.discard(context['auth_user_obj'].id)
         _send_mail(users, 'new_datarequest', datarequest_dict)
