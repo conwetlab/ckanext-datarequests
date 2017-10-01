@@ -20,7 +20,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.4.1'
+version = '1.0.0'
 
 setup(
     name='ckanext-datarequests',

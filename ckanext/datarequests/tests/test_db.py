@@ -33,6 +33,7 @@ class DBTest(unittest.TestCase):
         # Restart databse initial status
         db.DataRequest = None
         db.Comment = None
+        db.DataRequestFollower = None
 
         # Create mocks
         self._sa = db.sa
@@ -47,6 +48,7 @@ class DBTest(unittest.TestCase):
     def tearDown(self):
         db.Comment = None
         db.DataRequest = None
+        db.DataRequestFollower = None
         db.sa = self._sa
         db.func = self._func
         db.or_ = self._or_
@@ -150,21 +152,24 @@ class DBTest(unittest.TestCase):
 
         table_data_request = MagicMock()
         table_comment = MagicMock()
+        table_datarequest_follower = MagicMock()
 
-        db.sa.Table = MagicMock(side_effect=[table_data_request, table_comment])
+        db.sa.Table = MagicMock(side_effect=[table_data_request, table_comment, table_datarequest_follower])
 
         # Call the function
         model = MagicMock()
         db.init_db(model)
 
         # Assert that table method has been called
-        self.assertEquals(2, db.sa.Table.call_count)
+        self.assertEquals(3, db.sa.Table.call_count)
         model.meta.mapper.assert_any_call(db.DataRequest, table_data_request)
         model.meta.mapper.assert_any_call(db.Comment, table_comment)
+        model.meta.mapper.assert_any_call(db.DataRequestFollower, table_datarequest_follower)
 
     def test_initdb_initialized(self):
         db.DataRequest = MagicMock()
         db.Comment = MagicMock()
+        db.DataRequestFollower = MagicMock()
 
         # Call the function
         model = MagicMock()
@@ -306,10 +311,48 @@ class DBTest(unittest.TestCase):
             'datarequest_id': 'example_uuid_v4'
         }
         db.Comment.id = 'id'
-        result = db.Comment.get_datarequest_comments_number(**params)
+        result = db.Comment.get_comment_datarequests_number(**params)
 
         # Assertions
         self.assertEquals(n_comments, result)
         query.filter_by.assert_called_once_with(**params)
         model.Session.query.assert_called_once_with(count)
         db.func.count.assert_called_once_with(db.Comment.id)
+
+    def test_datarequest_follower_get(self):
+        self._test_get('DataRequestFollower')
+
+    def test_get_datarequest_followers_number(self):
+
+        n_followers = 7
+        count = 'example'
+
+        db.func = MagicMock()
+        db.func.count.return_value = count
+
+        filter_by = MagicMock()
+        filter_by.scalar.return_value = n_followers
+
+        query = MagicMock()
+        query.filter_by = MagicMock(return_value=filter_by)
+
+        model = MagicMock()
+        model.DomainObject = object
+        model.Session.query = MagicMock(return_value=query)
+
+        # Init the database
+        db.init_db(model)
+
+        # Call the method
+        params = {
+            'datarequest_id': 'example_uuid_v4'
+        }
+        db.DataRequestFollower.id = 'id'
+        result = db.DataRequestFollower.get_datarequest_followers_number(**params)
+
+        # Assertions
+        self.assertEquals(n_followers, result)
+        query.filter_by.assert_called_once_with(**params)
+        model.Session.query.assert_called_once_with(count)
+        db.func.count.assert_called_once_with(db.DataRequestFollower.id)
+

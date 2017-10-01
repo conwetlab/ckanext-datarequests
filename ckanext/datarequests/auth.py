@@ -21,12 +21,12 @@ import constants
 from ckan.plugins import toolkit as tk
 
 
-def datarequest_create(context, data_dict):
+def create_datarequest(context, data_dict):
     return {'success': True}
 
 
 @tk.auth_allow_anonymous_access
-def datarequest_show(context, data_dict):
+def show_datarequest(context, data_dict):
     return {'success': True}
 
 
@@ -39,41 +39,49 @@ def auth_if_creator(context, data_dict, show_function):
     return {'success': data_dict['user_id'] == context.get('auth_user_obj').id}
 
 
-def datarequest_update(context, data_dict):
-    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
+def update_datarequest(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST)
 
 
 @tk.auth_allow_anonymous_access
-def datarequest_index(context, data_dict):
+def list_datarequests(context, data_dict):
     return {'success': True}
 
 
-def datarequest_delete(context, data_dict):
-    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
+def delete_datarequest(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST)
 
 
-def datarequest_close(context, data_dict):
-    return auth_if_creator(context, data_dict, constants.DATAREQUEST_SHOW)
+def close_datarequest(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST)
 
 
-def datarequest_comment(context, data_dict):
+def comment_datarequest(context, data_dict):
     return {'success': True}
 
 
 @tk.auth_allow_anonymous_access
-def datarequest_comment_list(context, data_dict):
+def list_datarequest_comments(context, data_dict):
     new_data_dict = {'id': data_dict['datarequest_id']}
-    return datarequest_show(context, new_data_dict)
+    return show_datarequest(context, new_data_dict)
 
 
 @tk.auth_allow_anonymous_access
-def datarequest_comment_show(context, data_dict):
+def show_datarequest_comment(context, data_dict):
     return {'success': True}
 
 
-def datarequest_comment_update(context, data_dict):
-    return auth_if_creator(context, data_dict, constants.DATAREQUEST_COMMENT_SHOW)
+def update_datarequest_comment(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST_COMMENT)
 
 
-def datarequest_comment_delete(context, data_dict):
-    return auth_if_creator(context, data_dict, constants.DATAREQUEST_COMMENT_SHOW)
+def delete_datarequest_comment(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST_COMMENT)
+
+
+def follow_datarequest(context, data_dict):
+    return {'success': True}
+
+
+def unfollow_datarequest(context, data_dict):
+    return {'success': True}

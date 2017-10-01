@@ -1,0 +1,15 @@
+Dear {{ user.fullname }},
+
+"{{ datarequest['title'] }}" data request has been closed. Check the accepted dataset in CKAN!
+
+You are receiving this notifications because:
+
+* You are the owner of the data request 
+* You are a member of the organization where the data request has been created
+* You are following the data request
+* You have posted a comment in the data request
+
+--
+
+Best Regards,
+{{ site_title }} Team -- {{ site_url }}
