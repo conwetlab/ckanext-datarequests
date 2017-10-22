@@ -254,7 +254,7 @@ python setup.py nosetests
 * New: Email notifications:
   * An email will be sent to organization staff when a data request is created in a organization.
   * An email will be sent to followers, people that commented, datarequest creator and organization staff when a comment in a datarequest is created.
-  * An email will be sent to followers, people that commented and datarequest creator when a data request is closed.
+  * An email will be sent to followers, people that commented, datarequest creator and organization staff when a data request is closed.
 * New: Major API changes:
   * `datarequest_create` :arrow_right: `create_datarequest`
   * `datarequest_show` :arrow_right: `show_datarequest`
