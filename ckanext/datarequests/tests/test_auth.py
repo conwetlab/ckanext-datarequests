@@ -45,6 +45,9 @@ request_data_comment = {
     'comment': 'This is an example comment'
 }
 
+request_follow = {
+       'datarequest_id': 'example_uuid_v4', 
+}
 
 class AuthTest(unittest.TestCase):
 
@@ -57,59 +60,68 @@ class AuthTest(unittest.TestCase):
 
     @parameterized.expand([
         # Data Requests
-        (auth.datarequest_create, None,    None),
-        (auth.datarequest_create, context, None),
-        (auth.datarequest_create, None,    request_data_dr),
-        (auth.datarequest_create, context, request_data_dr),
-        (auth.datarequest_show,   None,    None),
-        (auth.datarequest_show,   context, None),
-        (auth.datarequest_show,   None,    request_data_dr),
-        (auth.datarequest_show,   context, request_data_dr),
-        (auth.datarequest_index,  None,    None),
-        (auth.datarequest_index,  context, None),
-        (auth.datarequest_index,  None,    request_data_dr),
-        (auth.datarequest_index,  context, request_data_dr),
+        (auth.create_datarequest, None,    None),
+        (auth.create_datarequest, context, None),
+        (auth.create_datarequest, None,    request_data_dr),
+        (auth.create_datarequest, context, request_data_dr),
+        (auth.show_datarequest,   None,    None),
+        (auth.show_datarequest,   context, None),
+        (auth.show_datarequest,   None,    request_data_dr),
+        (auth.show_datarequest,   context, request_data_dr),
+        (auth.list_datarequests,  None,    None),
+        (auth.list_datarequests,  context, None),
+        (auth.list_datarequests,  None,    request_data_dr),
+        (auth.list_datarequests,  context, request_data_dr),
         # Comments
-        (auth.datarequest_comment,        None,    None),
-        (auth.datarequest_comment,        context, None),
-        (auth.datarequest_comment,        None,    request_data_comment),
-        (auth.datarequest_comment,        context, request_data_comment),
-        (auth.datarequest_comment_show,   None,    None),
-        (auth.datarequest_comment_show,   context, None),
-        (auth.datarequest_comment_show,   None,    request_data_comment),
-        (auth.datarequest_comment_show,   context, request_data_comment),
-        (auth.datarequest_comment_list,   None,    request_data_comment),
-        (auth.datarequest_comment_list,   context, request_data_comment)
+        (auth.comment_datarequest,        None,    None),
+        (auth.comment_datarequest,        context, None),
+        (auth.comment_datarequest,        None,    request_data_comment),
+        (auth.comment_datarequest,        context, request_data_comment),
+        (auth.show_datarequest_comment,   None,    None),
+        (auth.show_datarequest_comment,   context, None),
+        (auth.show_datarequest_comment,   None,    request_data_comment),
+        (auth.show_datarequest_comment,   context, request_data_comment),
+        (auth.list_datarequest_comments,  None,    request_data_comment),
+        (auth.list_datarequest_comments,  context, request_data_comment),
+        # Follow/Unfollow
+        (auth.follow_datarequest,   None,    None),
+        (auth.follow_datarequest,   context, None),
+        (auth.follow_datarequest,   None,    request_follow),
+        (auth.follow_datarequest,   context, request_follow),
+        (auth.unfollow_datarequest, None,    None),
+        (auth.unfollow_datarequest, context, None),
+        (auth.unfollow_datarequest, None,    request_follow),
+        (auth.unfollow_datarequest, context, request_follow),
     ])
     def test_everyone_can_create_show_and_index(self, function, context, request_data):
         self.assertTrue(function(context, request_data).get('success', False))
 
     @parameterized.expand([
         # Data Requests
-        (auth.datarequest_update, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        (auth.datarequest_update, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        (auth.datarequest_update, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        (auth.datarequest_update, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
-        (auth.datarequest_delete, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        (auth.datarequest_delete, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        (auth.datarequest_delete, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        (auth.datarequest_delete, constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
-        (auth.datarequest_close,  constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        (auth.datarequest_close,  constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        (auth.datarequest_close,  constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        (auth.datarequest_close,  constants.DATAREQUEST_SHOW,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.update_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.update_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.update_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.update_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.delete_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.delete_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.delete_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.delete_datarequest, constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.close_datarequest,  constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.close_datarequest,  constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.close_datarequest,  constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.close_datarequest,  constants.SHOW_DATAREQUEST,                 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
         # Comments
-        (auth.datarequest_comment_update, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        (auth.datarequest_comment_update, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        (auth.datarequest_comment_update, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        (auth.datarequest_comment_update, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
-        (auth.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
-        (auth.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
-        (auth.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
-        (auth.datarequest_comment_delete, constants.DATAREQUEST_COMMENT_SHOW, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.update_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.update_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.update_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.update_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
+        (auth.delete_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'user_id'}, True, True),
+        (auth.delete_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'user_id'}, False, True),
+        (auth.delete_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, True, False),
+        (auth.delete_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, 'user_id', {'id': 'id', 'user_id': 'other_user_id'}, False, False),
 
     ])
-    def test_datarequest_update_delete(self, function, show_function, user_id, request_data, action_called, expected_result):
+    def test_update_delete_datarequest(self, function, show_function, user_id, request_data, action_called, expected_result):
 
         user_obj = MagicMock()
         user_obj.id = user_id

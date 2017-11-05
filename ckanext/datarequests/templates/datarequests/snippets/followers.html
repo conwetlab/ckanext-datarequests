@@ -1,0 +1,37 @@
+{% block datarequests_followers %}
+  <section class="module module-narrow">
+    <div class="module context-info">
+      <div class="module-content">
+        {% block heading %}
+          <h1 class="heading">{{ datarequest.get('title') }}</h1>
+        {% endblock %}
+        {% block nums %}
+          <div class="nums">
+            <dl>
+              <dt>{{ _('Followers') }}</dt>
+              <dd data-module="followers-counter" data-module-id="{{ datarequest.followers }}" data-module-num_followers="{{ num_followers }}">{{ h.SI_number_span(datarequest.followers) }}</dd>
+            </dl>
+          </div>
+        {% endblock %}
+        {% block follow_button %}
+          <div class="follow_button">
+            {% if h.check_access('follow_datarequest') %}
+              {% if h.is_following_datarequest(datarequest.id) %}
+                <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='unfollow', id=datarequest.id) }}" class="{% block following_class %}btn btn-danger{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="unfollow">
+                  <i class="fa fa-times-circle icon-remove-sign"></i>
+                  {{ _('Unfollow') }}
+                </a>
+              {% else %}
+                <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='follow', id=datarequest.id) }}" class="{% block unfollowing_class %}btn btn-success{% endblock %}" data-module="follow" data-module-type="datarequest" data-module-id="{{ datarequest.id }}" data-module-action="follow">
+                  <i class="fa fa-plus-circle icon-plus-sign"></i>
+                  {{ _('Follow') }}
+                </a>
+              {% endif %}
+            {% endif %}
+          </div>
+        {% endblock %}
+
+      </div>
+    </div>
+  </section>
+{% endblock %}
