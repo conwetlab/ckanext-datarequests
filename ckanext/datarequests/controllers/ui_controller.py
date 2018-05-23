@@ -149,7 +149,11 @@ class DataRequestsUI(base.BaseController):
             if include_organization_facet is True:
                 c.facet_titles['organization'] = tk._('Organizations')
 
-            return tk.render(file_to_render)
+            extra_vars = {}
+            if hasattr(c, 'group_dict'):
+                extra_vars.update({'group_type': c.group_dict.get('type')})
+
+            return tk.render(file_to_render, extra_vars=extra_vars)
         except ValueError as e:
             # This exception should only occur if the page value is not valid
             log.warn(e)
