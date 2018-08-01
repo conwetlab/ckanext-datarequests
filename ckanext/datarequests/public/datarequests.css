@@ -10,7 +10,7 @@
     text-transform: uppercase;
 }
 
-.comment-actions {
+.comment-form-actions {
 	text-align: right;
 }
 
@@ -19,4 +19,111 @@
     font-size: 12px;
     white-space: nowrap;
     margin-top: 8px;
+}
+
+.divider {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.datarequest-properties {
+    margin-top: 8px;
+}
+
+.comment-edit-form {
+    margin: 10px 10px 10px 8px;
+}
+
+
+/*****************************************
+  Style extracted from ckanext-issues
+  ****************************************/
+
+.comment-wrapper {
+  position: relative;
+  padding-left: 64px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.comment {
+  position: relative;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.comment-avatar {
+  float: left;
+  margin-left: -64px;
+}
+
+.comment-avatar img {
+  border-radius: 4px;
+}
+
+.comment-header {
+  padding-left: 15px;
+  padding-right: 10px;
+  color: #777;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #eee;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.comment-header .author {
+  font-weight: bold;
+  color: #555;
+}
+
+.comment-header .comment-actions .comment-action {
+  float: right;
+}
+
+.comment-header .subtle-btn {
+  color: #999;
+  border: 0px;
+  background: transparent;
+}
+.comment-header .subtle-btn:hover {
+  color: #009F00;
+  text-decoration: none;
+}
+.comment-header .subtle-btn-abuse:hover {
+  color: #DD0000;
+}
+.comment-header .subtle-btn-abuse-active {
+  color: #DD0000;
+}
+.comment-header .subtle-btn-abuse:hover {
+  color: #FF0000;
+  text-decoration: none;
+}
+.comment-header .subtle-btn-abuse-active:hover {
+  color: #999;
+  text-decoration: none;
+}
+
+.comment-action {
+  margin-top: 8px;
+  padding-left: 5px;
+}
+
+.comment-header-text {
+  max-width: 78%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.comment-content {
+  padding: 15px;
+  font-size: 14px
+}
+
+.comment-new {
+  border-top: 2px solid #f3f3f3;
+  background-color: #fff;
 }

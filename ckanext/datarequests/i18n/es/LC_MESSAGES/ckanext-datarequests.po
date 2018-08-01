@@ -1,0 +1,397 @@
+# Spanish translations for ckanext-datarequests.
+# Copyright (C) 2016 ORGANIZATION
+# This file is distributed under the same license as the
+# ckanext-datarequests
+# project.
+# Aitor Magán <amagan@conwet.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ckanext-datarequests 0.3.0\n"
+"Report-Msgid-Bugs-To: amagan@conwet.com\n"
+"POT-Creation-Date: 2016-04-28 14:45+0200\n"
+"PO-Revision-Date: 2016-04-19 11:43+0200\n"
+"Last-Translator: Aitor Magán <amagan@conwet.com>\n"
+"Language-Team: es <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+
+#: ckanext/datarequests/actions.py:192 ckanext/datarequests/actions.py:244
+#: ckanext/datarequests/actions.py:435 ckanext/datarequests/actions.py:480
+#: ckanext/datarequests/actions.py:536 ckanext/datarequests/actions.py:624
+msgid "Data Request ID has not been included"
+msgstr "El ID de la Solicitud de Datos no ha sido incluído"
+
+#: ckanext/datarequests/actions.py:203 ckanext/datarequests/actions.py:255
+#: ckanext/datarequests/actions.py:446 ckanext/datarequests/actions.py:491
+#, python-format
+msgid "Data Request %s not found in the data base"
+msgstr "Solicitud de Datos %s no encontrada"
+
+#: ckanext/datarequests/actions.py:500
+msgid "This Data Request is already closed"
+msgstr "Esta Solicitud de Datos ya está cerrada"
+
+#: ckanext/datarequests/actions.py:578 ckanext/datarequests/actions.py:671
+#: ckanext/datarequests/actions.py:717
+msgid "Comment ID has not been included"
+msgstr "El ID del comentario no ha sido incluído"
+
+#: ckanext/datarequests/actions.py:589 ckanext/datarequests/actions.py:682
+#: ckanext/datarequests/actions.py:728
+#, python-format
+msgid "Comment %s not found in the data base"
+msgstr "Comentario %s no encontrado"
+
+#: ckanext/datarequests/validator.py:31
+#, python-format
+msgid "Title must be a maximum of %d characters long"
+msgstr "El título debe tener una longitud máxima de %d carácteres"
+
+#: ckanext/datarequests/validator.py:34
+msgid "Title cannot be empty"
+msgstr "El título no puede estar vacío"
+
+#: ckanext/datarequests/validator.py:41
+msgid "That title is already in use"
+msgstr "Ese título ya está en uso"
+
+#: ckanext/datarequests/validator.py:45
+#, python-format
+msgid "Description must be a maximum of %d characters long"
+msgstr "La descripción debe tener una longitud máxima de %d carácteres"
+
+#: ckanext/datarequests/validator.py:65
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:24
+msgid "Accepted Dataset"
+msgstr "Conjunto de Datos Aceptado"
+
+#: ckanext/datarequests/validator.py:65
+msgid "Dataset not found"
+msgstr "Solicitud de Datos no encontrada"
+
+#: ckanext/datarequests/validator.py:75
+#: ckanext/datarequests/templates/datarequests/base.html:17
+#: ckanext/datarequests/templates/datarequests/show.html:25
+msgid "Data Request"
+msgstr "Solicitud de Datos"
+
+#: ckanext/datarequests/validator.py:75
+msgid "Data Request not found"
+msgstr "Solicitud de Datos no encontrada"
+
+#: ckanext/datarequests/validator.py:78 ckanext/datarequests/validator.py:81
+msgid "Comment"
+msgstr "Comentario"
+
+#: ckanext/datarequests/validator.py:78
+msgid "Comments must be a minimum of 1 character long"
+msgstr "Los comentarios deben tener al menos un carácter"
+
+#: ckanext/datarequests/validator.py:81
+#, python-format
+msgid "Comments must be a maximum of %d characters long"
+msgstr "Los comentarios deben tener una longitud máxima de %d carácteres"
+
+#: ckanext/datarequests/controllers/ui_controller.py:129
+msgid "Newest"
+msgstr "Los más nuevos"
+
+#: ckanext/datarequests/controllers/ui_controller.py:129
+msgid "Oldest"
+msgstr "Los más viejos"
+
+#: ckanext/datarequests/controllers/ui_controller.py:145
+#: ckanext/datarequests/tests/test_ui_controller.py:628
+msgid "State"
+msgstr "Estado"
+
+#: ckanext/datarequests/controllers/ui_controller.py:156
+msgid "\"page\" parameter must be an integer"
+msgstr "El parámetro \"page\" debe ser un número entero"
+
+#: ckanext/datarequests/controllers/ui_controller.py:159
+msgid "Unauthorized to list Data Requests"
+msgstr "No estás autorizado a listar las Solicitudes de Datos"
+
+#: ckanext/datarequests/controllers/ui_controller.py:210
+msgid "Unauthorized to create a Data Request"
+msgstr "No estás autorizado a crear una nueva Solicitud de Datos"
+
+#: ckanext/datarequests/controllers/ui_controller.py:225
+#: ckanext/datarequests/controllers/ui_controller.py:248
+#: ckanext/datarequests/controllers/ui_controller.py:265
+#: ckanext/datarequests/controllers/ui_controller.py:334
+#: ckanext/datarequests/controllers/ui_controller.py:401
+#, python-format
+msgid "Data Request %s not found"
+msgstr "Solicitud de Datos %s no encontrada"
+
+#: ckanext/datarequests/controllers/ui_controller.py:228
+#, python-format
+msgid "You are not authorized to view the Data Request %s"
+msgstr "No estás autorizado a ver la Solicitud de Datos %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:251
+#, python-format
+msgid "You are not authorized to update the Data Request %s"
+msgstr "No estás autorizado a actualizar la Solicitud de Datos %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:261
+#: ckanext/datarequests/tests/test_ui_controller.py:672
+#, python-format
+msgid "Data Request %s has been deleted"
+msgstr "La Solicitud de Datos %s ha sido borrada"
+
+#: ckanext/datarequests/controllers/ui_controller.py:268
+#, python-format
+msgid "You are not authorized to delete the Data Request %s"
+msgstr "No estás autorizado a borrar la Solicitud de Datos %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:316
+msgid "This data request is already closed"
+msgstr "Esta Solicitud de Datos ya está borrada"
+
+#: ckanext/datarequests/controllers/ui_controller.py:337
+#, python-format
+msgid "You are not authorized to close the Data Request %s"
+msgstr "No estás autorizado a cerrar la Solicitud de Datos %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:366
+msgid "Comment has been published"
+msgstr "El comentario ha sido publicado"
+
+#: ckanext/datarequests/controllers/ui_controller.py:368
+msgid "Comment has been updated"
+msgstr "El comentario ha sido actualizado"
+
+#: ckanext/datarequests/controllers/ui_controller.py:374
+#, python-format
+msgid "You are not authorized to %s"
+msgstr "No estás autorizado a %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:405
+#, python-format
+msgid "You are not authorized to list the comments of the Data Request %s"
+msgstr "No estás autorizado a ver los comentarios de la Solicitud de Datos %s"
+
+#: ckanext/datarequests/controllers/ui_controller.py:414
+msgid "Comment has been deleted"
+msgstr "El comentario ha sido borrado"
+
+#: ckanext/datarequests/controllers/ui_controller.py:419
+#, python-format
+msgid "Comment %s not found"
+msgstr "Comentario %s no encontrado"
+
+#: ckanext/datarequests/controllers/ui_controller.py:422
+msgid "You are not authorized to delete this comment"
+msgstr "No tienes autorización para borrar este comentario"
+
+#: ckanext/datarequests/templates/header.html:8
+#: ckanext/datarequests/templates/datarequests/base.html:8
+#: ckanext/datarequests/templates/datarequests/base.html:11
+#: ckanext/datarequests/templates/datarequests/close.html:6
+#: ckanext/datarequests/templates/datarequests/edit.html:6
+#: ckanext/datarequests/templates/datarequests/new.html:6
+#: ckanext/datarequests/templates/datarequests/show.html:8
+#: ckanext/datarequests/templates/organization/read_base.html:6
+#: ckanext/datarequests/templates/user/read_base.html:6
+msgid "Data Requests"
+msgstr "Solicitudes de Datos"
+
+#: ckanext/datarequests/templates/datarequests/base.html:20
+msgid ""
+"Data Requests allow users to ask for data that is not published in the "
+"platform yet. If you want some specific data and you are not able to find"
+" it among all the published datasets, you can create a new data request "
+"specifying the data than you want to get."
+msgstr ""
+"Las solicitudes de datos permiten a los usuarios pedir conjuntos de datos"
+" que aún no están disponibles en la plataforma. Si quiere algún conjunto "
+"de datos específico y no lo encuentra entre todos los publicados, puede "
+"crear una nueva solicitud de datos especificando los datos que quiera "
+"obtener."
+
+#: ckanext/datarequests/templates/datarequests/close.html:3
+#: ckanext/datarequests/templates/datarequests/close.html:8
+#: ckanext/datarequests/templates/datarequests/close.html:12
+#: ckanext/datarequests/templates/datarequests/snippets/close_datarequest_form.html:25
+msgid "Close Data Request"
+msgstr "Cerrar Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/comment.html:5
+#: ckanext/datarequests/templates/datarequests/show.html:28
+msgid "Comments"
+msgstr "Comentarios"
+
+#: ckanext/datarequests/templates/datarequests/edit.html:3
+#: ckanext/datarequests/templates/datarequests/edit.html:8
+#: ckanext/datarequests/templates/datarequests/edit.html:12
+msgid "Edit Data Request"
+msgstr "Editar Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/index.html:9
+#: ckanext/datarequests/templates/organization/datarequests.html:10
+msgid "Add Data Request"
+msgstr "Añadir Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/index.html:12
+#: ckanext/datarequests/templates/organization/datarequests.html:13
+#: ckanext/datarequests/templates/user/datarequests.html:9
+msgid "Search Data Requests..."
+msgstr "Buscar Solicitud de Datos..."
+
+#: ckanext/datarequests/templates/datarequests/new.html:3
+#: ckanext/datarequests/templates/datarequests/new.html:7
+#: ckanext/datarequests/templates/datarequests/new.html:11
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:47
+#: ckanext/datarequests/templates/datarequests/snippets/new_datarequest_form.html:7
+msgid "Create Data Request"
+msgstr "Crear Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/new.html:16
+msgid ""
+"To create a data request, fill the form and specify a title and a "
+"description for your request. Please, be as clear as you can in order to "
+"ease the task of accomplishing your request. You can also specify an "
+"organization if your data request is closely related with it. "
+msgstr ""
+"Para crear una solicitud de datos, rellene el formulario y añada un "
+"título y una descipción. Por favor, sea todo lo claro posible a fin de "
+"que su solicitud se pueda completar en el menor tiempo posible. También "
+"puede especificar una organización si la Solicitud de Datos está "
+"relacionada con ella."
+
+#: ckanext/datarequests/templates/datarequests/show.html:19
+msgid "Close"
+msgstr "Cerrar"
+
+#: ckanext/datarequests/templates/datarequests/show.html:45
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:19
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_item.html:12
+msgid "Closed"
+msgstr "Cerrada"
+
+#: ckanext/datarequests/templates/datarequests/show.html:50
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_item.html:16
+msgid "Open"
+msgstr "Abierta"
+
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:2
+msgid "Additional Info"
+msgstr "Información Adicional"
+
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:7
+msgid "Creator"
+msgstr "Autor"
+
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:8
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:12
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:29
+msgid "None"
+msgstr "Ninguno"
+
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:15
+msgid "Created"
+msgstr "Creado"
+
+#: ckanext/datarequests/templates/datarequests/snippets/additional_info.html:20
+msgid "Not closed yet"
+msgstr "No cerrada aún"
+
+#: ckanext/datarequests/templates/datarequests/snippets/close_datarequest_form.html:11
+msgid "Accep. Dataset"
+msgstr "Conj. Datos Acept."
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:22
+msgid "Add a new Comment"
+msgstr "Añadir un nuevo Comentario"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:23
+#, python-format
+msgid ""
+"You can use <a href=\"#markdown\" title=\"Markdown quick reference\" "
+"data-target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-"
+"html=\"true\">Markdown formatting</a> here. You can refer datasets by "
+"adding their URL."
+msgstr ""
+"Puede usar <a href=\"#markdown\" title=\"Referencia rápida de Markdown\" "
+"data-target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-"
+"html=\"true\">formato Markdown</a> aquí. Puede referenciar conjuntos de "
+"datos añadiendo su URL."
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:29
+msgid "Update Comment"
+msgstr "Actualizar Comentario"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:31
+msgid "Add Comment"
+msgstr "Añadir Comentario"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:18
+msgid "Are you sure you want to delete this comment?"
+msgstr "¿Estás seguro de que deseas borrar este comentario?"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comment_item.html:29
+msgid "commented"
+msgstr "comentó"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comments.html:3
+msgid "Current Discussion"
+msgstr "Conversación"
+
+#: ckanext/datarequests/templates/datarequests/snippets/comments.html:13
+msgid "This data request has not been commented yet"
+msgstr "Esta Solicitud de Datos no tiene comentarios aún"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:17
+msgid "eg. Data Request Name"
+msgstr "eg. Nombre de la Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:21
+msgid "eg. Data Request description"
+msgstr "eg. Descripción de la Solicitud de Datos"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_form.html:43
+msgid "Are you sure you want to delete this data request?"
+msgstr "¿Estás seguro de que quieres borrar esta Solicitud de Datos?"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:1
+msgid "No Data Requests found"
+msgstr "No hay Solicitudes de Datos"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:14
+msgid "No Data Requests found with the given criteria"
+msgstr "No se han encontrado Solicitudes de Datos para los criterios dados"
+
+#: ckanext/datarequests/templates/datarequests/snippets/datarequest_list.html:16
+msgid "How about creating one?"
+msgstr "¿Quieres crear una?"
+
+#: ckanext/datarequests/templates/datarequests/snippets/edit_datarequest_form.html:4
+msgid "Update Data Request"
+msgstr "Actualizar Solicitud de Datos"
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:6
+msgid "{number} data request found for \"{query}\""
+msgid_plural "{number} data requests found for \"{query}\""
+msgstr[0] "{number} solicitud de datos encontrada para \"{query}\""
+msgstr[1] "{number} solicitudes de datos encontradas para \"{query}\""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:7
+msgid "No data requests found for \"{query}\""
+msgstr "No se han encontrado solicitudes de datos para \"{query}\""
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:8
+msgid "{number} data request found"
+msgid_plural "{number} data requests found"
+msgstr[0] "{number} solicitud de datos encontrada"
+msgstr[1] "{number} solicitudes de datos encontradas"
+
+#: ckanext/datarequests/templates/snippets/custom_search_form.html:9
+msgid "No data requests found"
+msgstr "No se han encontrado solicitudes de datos"

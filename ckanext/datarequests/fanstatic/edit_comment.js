@@ -22,33 +22,34 @@
 (function() {
     
     var UPDATE_COMMENT_BASIC_ID = 'update-comment-';
+    var DISCARD_COMMENT_BASIC_ID = 'comment-discard-'
 
-    // Capture all the update buttons
     $("[id^=" + UPDATE_COMMENT_BASIC_ID + "]").on('click', function(e) {
         comment_id = $(this).attr('id').replace(UPDATE_COMMENT_BASIC_ID, '');
-        
-        // Set comment in the textarea and the ID in the hidden input
-        $('#comment-id').val(comment_id);
-        $('#field-comment').val($('#comment-' + comment_id).text().trim());
 
-        // Hide and show buttons
-        $('#datarequest-comment-update-discard').removeClass('hide');
-        $('#datarequest-comment-update').removeClass('hide');
-        $('#datarequest-comment-add').addClass('hide');
+        if ($('#comment-' + comment_id).hasClass('hide')) {
+            $('#' + DISCARD_COMMENT_BASIC_ID + comment_id).click();
+        } else {
+            $('#comment-' + comment_id).addClass('hide');
+            $('#comment-form-' + comment_id).removeClass('hide');
+        }
     });
 
-    // Capute the discard button
-    $('#datarequest-comment-update-discard').on('click', function(e) {
-        // Remove the values
-        $('#comment-id').val('');
-        $('#field-comment').val('');
+    $("[id^=" + DISCARD_COMMENT_BASIC_ID + "]").on('click', function(e) {
+        comment_id = $(this).attr('id').replace(DISCARD_COMMENT_BASIC_ID, '');
 
-        // Hide and show buttons
-        $('#datarequest-comment-update-discard').addClass('hide');
-        $('#datarequest-comment-update').addClass('hide');
-        $('#datarequest-comment-add').removeClass('hide');
+        $('#comment-' + comment_id).removeClass('hide');
+        $('#comment-form-' + comment_id).addClass('hide');
 
-        // Prevent default
         e.preventDefault();
-    })
+    });
+
+    $(document).ready(function() {
+        var anchorName = 'comment_focus';
+
+        if ($('[name="' + anchorName + '"]').length) {
+            window.location.hash = anchorName;
+        }
+    });
+
 })();

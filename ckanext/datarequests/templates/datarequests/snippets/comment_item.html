@@ -1,30 +1,44 @@
-<li class="item comment">
-  <i class="icon icon-comment"></i>
-  <p>
+{% set focus = updated_comment is not none and updated_comment.id == comment.id %}
+{% set can_update = h.check_access('update_datarequest_comment', {'id':comment.id }) %}
 
-    <span class="actor">{{ h.gravatar(comment.user.get('email_hash'), 30) }}
-        <a href="{{ h.url_for(controller='user', action='read', id=comment.user.get('name')) }}">{{ comment.user.get('display_name') }}</a>
-    </span>
+{% if focus %}
+    <a name="comment_focus"></a>
+{% endif %}
 
-    <span class="date" title="{{ comment.time }}"> {{ h.time_ago_from_timestamp(comment.time) }}</span>
+<div class="comment-wrapper">
+  <a href="{{ h.url_for(controller='user', action='read', id=comment.user.get('name')) }}"
+    class="comment-avatar">
+    {{ h.gravatar(comment.user.get('email_hash'), 48) }}
+  </a>
+  <div class="comment">
+    <div class="comment-header">
+      <div class="comment-actions">
+        {% if h.check_access('delete_datarequest_comment', {'id':comment.id }) %}
+          <div class="comment-action">
+            {% set locale = h.dump_json({'content': _('Are you sure you want to delete this comment?')}) %}
+            <a class="subtle-btn" id="delete-comment-{{ comment.id }}" href="{% url_for controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='delete_comment', datarequest_id=datarequest.id, comment_id=comment.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}"><i class="icon-remove fa fa-times"></i></a>
+          </div>
+        {% endif %}
+        {% if can_update %}
+          <div class="comment-action" id="edit-button">
+            <button class="subtle-btn" id="update-comment-{{ comment.id }}" href=""><i class="icon-pencil fa fa-pencil"></i></button>
+          </div>          
+        {% endif %}
+        <div class="comment-header-text">
+          <a href="{{ h.url_for(controller='user', action='read', id=comment.user.get('name')) }}" class="author">{{ comment.user.get('display_name') }}</a>
+          {% trans %}commented{% endtrans %}
+          <span title="{{comment.time}}">{{ h.time_ago_from_timestamp(comment.time).lower() }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="comment-content {{ 'hide' if focus and errors }}" id="comment-{{ comment.id }}">
+      {{ h.render_markdown(comment.comment|safe) }}
+    </div>
 
-    <span class="pull-right">
-      {% if h.check_access('datarequest_comment_delete', {'id':comment.id }) %}
-        <a class="btn btn-mini" id="update-comment-{{ comment.id }}" href="#form"><i class="icon-edit"></i>{{ _('Edit') }}</a>
-      {% endif %}
-      
-      {% if h.check_access('datarequest_comment_update', {'id':comment.id }) %}
-        {% set locale = h.dump_json({'content': _('Are you sure you want to delete this comment?')}) %}
-        <a class="btn btn-mini btn-danger" id="delete-comment-{{ comment.id }}" href="{% url_for controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='delete_comment', datarequest_id=datarequest.id, comment_id=comment.id %}" data-module="confirm-action" data-module-i18n="{{ locale }}"><i class="icon-remove"></i>{{ _('Delete') }}</a>
-      {% endif %}
-    </span>
+    {% if can_update %}
+      {% snippet "datarequests/snippets/comment_form.html", comment_id=comment.id, datarequest=datarequest, errors=errors, errors_summary=errors_summary, initial_text=updated_comment.comment if focus else comment.comment, focus=focus %}
+    {% endif %}
 
-    <br/>
-
-    <span id="comment-{{ comment.id }}">
-      {{ comment.comment|safe }}
-    </span>
-
-    <br/>
-  </p>
-</li>
+  </div>
+</div>

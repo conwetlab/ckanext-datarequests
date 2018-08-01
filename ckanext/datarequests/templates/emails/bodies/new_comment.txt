@@ -1,0 +1,15 @@
+Dear {{ user.fullname }},
+
+An user has commented in the "{{ datarequest['title'] }}" data request. Check this new comment just in case you want to give it a reply.
+
+You are receiving this notifications because:
+
+* You are the owner of the data request
+* You are a member of the organization where the data request has been created
+* You are following the data request
+* You have posted a comment in the data request
+
+--
+
+Best Regards,
+{{ site_title }} Team -- {{ site_url }}

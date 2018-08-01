@@ -5,11 +5,11 @@
       {% block package_additional_info %}
           <tr>
           <th scope="row" class="dataset-label">{{ _('Creator') }}</th>
-          <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else None }}</td>
+          <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else _('None') }}</td>
         </tr>
         <tr>
           <th scope="row" class="dataset-label">{{ _('Organization') }}</th>
-          <td class="dataset-details">{{ datarequest.organization['display_name'] if datarequest.organization else None }}</td>
+          <td class="dataset-details">{{ datarequest.organization['display_name'] if datarequest.organization else _('None') }}</td>
         </tr>
         <tr>
           <th scope="row" class="dataset-label">{{ _('Created') }}</th>
