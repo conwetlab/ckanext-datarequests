@@ -9,7 +9,8 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# CKAN Data Requests Extension is distributed in the hope that it will be useful# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# CKAN Data Requests Extension is distributed in the hope that it will be useful# but WITHOUT ANY WARRANTY;
+# without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Affero General Public License for more details.
 
@@ -34,10 +35,12 @@ import sys
 from functools import partial
 from pylons import config
 
+
 def get_config_bool_value(config_name, default_value=False):
     value = config.get(config_name, default_value)
     value = value if type(value) == bool else value != 'False'
     return value
+
 
 def is_fontawesome_4():
     if hasattr(h, 'ckan_version'):
@@ -46,12 +49,13 @@ def is_fontawesome_4():
     else:
         return False
 
+
 def get_plus_icon():
     return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
 
+
 def get_question_icon():
     return 'question-circle' if is_fontawesome_4() else 'question-sign'
-
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
@@ -73,9 +77,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
 
-    ######################################################################
-    ############################## IACTIONS ##############################
-    ######################################################################
+    # IActions
 
     def get_actions(self):
         additional_actions = {
@@ -98,9 +100,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return additional_actions
 
-    ######################################################################
-    ########################### AUTH FUNCTIONS ###########################
-    ######################################################################
+    # Auth Functions
 
     def get_auth_functions(self):
         auth_functions = {
@@ -123,9 +123,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return auth_functions
 
-    ######################################################################
-    ############################ ICONFIGURER #############################
-    ######################################################################
+    # IConfigurer
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -138,9 +136,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Register this plugin's fanstatic directory with CKAN.
         tk.add_resource('fanstatic', 'datarequest')
 
-    ######################################################################
-    ############################## IROUTES ###############################
-    ######################################################################
+    # IRoutes
 
     def before_map(self, m):
         # Data Requests index
@@ -207,15 +203,13 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return m
 
-    ######################################################################
-    ######################### ITEMPLATESHELPER ###########################
-    ######################################################################
+    # ITemplateHelper
 
     def get_helpers(self):
         return {
             'show_comments_tab': lambda: self.comments_enabled,
             'is_organization_requestable': self.has_organization_maintainer,
-            'active_organizations_available': self.active_organizations_available
+            'active_organizations_available': self.active_organizations_available,
             'get_comments_number': helpers.get_comments_number,
             'get_comments_badge': helpers.get_comments_badge,
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
@@ -237,18 +231,18 @@ class DataRequestsPlugin(p.SingletonPlugin):
         '''Returns true if the given organization has admin or maintainer role associated to it other than the default admin
            false otherwise'''
         context = {'user': c.user}
-        data_dict={'id': orgid, 'capacity': 'admin'}
+        data_dict = {'id': orgid, 'capacity': 'admin'}
 
-        ## TODO: Do it in a more python way
-        members = tk.get_action('member_list')(context,data_dict)
+        # TODO: Do it in a more python way
+        members = tk.get_action('member_list')(context, data_dict)
 
         if members:
             sys_maintainers = 0
-            ## Return all sysadmins and check whether this organization has any other admin more than a default sysadmin has it
+            # Return all sysadmins and check whether this organization has any other admin more than a default sysadmin has it
             admins = list(model.Session.query(model.User).filter(model.User.sysadmin == True))  # noqa
             adminsuuid = {}
             for admin in admins:
-                adminsuuid['%s' %admin.id] = []
+                adminsuuid['%s' % admin.id] = []
 
             for member in members:
                 if any(str(member[0]) in adminuuid for adminuuid in adminsuuid):
@@ -257,9 +251,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         else:
             return False
 
-    ######################################################################
-    ########################### ITRANSLATION #############################
-    ######################################################################
+    # ITranslator
 
     # The following methods are copied from ckan.lib.plugins.DefaultTranslation
     # and have been modified to fix a bug in CKAN 2.5.1 that prevents CKAN from
@@ -284,10 +276,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         plugin
         '''
         directory = self.i18n_directory()
-        return [ d for
-                 d in os.listdir(directory)
-                 if os.path.isdir(os.path.join(directory, d))
-        ]
+        return [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d))]
 
     def i18n_domain(self):
         '''Change the gettext domain handled by this plugin

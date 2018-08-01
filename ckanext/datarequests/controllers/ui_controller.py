@@ -174,7 +174,8 @@ class DataRequestsUI(base.BaseController):
 
             try:
                 result = tk.get_action(action)(context, data_dict)
-                tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=result['id']))
+                tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                               action='show', id=result['id']))
 
             except tk.ValidationError as e:
                 log.warn(e)
@@ -264,7 +265,7 @@ class DataRequestsUI(base.BaseController):
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
-            log.warn(e) 
+            log.warn(e)
             tk.abort(403, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
@@ -272,7 +273,7 @@ class DataRequestsUI(base.BaseController):
         context = self._get_context()
 
         try:
-          c.group_dict = tk.get_action('organization_show')(context, {'id': id})
+            c.group_dict = tk.get_action('organization_show')(context, {'id': id})
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Organization was not found'))
@@ -298,7 +299,8 @@ class DataRequestsUI(base.BaseController):
             # belongs to the organization are shown)
             organization_id = c.datarequest.get('organization_id', '')
             if organization_id:
-                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id, 'include_datasets': True})['packages']
+                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id,
+                                                                                           'include_datasets': True})['packages']
             else:
                 # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
                 # We assume that a user will close their data request with a recently added or modified dataset
@@ -326,7 +328,8 @@ class DataRequestsUI(base.BaseController):
                 data_dict['id'] = id
 
                 tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-                tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=data_dict['id']))
+                tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                               action='show', id=data_dict['id']))
 
             else:   # GET
                 return _return_page()
@@ -419,7 +422,8 @@ class DataRequestsUI(base.BaseController):
             tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
             tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
             helpers.flash_notice(tk._('Comment has been deleted'))
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest_id))
+            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                           action='comment', id=datarequest_id))
 
         except tk.ObjectNotFound as e:
             log.warn(e)
@@ -435,4 +439,3 @@ class DataRequestsUI(base.BaseController):
     def unfollow(self, datarequest_id):
         # Method is not called
         pass
-        

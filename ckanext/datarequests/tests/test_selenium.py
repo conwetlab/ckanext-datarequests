@@ -262,7 +262,7 @@ class TestSelenium(unittest.TestCase):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
                          '//li[@class=\'dataset-item\']')), expected_number)
 
-    def check_datarequest(self, datarequest_id, title, description, open, owner, 
+    def check_datarequest(self, datarequest_id, title, description, open, owner,
                           organization='None', accepted_dataset='None'):
         driver = self.driver
         driver.get(self.base_url + 'datarequest/' + datarequest_id)

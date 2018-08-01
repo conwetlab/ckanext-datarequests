@@ -27,9 +27,8 @@ DATAREQUEST_ID = 'example_uuidv4'
 FREE_TEXT = 'free-text'
 DEFAULT_FOLLOWERS = 3
 
-######################################################################
-############################## FUNCTIONS #############################
-######################################################################
+
+# Functions
 
 def dictice_ddbb_response(datarequest):
     return {
@@ -77,7 +76,7 @@ def _generate_basic_ddbb_response(number, organizations=None, closed=None):
 
     response = list()
     for n in range(number):
-        response.append(_generate_basic_datarequest(organization_id=organizations[n], 
+        response.append(_generate_basic_datarequest(organization_id=organizations[n],
                                                     closed=closed[n]))
 
     return response
@@ -130,9 +129,7 @@ def _initialize_basic_actions(actions, default_user, default_org, default_pkg):
     actions.tk.get_action.side_effect = _get_action
 
 
-######################################################################
-######################### DATA FOR BASIC TESTS #######################
-######################################################################
+# Data for basic tests
 
 create_request_data = {
     'title': 'title',
@@ -193,9 +190,7 @@ follow_data_request_data = {
 }
 
 
-######################################################################
-########################### LIST_DATAREQUESTS ########################
-######################################################################
+# List datarequests
 
 org1 = 'org1'
 org2 = 'org2'
@@ -387,7 +382,8 @@ list_datarequests_test_case_11 = {
 list_datarequests_test_case_12 = {
     'organization_show_func': _organization_show,
     'content': {'organization_id': 'fiware', 'user_id': 'ckan', 'closed': True, 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id, 'user_id': user_default_id, 'closed': True, 'desc': False},
+    'expected_ddbb_params': {'q': None, 'organization_id': organization_default_id,
+                             'user_id': user_default_id, 'closed': True, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }
@@ -427,8 +423,10 @@ list_datarequests_test_case_16 = {
 
 list_datarequests_test_case_17 = {
     'organization_show_func': _organization_show,
-    'content': {'q': FREE_TEXT, 'organization_id': 'fiware', 'user_id': 'ckan', 'closed': False, 'offset': default_offset, 'limit': default_limit},
-    'expected_ddbb_params': {'q': FREE_TEXT, 'organization_id': organization_default_id, 'user_id': user_default_id, 'closed': False, 'desc': False},
+    'content': {'q': FREE_TEXT, 'organization_id': 'fiware', 'user_id': 'ckan',
+                'closed': False, 'offset': default_offset, 'limit': default_limit},
+    'expected_ddbb_params': {'q': FREE_TEXT, 'organization_id': organization_default_id,
+                             'user_id': user_default_id, 'closed': False, 'desc': False},
     'ddbb_response': ddbb_response_2,
     'expected_response': expected_result_3
 }

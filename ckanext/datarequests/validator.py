@@ -78,6 +78,7 @@ def validate_comment(context, request_data):
         raise tk.ValidationError({tk._('Comment'): [tk._('Comments must be a minimum of 1 character long')]})
 
     if len(comment) > constants.COMMENT_MAX_LENGTH:
-        raise tk.ValidationError({tk._('Comment'): [tk._('Comments must be a maximum of %d characters long') % constants.COMMENT_MAX_LENGTH]})
+        raise tk.ValidationError({tk._('Comment'): [tk._('Comments must be a maximum of %d characters long') %
+                                                    constants.COMMENT_MAX_LENGTH]})
 
     return datarequest

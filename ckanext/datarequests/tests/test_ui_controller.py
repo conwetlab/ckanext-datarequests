@@ -83,10 +83,7 @@ class UIControllerTest(unittest.TestCase):
         controller.base = self._base
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
-
-    ######################################################################
-    ################################# AUX ################################
-    ######################################################################
+    # Aux
 
     def _test_not_authorized(self, function, action, check_access_func):
         datarequest_id = 'example_uuidv4'
@@ -122,10 +119,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
-
-    ######################################################################
-    ################################# NEW ################################
-    ######################################################################
+    # New
 
     @parameterized.expand([
         (True,),
@@ -187,7 +181,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.new()
 
         # Authorize function has been called
-        controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, 
+        controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
                                                            self.expected_context, None)
 
         if authorized:
@@ -219,10 +213,7 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
-
-    ######################################################################
-    ################################ SHOW ################################
-    ######################################################################
+    # Show
 
     def test_show_not_authorized(self):
         self._test_not_authorized(self.controller_instance.show, 'view', constants.SHOW_DATAREQUEST)
@@ -314,10 +305,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.render.assert_called_once_with('datarequests/show.html')
         self.assertEquals(controller.tk.render.return_value, result)
 
-
-    ######################################################################
-    ############################### UPDATE ###############################
-    ######################################################################
+    # Update
 
     def test_update_not_authorized(self):
         self._test_not_authorized(self.controller_instance.update, 'update', constants.UPDATE_DATAREQUEST)
@@ -432,10 +420,7 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
 
-
-    ######################################################################
-    ################################ INDEX ###############################
-    ######################################################################
+    # Index
 
     def test_index_not_authorized(self):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
@@ -607,7 +592,7 @@ class UIControllerTest(unittest.TestCase):
         silly_page = 72
         query_param = 'q={0}&'.format(query) if query else ''
         self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
-                          page_arguments['url'](q=query,page=silly_page))
+                          page_arguments['url'](q=query, page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
@@ -635,10 +620,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(controller.tk.render.return_value, result)
         controller.tk.render.assert_called_once_with(expected_render_page)
 
-
-    ######################################################################
-    ############################### DELETE ###############################
-    ######################################################################
+    # Delete
 
     def test_delete_not_authorized(self):
         self._test_not_authorized(self.controller_instance.delete, 'delete', constants.DELETE_DATAREQUEST)
@@ -677,10 +659,7 @@ class UIControllerTest(unittest.TestCase):
             action='index')
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
-
-    ######################################################################
-    ################################ CLOSE ###############################
-    ######################################################################
+    # Close
 
     def test_close_not_authorized(self):
         self._test_not_authorized(self.controller_instance.close, 'close', constants.CLOSE_DATAREQUEST)
@@ -784,10 +763,7 @@ class UIControllerTest(unittest.TestCase):
         self.test_close(organization, post_content, exception.error_dict,
                         {'Accepted Dataset': 'error1, error2'}, close_datarequest)
 
-
-    ######################################################################
-    ############################### COMMENT ##############################
-    ######################################################################
+    # Comment
 
     def test_comment_list_not_authorized(self):
         datarequest_id = 'example_uuidv4'
@@ -797,8 +773,10 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.comment(datarequest_id)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.LIST_DATAREQUEST_COMMENTS, self.expected_context, {'datarequest_id': datarequest_id})
-        controller.tk.abort.assert_called_once_with(403, 'You are not authorized to list the comments of the Data Request %s' % datarequest_id)
+        controller.tk.check_access.assert_called_once_with(constants.LIST_DATAREQUEST_COMMENTS,
+                                                           self.expected_context, {'datarequest_id': datarequest_id})
+        controller.tk.abort.assert_called_once_with(403, 'You are not authorized to list the comments of the Data Request %s'
+                                                    % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
@@ -895,7 +873,8 @@ class UIControllerTest(unittest.TestCase):
 
         if new_comment or update_comment:
             default_action.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else ''})
+                                                                           'comment': comment,
+                                                                           'id': comment_id if update_comment else ''})
 
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
@@ -930,10 +909,7 @@ class UIControllerTest(unittest.TestCase):
             if update_comment:
                 self.assertEquals(comment_id, controller.c.updated_comment['id'])
 
-
-    ######################################################################
-    ########################### DELETE COMMENT ###########################
-    ######################################################################
+    # Delete comment
 
     def test_delete_comment_not_authorized(self):
         comment_id = 'example_uuidv4_comment'
@@ -943,7 +919,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.delete_comment('datarequest_id', comment_id)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT, 
+        controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT,
                                                            self.expected_context, {'id': comment_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to delete this comment')
         self.assertEquals(0, controller.tk.render.call_count)
@@ -981,9 +957,7 @@ class UIControllerTest(unittest.TestCase):
             action='comment', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
-    ######################################################################
-    ########################## FOLLOW/UNFOLLOW ###########################
-    ######################################################################
+    # Follow / Unfollow
 
     def test_follow(self):
         self.controller_instance.follow('example_uuidv4')
