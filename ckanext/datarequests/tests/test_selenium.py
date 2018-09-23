@@ -258,7 +258,7 @@ class TestSelenium(unittest.TestCase):
         if search:
             text += ' for "%s"' % search
 
-        self.assertEqual(text, self.driver.find_element_by_css_selector("h2").text)
+        self.assertEqual(text, self.driver.find_element_by_css_selector(".primary h2").text)
 
     def check_n_datarequests(self, expected_number):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
@@ -306,14 +306,15 @@ class TestSelenium(unittest.TestCase):
     def test_create_datarequest_and_check_permissions(self):
 
         users = ['user1', 'user2']
+        pwds = []
 
         # Create users
         for user in users:
-            pwd = self.default_register(user)
+            pwds.append(self.default_register(user))
 
         # The first user creates a data request and they are able to
         # close/modify it
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
@@ -324,7 +325,7 @@ class TestSelenium(unittest.TestCase):
         # Second user can access the data request but they are not able to
         # close/modify it
         self.logout()
-        self.login(users[1], users[1])
+        self.login(users[1], pwds[1])
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, True, False)
 
@@ -440,7 +441,7 @@ class TestSelenium(unittest.TestCase):
 
         # Check that there are not more data requests in the system
         self.assertTrue('No Data Requests found with the given criteria.'
-                        in self.driver.find_element_by_css_selector('p.empty').text)
+                        in self.driver.find_element_by_css_selector('.primary p.empty').text)
 
         # Check flash message
         self.assertTrue('Data Request ' + datarequest_title + ' has been deleted'
@@ -589,13 +590,14 @@ class TestSelenium(unittest.TestCase):
             self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-times'))
 
         users = ['user1', 'user2']
+        pwds = []
 
         # Create users
         for user in users:
-            pwd = self.default_register(user)
+            pwds.append(self.default_register(user))
 
         # First user creates the data request
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
@@ -603,7 +605,7 @@ class TestSelenium(unittest.TestCase):
 
         # Second user creates the comment so they are able to modify it
         self.logout()
-        self.login(users[1], users[1])
+        self.login(users[1], pwds[1])
 
         comment = 'this is a sample comment'
         self.comment_datarequest(datarequest_id, comment)
@@ -613,7 +615,7 @@ class TestSelenium(unittest.TestCase):
 
         # First user is not able to modify the comment
         self.logout()
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
 
         self.driver.get(self.base_url + 'datarequest/comment/' +
                         datarequest_id)
