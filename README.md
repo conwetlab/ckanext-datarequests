@@ -248,6 +248,10 @@ python setup.py nosetests
 
 ## Changelog
 
+### v1.1.0
+
+* New Compatibility with CKAN 2.8.0
+
 ### v1.0.0
 
 * New: Option to follow data requests.
