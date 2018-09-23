@@ -119,7 +119,9 @@ class TestSelenium(unittest.TestCase):
         self.logout()
 
     def default_register(self, user):
-        self.register(user, user, '%s@conwet.com' % user, user)
+        pwd = user.ljust(8, '0')
+        self.register(user, user, '%s@conwet.com' % user, pwd)
+        return pwd
 
     def login(self, username, password):
         driver = self.driver
@@ -307,7 +309,7 @@ class TestSelenium(unittest.TestCase):
 
         # Create users
         for user in users:
-            self.default_register(user)
+            pwd = self.default_register(user)
 
         # The first user creates a data request and they are able to
         # close/modify it
@@ -341,8 +343,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the description
         description = _generate_random_string(description_length)
@@ -355,8 +357,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the comment
         title = 'Data Request'
@@ -378,8 +380,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the data request
         datarequest_title = 'Data Request 1'
@@ -403,8 +405,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the comment
         title = 'Data Request'
@@ -424,8 +426,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the data request
         datarequest_title = 'Data Request 1'
@@ -448,8 +450,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create data request
         datarequest_title = 'Data Request 1'
@@ -468,8 +470,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         organization_1_name = 'conwet'
         organization_2_name = 'upm'
@@ -518,8 +520,8 @@ class TestSelenium(unittest.TestCase):
         n_datarequests = 11
         base_name = 'Data Request'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         for i in range(n_datarequests):
             datarequest_title = '{0} {1}'.format(base_name, i)
@@ -590,7 +592,7 @@ class TestSelenium(unittest.TestCase):
 
         # Create users
         for user in users:
-            self.default_register(user)
+            pwd = self.default_register(user)
 
         # First user creates the data request
         self.login(users[0], users[0])
@@ -627,8 +629,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -653,8 +655,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -677,8 +679,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -699,8 +701,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create Data Request
         datarequest_title = 'Data Request 1'
