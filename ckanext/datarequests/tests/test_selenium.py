@@ -185,7 +185,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_id('field-description').send_keys(description)
 
         if organization_name:
-            Select(driver.find_element_by_id('field-organizations')).select_by_visible_text(organization_name)
+            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
 
         driver.find_element_by_name('save').click()
 
