@@ -575,6 +575,7 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.get_action.assert_called_once_with(constants.LIST_DATAREQUESTS)
             self.assertEquals(0, organization_show.call_count)
             expected_render_page = 'datarequests/index.html'
+            user_dict = None
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
             self.assertEquals(2, controller.tk.get_action.call_count)
             controller.tk.get_action.assert_any_call(constants.LIST_DATAREQUESTS)
@@ -582,13 +583,15 @@ class UIControllerTest(unittest.TestCase):
             self.assertEquals(organization_show.return_value, controller.c.group_dict)
             organization_show.assert_called_once_with(self.expected_context, {'id': organization})
             expected_render_page = 'organization/datarequests.html'
+            user_dict = None
         elif func == USER_DATAREQUESTS_FUNCTION:
-            self.assertEquals(2, controller.tk.get_action.call_count)
+            self.assertEquals(3, controller.tk.get_action.call_count)
             controller.tk.get_action.assert_any_call(constants.LIST_DATAREQUESTS)
             controller.tk.get_action.assert_any_call(user_show_action)
             self.assertEquals(user_show.return_value, controller.c.user_dict)
             user_show.assert_called_once_with(self.expected_context, {'id': user, 'include_num_followers': True})
             expected_render_page = 'user/datarequests.html'
+            user_dict = user_show.return_value
 
         # Check the values put in c
         list_datarequests.assert_called_once_with(self.expected_context, expected_data_dict)
@@ -633,7 +636,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Check that the render functions has been called with the suitable parameters
         self.assertEquals(controller.tk.render.return_value, result)
-        controller.tk.render.assert_called_once_with(expected_render_page)
+        controller.tk.render.assert_called_once_with(expected_render_page, extra_vars={'user_dict': user_dict, 'group_type': 'organization'})
 
 
     ######################################################################

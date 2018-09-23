@@ -665,7 +665,7 @@ class TestSelenium(unittest.TestCase):
 
         # Delete the comment
         self.driver.find_element_by_css_selector('i.fa-times').click()
-        self.driver.find_element_by_css_selector('button.btn.btn-primary').click()
+        self.driver.find_element_by_css_selector('.modal-footer > button.btn.btn-primary').click()
 
         # Check that the comment has been deleted
         self.assertEqual('This data request has not been commented yet',
