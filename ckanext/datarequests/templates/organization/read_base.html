@@ -1,14 +1,8 @@
 {% ckan_extends %}
 
 {% block content_primary_nav %}
-
-  {% set organization_datasets_nav = 'organization_datasets' if h.ckan_version()[:3] <= '2.7' else 'organization.read' %}
-  {% set organization_activity_nav = 'organization_activity_stream' if h.ckan_version()[:3] <= '2.7' else 'organization.activity' %}
-  {% set organization_about_nav = 'organization_about' if h.ckan_version()[:3] <= '2.7' else 'organization.about' %}
-
-
-  {{ h.build_nav_icon(organization_datasets_nav, _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon(organization_activity_nav, _('Activity Stream'), id=c.group_dict.name, offset=0) }}
+  {{ h.build_nav_icon('organization_datasets', _('Datasets'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('organization_activity_stream', _('Activity Stream'), id=c.group_dict.name, offset=0) }}
   {{ h.build_nav_icon('organization_datarequests', _('Data Requests'), id=c.group_dict.name)}}
-  {{ h.build_nav_icon(organization_about_nav, _('About'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon('organization_about', _('About'), id=c.group_dict.name) }}
 {% endblock %}

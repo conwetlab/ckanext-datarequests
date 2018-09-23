@@ -147,13 +147,12 @@ class DataRequestsUI(base.BaseController):
 
             # Required in CKAN >= 2.8
             user_dict = tk.get_action('user_show')(context, {'id': user_id, 'include_num_followers': True}) if user_id else None
-            organization_dict = tk.get_action('organization_show')(context, {'id': organization_id, 'include_num_followers': True}) if organization_id else None
 
             # Organization facet cannot be shown when the user is viewing an org
             if include_organization_facet is True:
                 c.facet_titles['organization'] = tk._('Organizations')
 
-            return tk.render(file_to_render, extra_vars={'user_dict': user_dict, 'organization_dict': organization_dict})
+            return tk.render(file_to_render, extra_vars={'user_dict': user_dict, 'group_type': 'organization'})
         except ValueError as e:
             # This exception should only occur if the page value is not valid
             log.warn(e)
