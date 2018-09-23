@@ -221,7 +221,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_link_text('Close').click()
 
         if dataset_name:
-            Select(driver.find_element_by_id('field-accepted_dataset_id')).select_by_visible_text(dataset_name)
+            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(dataset_name)
 
         driver.find_element_by_name('close').click()
 
@@ -576,7 +576,7 @@ class TestSelenium(unittest.TestCase):
 
         # Filter by open (there should be 5 data requests open with the given
         # base name)
-        self.driver.find_element_by_link_text('Open (5)').click()
+        self.driver.find_element_by_partial_link_text('Open').click()
         self.check_n_datarequests(5)
         self.check_datarequests_counter(5, base_name)
 
