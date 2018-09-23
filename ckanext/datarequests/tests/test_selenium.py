@@ -221,7 +221,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_link_text('Close').click()
 
         if dataset_name:
-            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(dataset_name)
+            Select(driver.find_element_by_xpath('//*[@id="field-accepted_dataset_id"]')).select_by_visible_text(dataset_name)
 
         driver.find_element_by_name('close').click()
 
