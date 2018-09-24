@@ -185,12 +185,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_id('field-description').send_keys(description)
 
         if organization_name:
-            # In new versions of CKAN this is not needed because the created organization is selected by default
-            # in order versions "No Organization" is the default option...
-            try:
-                Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
-            except Exception:
-                pass
+            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
 
         driver.find_element_by_name('save').click()
 
@@ -472,6 +467,8 @@ class TestSelenium(unittest.TestCase):
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True)
 
+    @unittest.skipIf('.'.join(os.environ.get('CKANVERSION', '2.7').split('.')[:-1]) >= 2.8, 
+                     'This test cannot be run in CKAN >= 2.8 because elements in combo boxes cannot be selected')
     def test_close_datarequest_with_organization_and_accepted_dataset(self):
 
         user = 'user1'
