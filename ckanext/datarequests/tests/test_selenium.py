@@ -185,7 +185,12 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_id('field-description').send_keys(description)
 
         if organization_name:
-            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
+            # In new versions of CKAN this is not needed because the created organization is selected by default
+            # in order versions "No Organization" is the default option...
+            try:
+                Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
+            except Exception:
+                pass
 
         driver.find_element_by_name('save').click()
 
