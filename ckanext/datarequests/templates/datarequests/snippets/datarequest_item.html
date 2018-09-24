@@ -23,7 +23,7 @@
       {% endif %}
       <div class="datarequest-properties">
         {% if h.show_comments_tab() %}
-          <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest.get('id','')) }}" class="label"><i class="icon-comment fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
+          <a href="{{ h.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest.get('id','')) }}" class="label label-default"><i class="icon-comment fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
         {% endif %}
         <div class="divider"/>
         <span class="date-datarequests">{{ h.time_ago_from_timestamp(datarequest.open_time) }}</span>
