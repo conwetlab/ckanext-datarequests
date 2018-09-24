@@ -248,6 +248,11 @@ python setup.py nosetests
 
 ## Changelog
 
+### v1.1.0
+
+* New: Compatibility with CKAN 2.8.0
+* New: Somali translation (thanks to @SimuliChina)
+
 ### v1.0.0
 
 * New: Option to follow data requests.
@@ -270,7 +275,7 @@ python setup.py nosetests
 
 ### v0.4.1
 
-* New: Brazilian Portuguese (thanks to @allysonbarros)
+* New: Brazilian Portuguese translation (thanks to @allysonbarros)
 
 ### v0.4.0
 

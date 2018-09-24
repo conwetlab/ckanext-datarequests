@@ -12,7 +12,7 @@
 {% block content_action %}
 
   {% if h.check_access('update_datarequest', {'id':datarequest_id }) %}
-    {% link_for _('Manage'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='update', id=datarequest_id, class_='btn', icon='wrench' %}
+    {% link_for _('Manage'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='update', id=datarequest_id, class_='btn btn-default', icon='wrench' %}
   {% endif %}
 
   {% if h.check_access('close_datarequest', {'id':datarequest_id }) and not c.datarequest.closed %}
