@@ -914,7 +914,7 @@ class UIControllerTest(unittest.TestCase):
 
             errors_summary = {}
             for key, error in comment_or_update_exception.error_dict.items():
-                    errors_summary[key] = ', '.join(error)
+                errors_summary[key] = ', '.join(error)
 
             self.assertEquals(errors_summary, controller.c.errors_summary)
 
