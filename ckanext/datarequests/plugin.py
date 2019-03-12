@@ -36,6 +36,7 @@ def get_config_bool_value(config_name, default_value=False):
     value = value if type(value) == bool else value != 'False'
     return value
 
+
 def is_fontawesome_4():
     if hasattr(h, 'ckan_version'):
         ckan_version = float(h.ckan_version()[0:3])
@@ -43,8 +44,10 @@ def is_fontawesome_4():
     else:
         return False
 
+
 def get_plus_icon():
     return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
+
 
 def get_question_icon():
     return 'question-circle' if is_fontawesome_4() else 'question-sign'
@@ -69,9 +72,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
 
-    ######################################################################
-    ############################## IACTIONS ##############################
-    ######################################################################
+    #  IACTIONS
 
     def get_actions(self):
         additional_actions = {
@@ -94,9 +95,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return additional_actions
 
-    ######################################################################
-    ########################### AUTH FUNCTIONS ###########################
-    ######################################################################
+    #  AUTH FUNCTIONS
 
     def get_auth_functions(self):
         auth_functions = {
@@ -119,9 +118,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return auth_functions
 
-    ######################################################################
-    ############################ ICONFIGURER #############################
-    ######################################################################
+    #  ICONFIGURER
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -134,9 +131,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Register this plugin's fanstatic directory with CKAN.
         tk.add_resource('fanstatic', 'datarequest')
 
-    ######################################################################
-    ############################## IROUTES ###############################
-    ######################################################################
+    #  IROUTES
 
     def before_map(self, m):
         # Data Requests index
@@ -203,9 +198,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return m
 
-    ######################################################################
-    ######################### ITEMPLATESHELPER ###########################
-    ######################################################################
+    #  ITEMPLATESHELPER
 
     def get_helpers(self):
         return {
@@ -218,9 +211,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'is_following_datarequest': helpers.is_following_datarequest
         }
 
-    ######################################################################
-    ########################### ITRANSLATION #############################
-    ######################################################################
+    #  ITRANSLATION
 
     # The following methods are copied from ckan.lib.plugins.DefaultTranslation
     # and have been modified to fix a bug in CKAN 2.5.1 that prevents CKAN from
@@ -245,10 +236,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
         plugin
         '''
         directory = self.i18n_directory()
-        return [ d for
-                 d in os.listdir(directory)
-                 if os.path.isdir(os.path.join(directory, d))
-        ]
+        return [d for
+                d in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, d))
+                ]
 
     def i18n_domain(self):
         '''Change the gettext domain handled by this plugin

@@ -94,10 +94,7 @@ class ActionsTest(unittest.TestCase):
         else:
             self.assertIsNone(response['close_time'])
 
-
-    ######################################################################
-    ################################# AUX ################################
-    ######################################################################
+    #  AUX
 
     def _test_not_authorized(self, function, action, request_data):
         # Configure the mock
@@ -148,10 +145,7 @@ class ActionsTest(unittest.TestCase):
         actions.tk.check_access.assert_called_once_with(action, self.context, request_data)
         actions.db.Comment.get.assert_called_once_with(id=request_data['id'])
 
-
-    ######################################################################
-    ######################### GET INVOLVED USERS #########################
-    ######################################################################
+    #  GET INVOLVED USERS
 
     @patch('ckanext.datarequests.actions.list_datarequest_comments')
     def test_get_involved_users_no_org_and_current_user_must_be_discarded(self, list_comments_mock):
@@ -177,7 +171,9 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(set(['user-2', 'user-3']), result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
-        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+        list_comments_mock.assert_called_once_with({'ignore_auth': True,
+                                                    'model': self.context['model']},
+                                                   {'datarequest_id': datarequest_id})
 
     @patch('ckanext.datarequests.actions.list_datarequest_comments')
     def test_get_involved_users_no_org_and_current_user_must_not_be_discarded(self, list_comments_mock):
@@ -203,7 +199,9 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(set(['user-1', 'user-2', 'user-3']), result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
-        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+        list_comments_mock.assert_called_once_with({'ignore_auth': True,
+                                                    'model': self.context['model']},
+                                                   {'datarequest_id': datarequest_id})
 
     @patch('ckanext.datarequests.actions.list_datarequest_comments')
     def test_get_involved_users_org(self, list_comments_mock):
@@ -229,12 +227,11 @@ class ActionsTest(unittest.TestCase):
         self.assertEquals(set(['user-1', 'user-2', 'user-3', 'user-4']), result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
-        list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
+        list_comments_mock.assert_called_once_with({'ignore_auth': True,
+                                                    'model': self.context['model']},
+                                                   {'datarequest_id': datarequest_id})
 
-
-    ######################################################################
-    ############################# SEND MAIL ##############################
-    ######################################################################
+    #  SEND MAIL
 
     @patch('ckanext.datarequests.actions.config')
     @patch('ckanext.datarequests.actions.mailer')
@@ -269,7 +266,6 @@ class ActionsTest(unittest.TestCase):
 
             mailer_mock.mail_user.assert_any_call(get_users_side_effect[i], subject, body)
 
-
     @patch('ckanext.datarequests.actions.config')
     @patch('ckanext.datarequests.actions.mailer')
     @patch('ckanext.datarequests.actions.base')
@@ -301,10 +297,7 @@ class ActionsTest(unittest.TestCase):
 
         mailer_mock.mail_user.assert_any_call(user, subject, body)
 
-
-    ######################################################################
-    ################################# NEW ################################
-    ######################################################################
+    #  NEW
 
     def test_create_datarequest_no_access(self):
         # Configure the mock
@@ -316,7 +309,9 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, self.context, test_data.create_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.create_request_data)
         self.assertEquals(0, actions.validator.validate_datarequest.call_count)
         self.assertEquals(0, actions.db.DataRequest.call_count)
         self.assertEquals(0, self.context['session'].add.call_count)
@@ -332,7 +327,9 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, self.context, test_data.create_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.create_request_data)
         actions.validator.validate_datarequest.assert_called_once_with(self.context, test_data.create_request_data)
         self.assertEquals(0, actions.db.DataRequest.call_count)
         self.assertEquals(0, self.context['session'].add.call_count)
@@ -357,7 +354,9 @@ class ActionsTest(unittest.TestCase):
         datarequest = actions.db.DataRequest.return_value
 
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, self.context, test_data.create_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.create_request_data)
         actions.validator.validate_datarequest.assert_called_once_with(self.context, test_data.create_request_data)
         actions.db.DataRequest.assert_called_once()
 
@@ -375,10 +374,7 @@ class ActionsTest(unittest.TestCase):
         # Check the returned object
         self._check_basic_response(datarequest, result, default_user, default_org, default_pkg)
 
-
-    ######################################################################
-    ################################ SHOW ################################
-    ######################################################################
+    #  SHOW
 
     def test_show_datarequest_not_authorized(self):
         self._test_not_authorized(actions.show_datarequest, constants.SHOW_DATAREQUEST, test_data.show_request_data)
@@ -404,7 +400,9 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.SHOW_DATAREQUEST, self.context, test_data.show_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.SHOW_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.show_request_data)
         actions.db.DataRequest.get.assert_called_once_with(id=test_data.show_request_data['id'])
 
         org = default_org if org_checked else None
@@ -438,10 +436,7 @@ class ActionsTest(unittest.TestCase):
 
         self._test_show_datarequest_found(datarequest, org_checked, pkg_checked)
 
-
-    ######################################################################
-    ############################### UPDATE ###############################
-    ######################################################################
+    #  UPDATE
 
     def test_update_datarequest_not_authorized(self):
         self._test_not_authorized(actions.update_datarequest, constants.UPDATE_DATAREQUEST, test_data.update_request_data)
@@ -473,7 +468,9 @@ class ActionsTest(unittest.TestCase):
         datarequest.organization_id = organization_id
         datarequest.accepted_dataset_id = accepted_dataset_id
         # Title should not be checked when it does not change
-        datarequest.title = test_data.create_request_data['title'] + 'a' if title_checked else test_data.create_request_data['title']
+        datarequest.title = (test_data.create_request_data['title'] + 'a'
+                             if title_checked
+                             else test_data.create_request_data['title'])
         actions.db.DataRequest.get.return_value = [datarequest]
 
         # Mock actions
@@ -490,7 +487,9 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST, self.context, test_data.update_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.update_request_data)
         actions.db.DataRequest.get.assert_called_once_with(id=test_data.update_request_data['id'])
         expected_context = self.context.copy()
         expected_context['avoid_existing_title_check'] = not title_checked
@@ -510,10 +509,7 @@ class ActionsTest(unittest.TestCase):
         pkg = default_pkg if accepted_dataset_id else None
         self._check_basic_response(datarequest, result, default_user, org, pkg)
 
-
-    ######################################################################
-    ################################ LIST ################################
-    ######################################################################
+    #  LIST
 
     def test_list_datarequests_not_authorized(self):
         self._test_not_authorized(actions.list_datarequests, constants.LIST_DATAREQUESTS, {})
@@ -544,7 +540,6 @@ class ActionsTest(unittest.TestCase):
         ddbb_response = test_case['ddbb_response']
         expected_response = test_case['expected_response']
         _organization_show = test_case['organization_show_func']
-        _user_show = test_case.get('user_show_func', None)
 
         # Set the mocks
         actions.db.DataRequest.get_ordered_by_date.return_value = ddbb_response
@@ -619,10 +614,7 @@ class ActionsTest(unittest.TestCase):
             for item in items:
                 self.assertIn(item, response['facets'][facet]['items'])
 
-
-    ######################################################################
-    ############################### DELETE ###############################
-    ######################################################################
+    #  DELETE
 
     def test_delete_datarequest_not_authorized(self):
         self._test_not_authorized(actions.delete_datarequest, constants.DELETE_DATAREQUEST, test_data.delete_request_data)
@@ -665,16 +657,15 @@ class ActionsTest(unittest.TestCase):
         pkg = default_pkg if accepted_dataset_id else None
         self._check_basic_response(datarequest, result, default_user, org, pkg)
 
-
-    ######################################################################
-    ################################ CLOSE ###############################
-    ######################################################################
+    #  CLOSE
 
     def test_close_datarequest_not_authorized_no_accepted_ds(self):
         self._test_not_authorized(actions.close_datarequest, constants.CLOSE_DATAREQUEST, test_data.close_request_data)
 
     def test_close_datarequest_not_authorized_accepted_ds(self):
-        self._test_not_authorized(actions.close_datarequest, constants.CLOSE_DATAREQUEST, test_data.close_request_data_accepted_ds)
+        self._test_not_authorized(actions.close_datarequest,
+                                  constants.CLOSE_DATAREQUEST,
+                                  test_data.close_request_data_accepted_ds)
 
     def test_close_datarequest_no_id(self):
         self._test_no_id(actions.close_datarequest)
@@ -703,7 +694,7 @@ class ActionsTest(unittest.TestCase):
         send_mail_patch = patch('ckanext.datarequests.actions._send_mail')
         send_mail_mock = send_mail_patch.start()
         self.addCleanup(send_mail_patch.stop)
-        
+
         get_datarequest_involved_users_patch = patch('ckanext.datarequests.actions._get_datarequest_involved_users')
         get_datarequest_involved_users_mock = get_datarequest_involved_users_patch.start()
         self.addCleanup(get_datarequest_involved_users_patch.stop)
@@ -739,10 +730,7 @@ class ActionsTest(unittest.TestCase):
         send_mail_mock.assert_called_once_with(get_datarequest_involved_users_mock.return_value, 'close_datarequest', result)
         get_datarequest_involved_users_mock.assert_called_once_with(self.context, result)
 
-
-    ######################################################################
-    ############################### COMMENT ##############################
-    ######################################################################
+    #  COMMENT
 
     def test_comment_not_authorized(self):
         self._test_not_authorized(actions.comment_datarequest, constants.COMMENT_DATAREQUEST, test_data.comment_request_data)
@@ -750,7 +738,9 @@ class ActionsTest(unittest.TestCase):
     def test_comment_no_id(self):
         self._test_no_id(actions.comment_datarequest)
 
-    def test_comment_invalid(self, function=actions.comment_datarequest, check_access=constants.COMMENT_DATAREQUEST, 
+    def test_comment_invalid(self,
+                             function=actions.comment_datarequest,
+                             check_access=constants.COMMENT_DATAREQUEST,
                              request_data=test_data.comment_request_data):
         '''
         This function is also used to check invalid content when a comment is updated
@@ -806,22 +796,25 @@ class ActionsTest(unittest.TestCase):
         # Check that the response is OK
         self._check_comment(comment, result, default_user)
 
-        send_mail_mock.assert_called_once_with(get_datarequest_involved_users_mock.return_value, 'new_comment', datarequest_dict)
+        send_mail_mock.assert_called_once_with(get_datarequest_involved_users_mock.return_value,
+                                               'new_comment',
+                                               datarequest_dict)
         get_datarequest_involved_users_mock.assert_called_once_with(self.context, datarequest_dict)
 
-
-    ######################################################################
-    ############################ SHOW COMMENT ############################
-    ######################################################################
+    #  SHOW COMMENT
 
     def test_comment_show_not_authorized(self):
-        self._test_not_authorized(actions.show_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, test_data.comment_show_request_data)
+        self._test_not_authorized(actions.show_datarequest_comment,
+                                  constants.SHOW_DATAREQUEST_COMMENT,
+                                  test_data.comment_show_request_data)
 
     def test_comment_show_no_id(self):
         self._test_no_id(actions.show_datarequest_comment)
 
     def test_comment_show_not_found(self):
-        self._test_comment_not_found(actions.show_datarequest_comment, constants.SHOW_DATAREQUEST_COMMENT, test_data.comment_show_request_data)
+        self._test_comment_not_found(actions.show_datarequest_comment,
+                                     constants.SHOW_DATAREQUEST_COMMENT,
+                                     test_data.comment_show_request_data)
 
     def test_comment_show(self):
         # Configure mock
@@ -838,13 +831,12 @@ class ActionsTest(unittest.TestCase):
         # Check that the response is OK
         self._check_comment(comment, result, default_user)
 
-
-    ######################################################################
-    ############################ LIST COMMENTS ###########################
-    ######################################################################
+    #  LIST COMMENTS
 
     def test_comment_list_not_authorized(self):
-        self._test_not_authorized(actions.list_datarequest_comments, constants.LIST_DATAREQUEST_COMMENTS, test_data.comment_list_request_data)
+        self._test_not_authorized(actions.list_datarequest_comments,
+                                  constants.LIST_DATAREQUEST_COMMENTS,
+                                  test_data.comment_list_request_data)
 
     def test_comment_list_no_id(self):
         self._test_no_id(actions.list_datarequest_comments)
@@ -877,17 +869,16 @@ class ActionsTest(unittest.TestCase):
         results = actions.list_datarequest_comments(self.context, params)
 
         # Check that the DB has been called appropriately
-        actions.db.Comment.get_ordered_by_date.assert_called_once_with(datarequest_id=test_data.comment_show_request_data['datarequest_id'],
-                                                                       desc=desc)
+        (actions.db.Comment
+            .get_ordered_by_date.assert_called_once_with(
+                datarequest_id=test_data.comment_show_request_data['datarequest_id'],
+                desc=desc))
 
         # Check that the response is OK
         for i in range(0, len(results)):
             self._check_comment(comments[i], results[i], default_user)
 
-
-    ######################################################################
-    ########################### UPDATE COMMENT ###########################
-    ######################################################################
+    #  UPDATE COMMENT
 
     def test_comment_update_not_authorized(self):
         self._test_not_authorized(actions.update_datarequest_comment, constants.UPDATE_DATAREQUEST_COMMENT,
@@ -923,7 +914,9 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST_COMMENT, self.context, test_data.comment_update_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST_COMMENT,
+                                                        self.context,
+                                                        test_data.comment_update_request_data)
         actions.db.Comment.get.assert_called_once_with(id=test_data.comment_update_request_data['id'])
         actions.validator.validate_comment.assert_called_once_with(self.context, test_data.comment_update_request_data)
 
@@ -938,19 +931,20 @@ class ActionsTest(unittest.TestCase):
         # Check the result
         self._check_comment(comment, result, default_user)
 
-
-    ######################################################################
-    ########################### DELETE COMMENT ###########################
-    ######################################################################
+    #  DELETE COMMENT
 
     def test_comment_delete_not_authorized(self):
-        self._test_not_authorized(actions.delete_datarequest_comment, constants.DELETE_DATAREQUEST_COMMENT, test_data.comment_delete_request_data)
+        self._test_not_authorized(actions.delete_datarequest_comment,
+                                  constants.DELETE_DATAREQUEST_COMMENT,
+                                  test_data.comment_delete_request_data)
 
     def test_comment_delete_no_id(self):
         self._test_no_id(actions.delete_datarequest_comment)
 
     def test_comment_delete_not_found(self):
-        self._test_comment_not_found(actions.delete_datarequest_comment, constants.DELETE_DATAREQUEST_COMMENT, test_data.comment_delete_request_data)
+        self._test_comment_not_found(actions.delete_datarequest_comment,
+                                     constants.DELETE_DATAREQUEST_COMMENT,
+                                     test_data.comment_delete_request_data)
 
     def test_comment_delete(self):
         # Configure the mock
@@ -972,9 +966,7 @@ class ActionsTest(unittest.TestCase):
 
         self._check_comment(comment, result, default_user)
 
-    ######################################################################
-    ######################### FOLLOW DATAREQUEST #########################
-    ######################################################################
+    #  FOLLOW DATAREQUEST
 
     def test_follow_not_authorized(self):
         self._test_not_authorized(actions.follow_datarequest, constants.FOLLOW_DATAREQUEST, test_data.follow_data_request_data)
@@ -1010,7 +1002,9 @@ class ActionsTest(unittest.TestCase):
         follower = actions.db.DataRequestFollower.return_value
 
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.FOLLOW_DATAREQUEST, self.context, test_data.follow_data_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.FOLLOW_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.follow_data_request_data)
         actions.db.DataRequestFollower.assert_called_once()
 
         self.context['session'].add.assert_called_once_with(follower)
@@ -1023,15 +1017,12 @@ class ActionsTest(unittest.TestCase):
 
         self.assertTrue(result)
 
-    ######################################################################
-    ######################## UNFOLLOW DATAREQUEST ########################
-    ######################################################################
+    #  UNFOLLOW DATAREQUEST
 
     def test_unfollow_not_authorized(self):
-        self._test_not_authorized(actions.unfollow_datarequest, constants.UNFOLLOW_DATAREQUEST, test_data.follow_data_request_data)
-
-    def test_follow_no_id(self):
-        self._test_no_id(actions.follow_datarequest)
+        self._test_not_authorized(actions.unfollow_datarequest,
+                                  constants.UNFOLLOW_DATAREQUEST,
+                                  test_data.follow_data_request_data)
 
     def test_unfollow_not_following(self):
         # Configure the mock
@@ -1054,10 +1045,11 @@ class ActionsTest(unittest.TestCase):
 
         # Assertions
         actions.db.init_db.assert_called_once_with(self.context['model'])
-        actions.tk.check_access.assert_called_once_with(constants.UNFOLLOW_DATAREQUEST, self.context, test_data.follow_data_request_data)
+        actions.tk.check_access.assert_called_once_with(constants.UNFOLLOW_DATAREQUEST,
+                                                        self.context,
+                                                        test_data.follow_data_request_data)
 
         self.context['session'].delete.assert_called_once_with(follower)
         self.context['session'].commit.assert_called_once()
 
         self.assertTrue(result)
-

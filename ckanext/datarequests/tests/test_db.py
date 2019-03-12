@@ -355,4 +355,3 @@ class DBTest(unittest.TestCase):
         query.filter_by.assert_called_once_with(**params)
         model.Session.query.assert_called_once_with(count)
         db.func.count.assert_called_once_with(db.DataRequestFollower.id)
-
