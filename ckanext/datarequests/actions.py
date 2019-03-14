@@ -185,7 +185,8 @@ def _get_datarequest_involved_users(context, datarequest_dict):
     users = set()
     users.add(datarequest_dict['user_id'])
     users.update([follower.user_id for follower in db.DataRequestFollower.get(datarequest_id=datarequest_id)])
-    users.update([comment['user_id'] for comment in list_datarequest_comments(new_context, {'datarequest_id': datarequest_id})])
+    users.update([comment['user_id'] for comment in list_datarequest_comments(
+        new_context, {'datarequest_id': datarequest_id})])
 
     if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])

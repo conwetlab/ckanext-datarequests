@@ -119,7 +119,9 @@ class TestSelenium(unittest.TestCase):
         self.logout()
 
     def default_register(self, user):
-        self.register(user, user, '%s@conwet.com' % user, user)
+        pwd = user.ljust(8, '0')
+        self.register(user, user, '%s@conwet.com' % user, pwd)
+        return pwd
 
     def login(self, username, password):
         driver = self.driver
@@ -183,7 +185,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_id('field-description').send_keys(description)
 
         if organization_name:
-            Select(driver.find_element_by_id('field-organizations')).select_by_visible_text(organization_name)
+            Select(driver.find_element_by_xpath('//*[@id="field-organizations"]')).select_by_visible_text(organization_name)
 
         driver.find_element_by_name('save').click()
 
@@ -219,7 +221,7 @@ class TestSelenium(unittest.TestCase):
         driver.find_element_by_link_text('Close').click()
 
         if dataset_name:
-            Select(driver.find_element_by_id('field-accepted_dataset_id')).select_by_visible_text(dataset_name)
+            Select(driver.find_element_by_xpath('//*[@id="field-accepted_dataset_id"]')).select_by_visible_text(dataset_name)
 
         driver.find_element_by_name('close').click()
 
@@ -256,7 +258,7 @@ class TestSelenium(unittest.TestCase):
         if search:
             text += ' for "%s"' % search
 
-        self.assertEqual(text, self.driver.find_element_by_css_selector("h2").text)
+        self.assertEqual(text, self.driver.find_element_by_css_selector(".primary h2").text)
 
     def check_n_datarequests(self, expected_number):
         self.assertEqual(len(self.driver.find_elements_by_xpath(
@@ -304,14 +306,15 @@ class TestSelenium(unittest.TestCase):
     def test_create_datarequest_and_check_permissions(self):
 
         users = ['user1', 'user2']
+        pwds = []
 
         # Create users
         for user in users:
-            self.default_register(user)
+            pwds.append(self.default_register(user))
 
         # The first user creates a data request and they are able to
         # close/modify it
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
@@ -322,7 +325,7 @@ class TestSelenium(unittest.TestCase):
         # Second user can access the data request but they are not able to
         # close/modify it
         self.logout()
-        self.login(users[1], users[1])
+        self.login(users[1], pwds[1])
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, True, False)
 
@@ -341,8 +344,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the description
         description = _generate_random_string(description_length)
@@ -355,8 +358,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the comment
         title = 'Data Request'
@@ -378,8 +381,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the data request
         datarequest_title = 'Data Request 1'
@@ -403,8 +406,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the comment
         title = 'Data Request'
@@ -424,8 +427,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create the data request
         datarequest_title = 'Data Request 1'
@@ -438,7 +441,7 @@ class TestSelenium(unittest.TestCase):
 
         # Check that there are not more data requests in the system
         self.assertTrue('No Data Requests found with the given criteria.'
-                        in self.driver.find_element_by_css_selector('p.empty').text)
+                        in self.driver.find_element_by_css_selector('.primary p.empty').text)
 
         # Check flash message
         self.assertTrue('Data Request ' + datarequest_title + ' has been deleted'
@@ -448,8 +451,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create data request
         datarequest_title = 'Data Request 1'
@@ -464,12 +467,14 @@ class TestSelenium(unittest.TestCase):
         self.check_datarequest(datarequest_id, datarequest_title,
                                datarequest_description, False, True)
 
+    @unittest.skipIf('.'.join(os.environ.get('CKANVERSION', '2.7').split('.')[:-1]) >= 2.8,
+                     'This test cannot be run in CKAN >= 2.8 because elements in combo boxes cannot be selected')
     def test_close_datarequest_with_organization_and_accepted_dataset(self):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         organization_1_name = 'conwet'
         organization_2_name = 'upm'
@@ -518,8 +523,8 @@ class TestSelenium(unittest.TestCase):
         n_datarequests = 11
         base_name = 'Data Request'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         for i in range(n_datarequests):
             datarequest_title = '{0} {1}'.format(base_name, i)
@@ -573,7 +578,7 @@ class TestSelenium(unittest.TestCase):
 
         # Filter by open (there should be 5 data requests open with the given
         # base name)
-        self.driver.find_element_by_link_text('Open (5)').click()
+        self.driver.find_element_by_partial_link_text('Open').click()
         self.check_n_datarequests(5)
         self.check_datarequests_counter(5, base_name)
 
@@ -587,13 +592,14 @@ class TestSelenium(unittest.TestCase):
             self.assertEqual(editable, self.is_element_present(By.CSS_SELECTOR, 'i.fa-times'))
 
         users = ['user1', 'user2']
+        pwds = []
 
         # Create users
         for user in users:
-            self.default_register(user)
+            pwds.append(self.default_register(user))
 
         # First user creates the data request
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
         datarequest_id = self.create_datarequest(datarequest_title,
@@ -601,7 +607,7 @@ class TestSelenium(unittest.TestCase):
 
         # Second user creates the comment so they are able to modify it
         self.logout()
-        self.login(users[1], users[1])
+        self.login(users[1], pwds[1])
 
         comment = 'this is a sample comment'
         self.comment_datarequest(datarequest_id, comment)
@@ -611,7 +617,7 @@ class TestSelenium(unittest.TestCase):
 
         # First user is not able to modify the comment
         self.logout()
-        self.login(users[0], users[0])
+        self.login(users[0], pwds[0])
 
         self.driver.get(self.base_url + 'datarequest/comment/' +
                         datarequest_id)
@@ -627,8 +633,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -653,8 +659,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -665,7 +671,7 @@ class TestSelenium(unittest.TestCase):
 
         # Delete the comment
         self.driver.find_element_by_css_selector('i.fa-times').click()
-        self.driver.find_element_by_css_selector('button.btn.btn-primary').click()
+        self.driver.find_element_by_css_selector('.modal-footer > button.btn.btn-primary').click()
 
         # Check that the comment has been deleted
         self.assertEqual('This data request has not been commented yet',
@@ -677,8 +683,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         datarequest_title = 'Data Request 1'
         datarequest_description = 'Example Description'
@@ -699,8 +705,8 @@ class TestSelenium(unittest.TestCase):
 
         user = 'user1'
 
-        self.default_register(user)
-        self.login(user, user)
+        pwd = self.default_register(user)
+        self.login(user, pwd)
 
         # Create Data Request
         datarequest_title = 'Data Request 1'

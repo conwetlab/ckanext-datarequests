@@ -77,7 +77,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
 
-    # IActions
+    #  IACTIONS
 
     def get_actions(self):
         additional_actions = {
@@ -100,7 +100,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return additional_actions
 
-    # Auth Functions
+    #  AUTH FUNCTIONS
 
     def get_auth_functions(self):
         auth_functions = {
@@ -123,7 +123,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return auth_functions
 
-    # IConfigurer
+    #  ICONFIGURER
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -136,7 +136,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         # Register this plugin's fanstatic directory with CKAN.
         tk.add_resource('fanstatic', 'datarequest')
 
-    # IRoutes
+    #  IROUTES
 
     def before_map(self, m):
         # Data Requests index
@@ -203,7 +203,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         return m
 
-    # ITemplateHelper
+    #  ITEMPLATESHELPER
 
     def get_helpers(self):
         return {

@@ -90,9 +90,10 @@ def init_db(model):
         datarequests_table = sa.Table('datarequests', model.meta.metadata,
                                       sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
                                       sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-                                      sa.Column('title', sa.types.Unicode(constants.NAME_MAX_LENGTH), primary_key=True, default=u''),
-                                      sa.Column('description', sa.types.Unicode(constants.DESCRIPTION_MAX_LENGTH),
-                                                primary_key=False, default=u''),
+                                      sa.Column('title', sa.types.Unicode(constants.NAME_MAX_LENGTH),
+                                                primary_key=True, default=u''),
+                                      sa.Column('description', sa.types.Unicode(
+                                          constants.DESCRIPTION_MAX_LENGTH), primary_key=False, default=u''),
                                       sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
                                       sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
                                       sa.Column('accepted_dataset_id', sa.types.UnicodeText, primary_key=False, default=None),
@@ -136,7 +137,8 @@ def init_db(model):
                                   sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
                                   sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
                                   sa.Column('time', sa.types.DateTime, primary_key=True, default=u''),
-                                  sa.Column('comment', sa.types.Unicode(constants.COMMENT_MAX_LENGTH), primary_key=False, default=u'')
+                                  sa.Column('comment', sa.types.Unicode(constants.COMMENT_MAX_LENGTH),
+                                            primary_key=False, default=u'')
                                   )
 
         # Create the table only if it does not exist

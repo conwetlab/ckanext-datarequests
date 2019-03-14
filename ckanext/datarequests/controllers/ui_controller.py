@@ -149,7 +149,11 @@ class DataRequestsUI(base.BaseController):
             if include_organization_facet is True:
                 c.facet_titles['organization'] = tk._('Organizations')
 
-            return tk.render(file_to_render)
+            return tk.render(file_to_render,
+                             extra_vars=({'user_dict': c.user_dict
+                                          if hasattr(c, 'user_dict')
+                                          else None,
+                                          'group_type': 'organization'}))
         except ValueError as e:
             # This exception should only occur if the page value is not valid
             log.warn(e)
@@ -175,7 +179,8 @@ class DataRequestsUI(base.BaseController):
             try:
                 result = tk.get_action(action)(context, data_dict)
                 tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                               action='show', id=result['id']))
+                                               action='show',
+                                               id=result['id']))
 
             except tk.ValidationError as e:
                 log.warn(e)
@@ -259,8 +264,8 @@ class DataRequestsUI(base.BaseController):
             tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
             datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
             helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
-
+            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                                           action='index'))
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
@@ -299,8 +304,8 @@ class DataRequestsUI(base.BaseController):
             # belongs to the organization are shown)
             organization_id = c.datarequest.get('organization_id', '')
             if organization_id:
-                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id,
-                                                                                           'include_datasets': True})['packages']
+                base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {
+                    'id': organization_id, 'include_datasets': True})['packages']
             else:
                 # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
                 # We assume that a user will close their data request with a recently added or modified dataset
@@ -329,8 +334,8 @@ class DataRequestsUI(base.BaseController):
 
                 tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
                 tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                               action='show', id=data_dict['id']))
-
+                                               action='show',
+                                               id=data_dict['id']))
             else:   # GET
                 return _return_page()
 
@@ -423,8 +428,8 @@ class DataRequestsUI(base.BaseController):
             tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
             helpers.flash_notice(tk._('Comment has been deleted'))
             tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                           action='comment', id=datarequest_id))
-
+                                           action='comment',
+                                           id=datarequest_id))
         except tk.ObjectNotFound as e:
             log.warn(e)
             tk.abort(404, tk._('Comment %s not found') % comment_id)

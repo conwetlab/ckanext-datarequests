@@ -216,53 +216,65 @@ class DataRequestPluginTest(unittest.TestCase):
         self.assertEquals(mapa_calls, mapa.connect.call_count)
         mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='index', conditions=dict(method=['GET']))
+                                     action='index',
+                                     conditions=dict(method=['GET']))
 
         mapa.connect.assert_any_call('/%s/new' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='new', conditions=dict(method=['GET', 'POST']))
+                                     action='new',
+                                     conditions=dict(method=['GET', 'POST']))
 
         mapa.connect.assert_any_call('show_datarequest', '/%s/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='show', conditions=dict(method=['GET']), ckan_icon=mock_icon)
+                                     action='show',
+                                     conditions=dict(method=['GET']),
+                                     ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='update', conditions=dict(method=['GET', 'POST']))
+                                     action='update',
+                                     conditions=dict(method=['GET', 'POST']))
 
         mapa.connect.assert_any_call('/%s/delete/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='delete', conditions=dict(method=['POST']))
+                                     action='delete',
+                                     conditions=dict(method=['POST']))
 
         mapa.connect.assert_any_call('/%s/close/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='close', conditions=dict(method=['GET', 'POST']))
+                                     action='close',
+                                     conditions=dict(method=['GET', 'POST']))
 
         mapa.connect.assert_any_call('organization_datarequests',
                                      '/organization/%s/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='organization_datarequests', conditions=dict(method=['GET']),
+                                     action='organization_datarequests',
+                                     conditions=dict(method=['GET']),
                                      ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call('user_datarequests',
                                      '/user/%s/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='user_datarequests', conditions=dict(method=['GET']),
+                                     action='user_datarequests',
+                                     conditions=dict(method=['GET']),
                                      ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call('user_datarequests',
                                      '/user/%s/{id}' % dr_basic_path,
                                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                                     action='user_datarequests', conditions=dict(method=['GET']),
+                                     action='user_datarequests',
+                                     conditions=dict(method=['GET']),
                                      ckan_icon=mock_icon)
 
         mapa.connect('/%s/follow/{id}' % dr_basic_path,
                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                     action='follow', conditions=dict(method=['POST']))
+                     action='follow',
+                     conditions=dict(method=['POST']))
 
         mapa.connect('/%s/unfollow/{id}' % dr_basic_path,
                      controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                     action='unfollow', conditions=dict(method=['POST']))
+                     action='unfollow',
+                     conditions=dict(method=['POST']))
 
         if comments_enabled == 'True':
             mapa.connect.assert_any_call('comment_datarequest', '/%s/comment/{id}' % dr_basic_path,

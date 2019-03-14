@@ -1,7 +1,10 @@
 {% ckan_extends %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('user.read', _('Datasets'), id=user.name) }}
-  {{ h.build_nav_icon('user.activity', _('Activity Stream'), id=user.name) }}
+  {% set user_datasets_nav = 'user_datasets' if h.ckan_version()[:3] <= '2.7' else 'user.read' %}
+  {% set user_activity_nav = 'user_activity_stream' if h.ckan_version()[:3] <= '2.7' else 'user.activity' %}
+
+  {{ h.build_nav_icon(user_datasets_nav, _('Datasets'), id=user.name) }}
+  {{ h.build_nav_icon(user_activity_nav, _('Activity Stream'), id=user.name) }}
   {{ h.build_nav_icon('user_datarequests', _('Data Requests'), id=user.name) }}
 {% endblock %}

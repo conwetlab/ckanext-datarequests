@@ -19,16 +19,16 @@
 
   <div class="control-full control-large control-group {{ 'error' if errors and errors.get('Comment') and focus }} editor">
     {% set markdown_tooltip = "<pre><p>__Bold text__ or _italic text_</p><p># title<br>## secondary title<br>### etc</p><p>* list<br>* of<br>* items</p><p>http://auto.link.ed/</p></pre><p><b><a href='http://daringfireball.net/projects/markdown/syntax' target='_blank'>Full markdown syntax</a></b></p><p class='muted'><b>Please note:</b> HTML tags are stripped out for security reasons</p>" %} 
-    <textarea name="comment" cols="20" rows="3" placeholder="{{ _('Add a new Comment') if not comment_id }}">{{ initial_text }}</textarea>
+    <textarea class="form-control" name="comment" cols="20" rows="3" placeholder="{{ _('Add a new Comment') if not comment_id }}">{{ initial_text }}</textarea>
     <span class="editor-info-block">{% trans %}You can use <a href="#markdown" title="Markdown quick reference" data-target="popover" data-content="{{ markdown_tooltip }}" data-html="true">Markdown formatting</a> here. You can refer datasets by adding their URL.{% endtrans %}</span>
   </div>
 
   <div class="comment-form-actions">
     {% if comment_id %}
       <button id="comment-discard-{{ comment_id }}" class="btn btn-danger" name="discard">{{ _('Cancel') }}</button>
-      <button class="btn" type="submit" name="update">{{ _('Update Comment') }}</button>
+      <button class="btn btn-primary" type="submit" name="update">{{ _('Update Comment') }}</button>
     {% else %}
-      <button class="btn" type="submit" name="add">{{ _('Add Comment') }}</button>
+      <button class="btn btn-primary" type="submit" name="add">{{ _('Add Comment') }}</button>
     {% endif %}
   </div>
 
