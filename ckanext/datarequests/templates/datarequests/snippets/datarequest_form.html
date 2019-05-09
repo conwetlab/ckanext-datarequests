@@ -5,6 +5,7 @@
 {% set organization_id = data.get('organization_id', h.get_request_param('organization')) %}
 {% set organizations_available = h.organizations_available('read') %}
 {% set form_horizontal = 'form-horizontal' if h.ckan_version()[:3] <= '2.7' else '' %}
+{% set description_required = h.is_description_required %}
 
 {# This provides a full page that renders a form for publishing a dataset. It can
 then itself be extended to add/remove blocks of functionality. #}
@@ -18,10 +19,11 @@ then itself be extended to add/remove blocks of functionality. #}
     {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Data Request Name'), value=title, error=errors['Title'], classes=['control-full', 'control-large'], is_required=true) }}
   {% endblock %}
 
-  {% block offering_description %}
-    {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description']) }}
+  {% block offering_description %}  
+    {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description'], is_required=description_required) }}
   {% endblock %}
 
+  {% block offering_organizations %}
   <div class="control-group form-group">
     <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
     <div class="controls">
@@ -36,6 +38,7 @@ then itself be extended to add/remove blocks of functionality. #}
       </select>
     </div>
   </div>
+  {% endblock %}
 
   {% block form_actions %}
     <div class="form-actions">
