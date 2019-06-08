@@ -211,7 +211,7 @@ def create_datarequest(context, data_dict):
     data_req = db.DataRequest()
     _undictize_datarequest_basic(data_req, data_dict)
     data_req.user_id = context['auth_user_obj'].id
-    data_req.open_time = datetime.datetime.now()
+    data_req.open_time = datetime.datetime.utcnow()
 
     session.add(data_req)
     session.commit()    
@@ -563,7 +563,7 @@ def close_datarequest(context, data_dict):
 
     data_req.closed = True
     data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
-    data_req.close_time = datetime.datetime.now()
+    data_req.close_time = datetime.datetime.utcnow()
 
     session.add(data_req)
     session.commit()
@@ -616,7 +616,7 @@ def comment_datarequest(context, data_dict):
     comment = db.Comment()
     _undictize_comment_basic(comment, data_dict)
     comment.user_id = context['auth_user_obj'].id
-    comment.time = datetime.datetime.now()
+    comment.time = datetime.datetime.utcnow()
 
     session.add(comment)
     session.commit()
