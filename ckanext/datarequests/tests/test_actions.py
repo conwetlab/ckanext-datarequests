@@ -341,8 +341,8 @@ class ActionsTest(unittest.TestCase):
     @patch('ckanext.datarequests.actions._send_mail')
     def test_create_datarequest_valid(self, send_mail_mock):
         # Configure the mocks
-        current_time = self._datetime.datetime.now()
-        actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        current_time = self._datetime.datetime.utcnow()
+        actions.datetime.datetime.utcnow = MagicMock(return_value=current_time)
 
         # Mock actions
         default_user = {'user': 1}
@@ -430,7 +430,7 @@ class ActionsTest(unittest.TestCase):
         datarequest = test_data._generate_basic_datarequest()
         datarequest.organization_id = organization_id
         datarequest.accepted_dataset_id = 'example_uuidv4_package'
-        datarequest.close_time = datetime.datetime.now()
+        datarequest.close_time = datetime.datetime.utcnow()
         datarequest.closed = True
 
         org_checked = True if organization_id else False
@@ -693,8 +693,8 @@ class ActionsTest(unittest.TestCase):
     ])
     def test_close_datarequest(self, data, expected_accepted_ds, organization_id):
         # Configure the mock
-        current_time = self._datetime.datetime.now()
-        actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        current_time = self._datetime.datetime.utcnow()
+        actions.datetime.datetime.utcnow = MagicMock(return_value=current_time)
         datarequest = test_data._generate_basic_datarequest()
         datarequest.organization_id = organization_id
         datarequest.accepted_dataset_id = None
@@ -774,9 +774,9 @@ class ActionsTest(unittest.TestCase):
     @patch('ckanext.datarequests.actions._get_datarequest_involved_users')
     def test_comment(self, get_datarequest_involved_users_mock, send_mail_mock):
         # Configure the mocks
-        current_time = self._datetime.datetime.now()
+        current_time = self._datetime.datetime.utcnow()
         datarequest_dict = MagicMock()
-        actions.datetime.datetime.now = MagicMock(return_value=current_time)
+        actions.datetime.datetime.utcnow = MagicMock(return_value=current_time)
         actions.validator.validate_comment.return_value = datarequest_dict
 
         # User

@@ -92,7 +92,7 @@ def _generate_basic_datarequest(id=DATAREQUEST_ID, user_id='example_uuidv4_user'
     datarequest.title = title
     datarequest.description = description
     datarequest.organization_id = organization_id
-    datarequest.open_time = datetime.datetime.now()
+    datarequest.open_time = datetime.datetime.utcnow()
     datarequest.closed = closed
     datarequest.close_time = None
     datarequest.accepted_dataset_id = None
@@ -108,7 +108,7 @@ def _generate_basic_comment(id=COMMENT_ID, user_id='example_uuidv4_user',
     comment.user_id = user_id
     comment.comment = comment
     comment.datarequest_id = datarequest_id
-    comment.time = datetime.datetime.now()
+    comment.time = datetime.datetime.utcnow()
 
     return comment
 
