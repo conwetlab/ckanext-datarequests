@@ -1,0 +1,12 @@
+beautifulsoup4==4.5.1
+behave==1.2.6
+behaving==1.5.6
+flake8==3.7.7
+nose==1.3.7
+mock
+nose_parameterized==0.3.3
+profanityfilter
+lxml==3.4.2
+-e git+https://github.com/qld-gov-au/ckanext-data-qld@develop#egg=ckanext-data_qld
+-e git+https://github.com/qld-gov-au/ckanext-data-qld-theme@develop#egg=ckanext-data_qld_theme
+-e git+https://github.com/qld-gov-au/ckanext-ytp-comments@develop#egg=ckanext-ytp-comments

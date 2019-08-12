@@ -1,3 +1,7 @@
+.ropeproject
+node_modules
+bower_components
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,24 +9,13 @@ __pycache__/
 # C extensions
 *.so
 
-### OSX Stuff
-*.DS_Store
-.AppleDouble
-.LSOverride
-
 # Distribution / packaging
 .Python
 env/
 build/
 develop-eggs/
 dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
 sdist/
-var/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -45,15 +38,8 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
 # Sphinx documentation
 docs/_build/
-
-# PyBuilder
-target/
+.env.local
+/test/screenshots
+!/test/screenshots/.gitkeep
