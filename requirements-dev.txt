@@ -8,5 +8,8 @@ nose_parameterized==0.3.3
 profanityfilter
 lxml==3.4.2
 -e git+https://github.com/qld-gov-au/ckanext-data-qld@develop#egg=ckanext-data_qld
+-e git+https://github.com/ckan/ckantoolkit@release-0.0.4#egg=ckantoolkit
+-e git+https://github.com/ckan/ckanapi@ckanapi-4.3#egg=ckanapi
+-e git+https://github.com/ckan/ckanext-scheming@release-1.2.0#egg=ckanext-scheming
 -e git+https://github.com/qld-gov-au/ckanext-data-qld-theme@develop#egg=ckanext-data_qld_theme
 -e git+https://github.com/qld-gov-au/ckanext-ytp-comments@develop#egg=ckanext-ytp-comments
