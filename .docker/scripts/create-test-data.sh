@@ -30,7 +30,7 @@ paster --plugin=ckan user add test_org_member email=test_org_member@localhost pa
 echo "Creating ${TEST_ORG_TITLE} Organisation:"
 
 TEST_ORG=$( \
-    curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+    curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "name=${TEST_ORG_NAME}&title=${TEST_ORG_TITLE}" \
     ${CKAN_ACTION_URL}/organization_create
 )
@@ -39,15 +39,15 @@ TEST_ORG_ID=$(echo $TEST_ORG | sed -r 's/^(.*)"id": "(.*)",(.*)/\2/')
 
 echo "Assigning test users to ${TEST_ORG_TITLE} Organisation:"
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${TEST_ORG_ID}&object=test_org_admin&object_type=user&capacity=admin" \
     ${CKAN_ACTION_URL}/member_create
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${TEST_ORG_ID}&object=test_org_editor&object_type=user&capacity=editor" \
     ${CKAN_ACTION_URL}/member_create
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${TEST_ORG_ID}&object=test_org_member&object_type=user&capacity=member" \
     ${CKAN_ACTION_URL}/member_create
 ##
@@ -70,7 +70,7 @@ paster --plugin=ckan user add dr_member email=dr_member@localhost password=passw
 echo "Creating ${DR_ORG_TITLE} Organisation:"
 
 DR_ORG=$( \
-    curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+    curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "name=${DR_ORG_NAME}&title=${DR_ORG_TITLE}" \
     ${CKAN_ACTION_URL}/organization_create
 )
@@ -79,29 +79,29 @@ DR_ORG_ID=$(echo $DR_ORG | sed -r 's/^(.*)"id": "(.*)",(.*)/\2/')
 
 echo "Assigning test users to ${DR_ORG_TITLE} Organisation:"
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${DR_ORG_ID}&object=dr_admin&object_type=user&capacity=admin" \
     ${CKAN_ACTION_URL}/member_create
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${DR_ORG_ID}&object=dr_editor&object_type=user&capacity=editor" \
     ${CKAN_ACTION_URL}/member_create
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${DR_ORG_ID}&object=dr_member&object_type=user&capacity=member" \
     ${CKAN_ACTION_URL}/member_create
 
 
 echo "Creating test Data Request:"
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "title=Test Request&description=This is an example&organization_id=${DR_ORG_ID}" \
     ${CKAN_ACTION_URL}/create_datarequest
 
 echo "Creating closed Data Request:"
 
 Closed_DR=$( \
-    curl -L -s -O- \
+    curl -L -s \
     ---header "Authorization: ${API_KEY}" \
     --data "title=Closed Request&description=This is an example&organization_id=${DR_ORG_ID}" \
     ${CKAN_ACTION_URL}/create_datarequest \
@@ -115,7 +115,7 @@ echo $CLOSE_DR_ID
 
 echo "Closing Data Request:"
 
-curl -L -s -O- ---header "Authorization: ${API_KEY}" \
+curl -L -s ---header "Authorization: ${API_KEY}" \
     --data "id=${CLOSE_DR_ID}" \
     ${CKAN_ACTION_URL}/close_datarequest
 
