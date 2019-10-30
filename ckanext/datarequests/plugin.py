@@ -68,6 +68,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
+        self.is_description_required = get_config_bool_value('ckan.datarequests.description_required', False)
 
     ######################################################################
     ############################## IACTIONS ##############################
@@ -215,7 +216,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
             'get_plus_icon': get_plus_icon,
-            'is_following_datarequest': helpers.is_following_datarequest
+            'is_following_datarequest': helpers.is_following_datarequest,
+            'is_description_required': self.is_description_required
         }
 
     ######################################################################
