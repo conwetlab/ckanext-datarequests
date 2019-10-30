@@ -577,6 +577,61 @@ def close_datarequest(context, data_dict):
     return datarequest_dict
 
 
+def open_datarequest(context, data_dict):
+    """
+    Action to open a data request. Access rights will be checked before
+    opening the data request. If the user is not allowed, a NotAuthorized
+    exception will be risen.
+
+    :param id: The ID of the data request to be closed
+    :type id: string
+
+    :returns: A dict with the data request (id, user_id, title, description,
+        organization_id, open_time, accepted_dataset, close_time, closed,
+        followers)
+    :rtype: dict
+
+    """
+
+    model = context['model']
+    session = context['session']
+    datarequest_id = data_dict.get('id', '')
+
+    # Check id
+    if not datarequest_id:
+        raise tk.ValidationError(tk._('Data Request ID has not been included'))
+
+        # Init the data base
+    db.init_db(model)
+
+    # Check access
+    tk.check_access(constants.OPEN_DATAREQUEST, context, data_dict)
+
+    # Get the data request
+    result = db.DataRequest.get(id=datarequest_id)
+
+    if not result:
+        raise tk.ObjectNotFound(tk._('Data Request %s not found in the data base') % datarequest_id)
+
+    data_req = result[0]
+    data_req.closed = False
+    data_req.accepted_dataset_id = None
+    data_req.close_time = None
+
+    session.add(data_req)
+    session.commit()
+
+    datarequest_dict = _dictize_datarequest(data_req)
+
+    # Mailing
+    if datarequest_dict['organization']:
+        users = set([user['id'] for user in datarequest_dict['organization']['users']])
+        users.discard(context['auth_user_obj'].id)
+        _send_mail(users, 'new_datarequest', datarequest_dict)
+
+    return datarequest_dict
+
+
 def comment_datarequest(context, data_dict):
     '''
     Action to create a comment in a data request. Access rights will be checked

@@ -207,6 +207,10 @@ ckan.datarequests.comments = [true|false]
 ```
 ckan.datarequests.show_datarequests_badge = [true|false]
 ```
+* Enable or disable ability to reopen a data request. False by default
+```
+ckan.datarequests.allow_datarequest_reopening = [True|False]
+```
 * Restart your apache2 reserver
 ```
 sudo service apache2 restart

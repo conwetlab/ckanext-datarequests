@@ -68,6 +68,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
         self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
+        self.allow_datarequest_reopening = get_config_bool_value('ckan.datarequests.allow_datarequest_reopening', False)
 
     ######################################################################
     ############################## IACTIONS ##############################
@@ -81,6 +82,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.LIST_DATAREQUESTS: actions.list_datarequests,
             constants.DELETE_DATAREQUEST: actions.delete_datarequest,
             constants.CLOSE_DATAREQUEST: actions.close_datarequest,
+            constants.OPEN_DATAREQUEST: actions.open_datarequest,
             constants.FOLLOW_DATAREQUEST: actions.follow_datarequest,
             constants.UNFOLLOW_DATAREQUEST: actions.unfollow_datarequest,
         }
@@ -106,6 +108,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
             constants.LIST_DATAREQUESTS: auth.list_datarequests,
             constants.DELETE_DATAREQUEST: auth.delete_datarequest,
             constants.CLOSE_DATAREQUEST: auth.close_datarequest,
+            constants.OPEN_DATAREQUEST: auth.open_datarequest,
             constants.FOLLOW_DATAREQUEST: auth.follow_datarequest,
             constants.UNFOLLOW_DATAREQUEST: auth.unfollow_datarequest,
         }
@@ -169,6 +172,11 @@ class DataRequestsPlugin(p.SingletonPlugin):
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                   action='close', conditions=dict(method=['GET', 'POST']))
 
+        # Re_Open a Data Request
+        m.connect('/%s/open/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+                  controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                  action='open', conditions=dict(method=['GET', 'POST']))
+
         # Data Request that belongs to an organization
         m.connect('organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
                   controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
@@ -215,7 +223,8 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
             'get_plus_icon': get_plus_icon,
-            'is_following_datarequest': helpers.is_following_datarequest
+            'is_following_datarequest': helpers.is_following_datarequest,
+            'allow_datarequest_reopening': self.allow_datarequest_reopening
         }
 
     ######################################################################

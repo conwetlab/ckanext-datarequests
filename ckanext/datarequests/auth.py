@@ -56,6 +56,10 @@ def close_datarequest(context, data_dict):
     return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST)
 
 
+def open_datarequest(context, data_dict):
+    return auth_if_creator(context, data_dict, constants.SHOW_DATAREQUEST)
+
+
 def comment_datarequest(context, data_dict):
     return {'success': True}
 

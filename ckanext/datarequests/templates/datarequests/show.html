@@ -19,6 +19,10 @@
     {% link_for _('Close'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='close', id=datarequest_id, class_='btn btn-danger', icon='lock' %}
   {% endif %}
 
+  {% if h.allow_datarequest_reopening and h.check_access('open_datarequest', {'id':datarequest_id }) and c.datarequest.closed %}
+    {% link_for _('Reopen'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='open', id=datarequest_id, class_='btn btn-success', icon='unlock' %}
+  {% endif %}
+
 {% endblock %}
 
 {% block content_primary_nav %}

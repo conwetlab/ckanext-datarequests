@@ -1,0 +1,1 @@
+[{{ site_title }}] Data Request {{ datarequest['title'] }} created in organization {{ datarequest['organization']['title'] }} has been re-opened!
