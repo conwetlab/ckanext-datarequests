@@ -76,7 +76,7 @@ def before_all(context):
     # Always use remote web driver.
     context.remote_webdriver = 1
     context.default_browser = 'chrome'
-    context.browser_args = {'url': REMOTE_CHROME_URL}
+    context.browser_args = {'command_executor': REMOTE_CHROME_URL}
 
     # Set the rest of the settings to default Behaving's settings.
     benv.before_all(context)
