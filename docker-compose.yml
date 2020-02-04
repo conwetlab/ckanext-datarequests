@@ -14,6 +14,7 @@ x-volumes:
 x-environment:
   &default-environment
   AMAZEEIO: AMAZEEIO
+  no_proxy: "ckan,postgres,postgres-datastore,redis,solr,chrome,mailhog.docker.amazee.io"
 
 x-user:
   &default-user
