@@ -207,6 +207,10 @@ ckan.datarequests.comments = [true|false]
 ```
 ckan.datarequests.show_datarequests_badge = [true|false]
 ```
+* Enable or disable description as a required field on data request forms. False by default
+```
+ckan.datarequests.description_required = [True|False]
+```
 * Restart your apache2 reserver
 ```
 sudo service apache2 restart

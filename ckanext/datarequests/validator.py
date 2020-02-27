@@ -20,6 +20,7 @@
 import constants
 import ckan.plugins.toolkit as tk
 import ckanext.datarequests.db as db
+import plugin as datarequests
 
 
 def validate_datarequest(context, request_data):
@@ -41,6 +42,9 @@ def validate_datarequest(context, request_data):
             errors[tk._('Title')] = [tk._('That title is already in use')]
 
     # Check description
+    if datarequests.get_config_bool_value('ckan.datarequests.description_required', False) and not request_data['description']:
+        errors[tk._('Description')] = [tk._('Description cannot be empty')]
+
     if len(request_data['description']) > constants.DESCRIPTION_MAX_LENGTH:
         errors[tk._('Description')] = [tk._('Description must be a maximum of %d characters long') % constants.DESCRIPTION_MAX_LENGTH]
 
