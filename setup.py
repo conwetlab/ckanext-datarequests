@@ -47,7 +47,7 @@ setup(
     ],
     tests_require=[
         'nose_parameterized==0.3.3',
-        'selenium==2.53',
+        'selenium==3.141.0',
         'coveralls==1.11.1'
     ],
     test_suite='nosetests',
