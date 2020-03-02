@@ -219,7 +219,7 @@ sudo service apache2 restart
 
 ## Translations
 
-Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German and Brazilian Portuguese. If you want to contribute with your translation, the first step is to clone this repo and move to the `develop` branch. Then, create the locale for your translation by executing:
+Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German, French, Somali, Romanian and Brazilian Portuguese. If you want to contribute with your translation, the first step is to clone this repo and move to the `develop` branch. Then, create the locale for your translation by executing:
 
 ```
 python setup.py init_catalog -l <YOUR_LOCALE>
@@ -251,6 +251,14 @@ python setup.py nosetests
 **Note 2:** When creating a PR that includes code changes, please, ensure your new code is tested. No PR will be merged until the Travis CI system marks it as valid.
 
 ## Changelog
+
+### v1.2.0 (UNRELEASED)
+
+* New: French translations (thanks to @bobeal)
+* New: Romanian translations (thanks to @costibleotu)
+* New: Option to force users to introduce a request description (thanks to @MarkCalvert)
+* Fix: Documentation fixes (thanks to @nykc)
+* Fix: Datarequests creation and closing times displayed incorrectly (thanks to @iamarnavgarg)
 
 ### v1.1.0
 
