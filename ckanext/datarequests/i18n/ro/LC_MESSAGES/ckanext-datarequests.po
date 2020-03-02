@@ -367,9 +367,9 @@ msgid ""
 "\">Markdown formatting</a> here. You can refer datasets by adding their "
 "URL."
 msgstr ""
-"Poți folosi <a href=“#markdown” title=“Markdown quick reference” data-"
-"target=“popover” data-content=“%(markdown_tooltip)s” data-"
-"html=“true”>formatarea Markdown</a> aici. Poți refenția seturi de date "
+"Poți folosi <a href=\"#markdown\" title=\"Markdown quick reference\" data-"
+"target=\"popover\" data-content=\"%(markdown_tooltip)s\" data-html=\"true"
+"\">formatarea Markdown</a> aici. Poți refenția seturi de date "
 "adăugând URL-ul lor."
 
 #: ckanext/datarequests/templates/datarequests/snippets/comment_form.html:28
