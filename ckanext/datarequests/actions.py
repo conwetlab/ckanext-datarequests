@@ -51,64 +51,12 @@ def _get_user(user_id):
         log.warn(e)
 
 
-def _get_organization(organization_id):
-    try:
-        organization_show = tk.get_action('organization_show')
-        return organization_show({'ignore_auth': True}, {'id': organization_id})
-    except Exception as e:
-        log.warn(e)
-
-
-def _get_package(package_id):
-    try:
-        package_show = tk.get_action('package_show')
-        return package_show({'ignore_auth': True}, {'id': package_id})
-    except Exception as e:
-        log.warn(e)
-
-
 def _dictize_datarequest(datarequest):
-    # Transform time
-    open_time = str(datarequest.open_time)
-    # Close time can be None and the transformation is only needed when the
-    # fields contains a valid date
-    close_time = datarequest.close_time
-    close_time = str(close_time) if close_time else close_time
-
-    # Convert the data request into a dict
-    data_dict = {
-        'id': datarequest.id,
-        'user_id': datarequest.user_id,
-        'title': datarequest.title,
-        'description': datarequest.description,
-        'organization_id': datarequest.organization_id,
-        'open_time': open_time,
-        'accepted_dataset_id': datarequest.accepted_dataset_id,
-        'close_time': close_time,
-        'closed': datarequest.closed,
-        'user': _get_user(datarequest.user_id),
-        'organization': None,
-        'accepted_dataset': None,
-        'followers': 0
-    }
-
-    if datarequest.organization_id:
-        data_dict['organization'] = _get_organization(datarequest.organization_id)
-
-    if datarequest.accepted_dataset_id:
-        data_dict['accepted_dataset'] = _get_package(datarequest.accepted_dataset_id)
-
-    data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
-        datarequest_id=datarequest.id)
-
-    return data_dict
+    return datarequest.dictize_datarequest()
 
 
-def _undictize_datarequest_basic(data_request, data_dict):
-    data_request.title = data_dict['title']
-    data_request.description = data_dict['description']
-    organization = data_dict['organization_id']
-    data_request.organization_id = organization if organization else None
+def _undictize_datarequest_basic(datarequest, data_dict):
+    datarequest.undictize_datarequest_basic(data_dict)
 
 
 def _dictize_comment(comment):
@@ -131,7 +79,7 @@ def _undictize_comment_basic(comment, data_dict):
 def _get_datarequest_involved_users(context, datarequest_dict):
 
     datarequest_id = datarequest_dict['id']
-    new_context = {'ignore_auth': True, 'model': context['model'] }
+    new_context = {'ignore_auth': True, 'model': context['model']}
 
     # Creator + Followers + People who has commented + Organization Staff
     users = set()
@@ -141,7 +89,7 @@ def _get_datarequest_involved_users(context, datarequest_dict):
 
     if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
-    
+
     # Notifications are not sent to the user that performs the action
     users.discard(context['auth_user_obj'].id)
 
@@ -214,7 +162,7 @@ def create_datarequest(context, data_dict):
     data_req.open_time = datetime.datetime.utcnow()
 
     session.add(data_req)
-    session.commit()    
+    session.commit()
 
     datarequest_dict = _dictize_datarequest(data_req)
 
@@ -562,8 +510,11 @@ def close_datarequest(context, data_dict):
         raise tk.ValidationError([tk._('This Data Request is already closed')])
 
     data_req.closed = True
-    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
+    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id') or None
     data_req.close_time = datetime.datetime.utcnow()
+    if tk.h.closing_circumstances_enabled:
+        data_req.close_circumstance = data_dict.get('close_circumstance') or None
+        data_req.approx_publishing_date = data_dict.get('approx_publishing_date') or None
 
     session.add(data_req)
     session.commit()
@@ -806,6 +757,7 @@ def delete_datarequest_comment(context, data_dict):
 
     return _dictize_comment(comment)
 
+
 def follow_datarequest(context, data_dict):
     '''
     Action to follow a data request. Access rights will be cheked before 
@@ -856,6 +808,7 @@ def follow_datarequest(context, data_dict):
     session.commit()
 
     return True
+
 
 def unfollow_datarequest(context, data_dict):
     '''

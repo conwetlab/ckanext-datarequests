@@ -3,7 +3,7 @@
   <table class="table table-striped table-bordered table-condensed">
     <tbody>
       {% block package_additional_info %}
-          <tr>
+        <tr>
           <th scope="row" class="dataset-label">{{ _('Creator') }}</th>
           <td class="dataset-details">{{ datarequest.user['display_name'] if datarequest.user else _('None') }}</td>
         </tr>
@@ -20,6 +20,20 @@
           <td class="dataset-details" title="{{ datarequest.close_time }}">{{ h.time_ago_from_timestamp(datarequest.close_time) if datarequest.close_time else _('Not closed yet') }}</td>
         </tr>
         {% if datarequest.closed %}
+          {% if h.closing_circumstances_enabled %}
+            <tr>
+              <th scope="row" class="dataset-label">{{ _('Close Circumstance') }}</th>
+              <td class="dataset-details" title="{{ datarequest.close_circumstance }}">
+                {{ datarequest.close_circumstance if datarequest.close_circumstance else _('None') }}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row" class="dataset-label">{{ _('Approx Publishing Date') }}</th>
+              <td class="dataset-details" title="{{ datarequest.approx_publishing_date }}">
+                {{ h.time_ago_from_timestamp(datarequest.approx_publishing_date) if datarequest.approx_publishing_date else _('None') }}
+              </td>
+            </tr>
+          {% endif %}
           <tr>
             <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
             <td class="dataset-details">
