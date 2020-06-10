@@ -31,7 +31,7 @@
               <tr>
                 <th scope="row" class="dataset-label">{{ _('Approx Publishing Date') }}</th>
                 <td class="dataset-details" title="{{ datarequest.approx_publishing_date }}">
-                  {{ h.time_ago_from_timestamp(datarequest.approx_publishing_date) }}
+                  {{ h.render_datetime(datarequest.approx_publishing_date) }}
                 </td>
               </tr>
             {% endif %}
