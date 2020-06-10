@@ -18,6 +18,7 @@ Feature: Datarequest
         And I enter my credentials and login
         Then I should see an element with xpath "//a[contains(string(), 'Add data request')]"
 
+
     Scenario: Data requests submitted without a description will produce an error message
         Given "SysAdmin" as the persona
         When I log in and go to datarequest page
@@ -40,6 +41,7 @@ Feature: Datarequest
         | User                  |
         | SysAdmin              |
         | DataRequestOrgAdmin   |
+
 
     Scenario Outline: Non-admin users should not see "Re-open" button on the data request detail page for closed data requests
         Given "<User>" as the persona
@@ -68,6 +70,7 @@ Feature: Datarequest
         | SysAdmin              |
         | DataRequestOrgAdmin   |
 
+
     Scenario Outline: Non admin users cannot not see a "Close" button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
@@ -83,40 +86,33 @@ Feature: Datarequest
         | TestOrgEditor         |
         | TestOrgMember         |
 
+
     Scenario: Creating a new data request will email the Admin users of the organisation
         Given "TestOrgEditor" as the persona
-        When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
-        And I fill in title with random text
-        And I fill in "description" with "Test description"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        When I log in and create a datarequest 
         When I wait for 3 seconds
         Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
         And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
 
+
     Scenario: Closing a data request will email the creator
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
-        And I fill in title with random text
-        And I fill in "description" with "Test description"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
+        And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         When I wait for 3 seconds
         Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
 
+
     Scenario: Re-Opening a data request will email the Admin users of the organisation and creator
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
-        And I fill in title with random text
-        And I fill in "description" with "Test description"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
+        And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         And I press the element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
         When I wait for 3 seconds
@@ -125,13 +121,10 @@ Feature: Datarequest
         And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "admin@localhost" containing "A data request assigned to your organisation has been re-opened."
 
+
      Scenario: Re-assigning a data request will email the Admin users of the assigned organisation and un-assigned organisation
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
-        And I fill in title with random text
-        And I fill in "description" with "Test description"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Manage')]"
         When I wait for 3 seconds
         # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown

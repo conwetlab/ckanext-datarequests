@@ -67,9 +67,9 @@ def validate_datarequest_closing(context, request_data):
         condition = request_data.get('condition', None)
         if condition:
             if condition == 'nominate_dataset' and request_data.get('accepted_dataset_id', '') == '':
-                raise tk.ValidationError({tk._('Accepted Dataset'): [tk._('Accepted Dataset cannot be empty')]})
+                raise tk.ValidationError({tk._('Accepted Dataset'): [tk._('Accepted dataset cannot be empty')]})
             elif condition == 'nominate_approximate_date' and request_data.get('approx_publishing_date', '') == '':
-                raise tk.ValidationError({tk._('Approx Publishing Date'): [tk._('Approx Publishing Date cannot be empty')]})
+                raise tk.ValidationError({tk._('Approx Publishing Date'): [tk._('Approx publishing date cannot be empty')]})
 
     accepted_dataset_id = request_data.get('accepted_dataset_id', '')
     if accepted_dataset_id:

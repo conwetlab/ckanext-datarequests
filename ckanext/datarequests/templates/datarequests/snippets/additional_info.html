@@ -27,23 +27,34 @@
                 {{ datarequest.close_circumstance if datarequest.close_circumstance else _('None') }}
               </td>
             </tr>
+            {% if datarequest.approx_publishing_date %}
+              <tr>
+                <th scope="row" class="dataset-label">{{ _('Approx Publishing Date') }}</th>
+                <td class="dataset-details" title="{{ datarequest.approx_publishing_date }}">
+                  {{ h.time_ago_from_timestamp(datarequest.approx_publishing_date) }}
+                </td>
+              </tr>
+            {% endif %}
+            {% if datarequest.accepted_dataset %}
+              <tr>
+                <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
+                <td class="dataset-details">
+                  {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
+                </td>
+              </tr>
+            {% endif %}
+          {% else %}
             <tr>
-              <th scope="row" class="dataset-label">{{ _('Approx Publishing Date') }}</th>
-              <td class="dataset-details" title="{{ datarequest.approx_publishing_date }}">
-                {{ h.time_ago_from_timestamp(datarequest.approx_publishing_date) if datarequest.approx_publishing_date else _('None') }}
+              <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
+              <td class="dataset-details">
+              {% if datarequest.accepted_dataset %}
+                {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
+              {% else %}
+                {{ _('None') }}
+              {% endif %}
               </td>
             </tr>
           {% endif %}
-          <tr>
-            <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
-            <td class="dataset-details">
-            {% if datarequest.accepted_dataset %}
-              {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
-            {% else %}
-              {{ _('None') }}
-            {% endif %}
-            </td>
-          </tr>
         {% endif %}
       {% endblock %}
     </tbody>

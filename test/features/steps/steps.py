@@ -68,3 +68,31 @@ def should_receive_base64_email_containing_text(context, address, text):
         return text in decoded_payload
 
     assert context.mail.user_messages(address, filter_contents)
+
+@step('I log in and go to admin config page')
+def log_in_go_to_admin_config(context):
+
+    assert context.persona
+    context.execute_steps(u"""
+        When I go to homepage
+        And I click the link with text that contains "Log in"
+        And I log in
+        And I go to admin config page
+    """)
+
+@step('I go to admin config page')
+def go_to_admin_config(context):
+    when_i_visit_url(context, '/ckan-admin/config')
+
+@step('I log in and create a datarequest')
+def log_in_create_a_datarequest(context):
+
+    assert context.persona
+    context.execute_steps(u"""
+        When I log in and go to datarequest page
+        And I click the link with text that contains "Add data request"
+        And I fill in title with random text
+        And I fill in "description" with "Test description"
+        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+    """)
+        

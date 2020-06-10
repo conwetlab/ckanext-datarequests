@@ -14,6 +14,21 @@ CKAN_INI_FILE=/app/ckan/default/production.ini
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
 API_KEY=$(paster --plugin=ckan user admin -c ${CKAN_INI_FILE} | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
 
+# # 
+##
+# BEGIN: Add sysadmin config values. 
+# This needs to be done before closing datarequests as they require the below config values
+#
+echo "Adding ckan.datarequests.closing_circumstances:"
+
+curl -L -s --header "Authorization: ${API_KEY}" --header "Content-Type: application/json" \
+    --data '{"ckan.datarequests.closing_circumstances":"Released as open data|nominate_dataset\nOpen dataset already exists|nominate_dataset\nPartially released|nominate_dataset\nTo be released as open data at a later date|nominate_approximate_date\nData openly available elsewhere\nNot suitable for release as open data\nRequested data not available/cannot be compiled\nRequestor initiated closure"}' \
+    ${CKAN_ACTION_URL}/config_option_update
+
+##
+# END.
+#
+
 ##
 # BEGIN: Create a test organisation with test users for admin, editor and member
 #
@@ -116,12 +131,29 @@ echo $CLOSE_DR_ID
 echo "Closing Data Request:"
 
 curl -L -s --header "Authorization: ${API_KEY}" \
-    --data "id=${CLOSE_DR_ID}" \
+    --data "id=${CLOSE_DR_ID}&close_circumstance=Requestor initiated closure" \
     ${CKAN_ACTION_URL}/close_datarequest
 
 ##
 # END.
 #
 
+# Use CKAN's built-in paster command for creating some test datasets...
+paster create-test-data -c ${CKAN_INI_FILE}
+
+# Datasets need to be assigned to an organisation
+
+echo "Assigning test Datasets to Organisation open-data-administration-data-requests..."
+
+curl -L -s -q --header "Authorization: ${API_KEY}" \
+    --data "id=annakarenina&owner_org=${DR_ORG_ID}" \
+    ${CKAN_ACTION_URL}/package_patch >> /dev/null
+
+curl -L -s -q --header "Authorization: ${API_KEY}" \
+    --data "id=warandpeace&owner_org=${DR_ORG_ID}" \
+    ${CKAN_ACTION_URL}/package_patch >> /dev/null
+##
+# END.
+#
 
 deactivate
