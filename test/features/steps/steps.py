@@ -53,7 +53,7 @@ def title_random_text(context):
     assert context.persona
     context.execute_steps(u"""
         When I fill in "title" with "Test Title {0}"
-    """.format(random.randrange(1000)) )
+    """.format(random.randrange(10000)))
 
 # The default behaving step does not convert base64 emails
 # Modifed the default step to decode the payload from base64
