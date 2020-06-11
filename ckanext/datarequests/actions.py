@@ -51,12 +51,71 @@ def _get_user(user_id):
         log.warn(e)
 
 
+def _get_organization(organization_id):
+    try:
+        organization_show = tk.get_action('organization_show')
+        return organization_show({'ignore_auth': True}, {'id': organization_id})
+    except Exception as e:
+        log.warn(e)
+
+
+def _get_package(package_id):
+    try:
+        package_show = tk.get_action('package_show')
+        return package_show({'ignore_auth': True}, {'id': package_id})
+    except Exception as e:
+        log.warn(e)
+
+
 def _dictize_datarequest(datarequest):
-    return datarequest.dictize_datarequest()
+    # Transform time
+    open_time = str(datarequest.open_time)
+    # Close time can be None and the transformation is only needed when the
+    # fields contains a valid date
+    close_time = datarequest.close_time
+    close_time = str(close_time) if close_time else close_time
+
+    # Convert the data request into a dict
+    data_dict = {
+        'id': datarequest.id,
+        'user_id': datarequest.user_id,
+        'title': datarequest.title,
+        'description': datarequest.description,
+        'organization_id': datarequest.organization_id,
+        'open_time': open_time,
+        'accepted_dataset_id': datarequest.accepted_dataset_id,
+        'close_time': close_time,
+        'closed': datarequest.closed,
+        'user': _get_user(datarequest.user_id),
+        'organization': None,
+        'accepted_dataset': None,
+        'followers': 0
+    }
+
+    if datarequest.organization_id:
+        data_dict['organization'] = _get_organization(datarequest.organization_id)
+
+    if datarequest.accepted_dataset_id:
+        data_dict['accepted_dataset'] = _get_package(datarequest.accepted_dataset_id)
+
+    data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
+        datarequest_id=datarequest.id)
+
+    if tk.h.closing_circumstances_enabled:
+        data_dict['close_circumstance'] = datarequest.close_circumstance
+        data_dict['approx_publishing_date'] = datarequest.approx_publishing_date
+
+    return data_dict
 
 
-def _undictize_datarequest_basic(datarequest, data_dict):
-    datarequest.undictize_datarequest_basic(data_dict)
+def _undictize_datarequest_basic(data_request, data_dict):
+    data_request.title = data_dict['title']
+    data_request.description = data_dict['description']
+    organization = data_dict['organization_id']
+    data_request.organization_id = organization if organization else None
+    if tk.h.closing_circumstances_enabled:
+        data_request.close_circumstance = data_dict.get('close_circumstance', None)
+        data_request.approx_publishing_date = data_dict.get('approx_publishing_date', None)
 
 
 def _dictize_comment(comment):

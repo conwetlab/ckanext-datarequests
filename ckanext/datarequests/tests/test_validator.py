@@ -45,6 +45,7 @@ class ValidatorTest(unittest.TestCase):
         validator.tk = MagicMock()
         validator.tk.ValidationError = self._tk.ValidationError
         validator.tk._ = self._tk._
+        validator.tk.h.closing_circumstances_enabled = False
 
         self._db = validator.db
         validator.db = MagicMock()

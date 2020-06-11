@@ -303,7 +303,7 @@ class DataRequestsUI(base.BaseController):
             c.errors = errors
             c.errors_summary = errors_summary
             for dataset in base_datasets:
-                c.datasets.append({'name': dataset.get('id'), 'title': dataset.get('title')})
+                c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
 
             if tk.h.closing_circumstances_enabled:
                 # This is required so the form can set the currently selected close_curcumstance option in the select dropdown

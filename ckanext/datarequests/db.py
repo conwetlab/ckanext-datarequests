@@ -21,12 +21,10 @@ import constants
 import sqlalchemy as sa
 import uuid
 import logging
-import ckan.lib.dictization.model_dictize as model_dictize
 import ckan.plugins.toolkit as tk
 
-from sqlalchemy import func, MetaData, ForeignKey, DDL
+from sqlalchemy import func, MetaData, DDL
 from sqlalchemy.sql.expression import or_
-from ckan.lib import dictization
 
 log = logging.getLogger(__name__)
 DataRequest = None
@@ -91,28 +89,6 @@ def init_db(model):
                 '''Returns the number of data requests that are open'''
                 return model.Session.query(func.count(cls.id)).filter_by(closed=False).scalar()
 
-            def dictize_datarequest(self):
-                '''Returns this model and its relationship models as a dictionary'''
-                context = {'model': model}
-                data_dict = dictization.table_dictize(self, context)               
-                if self.organization:
-                    data_dict['organization'] = model_dictize.group_dictize(self.organization, context)
-                if self.package:
-                    data_dict['accepted_dataset'] = model_dictize.package_dictize(self.package, context)
-                data_dict['followers'] = DataRequestFollower.get_datarequest_followers_number(datarequest_id=self.id)
-
-                return data_dict
-
-            def undictize_datarequest_basic(self, data_dict):
-                '''Adds some basic data_dict fields to the datarequest model'''
-                self.title = data_dict.get('title', '')
-                self.description = data_dict.get('description') or None
-                self.organization_id = data_dict.get('organization_id') or None
-                if tk.h.closing_circumstances_enabled:
-                    self.accepted_dataset_id = data_dict.get('accepted_dataset_id') or None
-                    self.close_circumstance = data_dict.get('close_circumstance', None)
-                    self.close_circumstance = data_dict.get('approx_publishing_date', None)
-
         DataRequest = _DataRequest
 
         # FIXME: References to the other tables...
@@ -121,9 +97,9 @@ def init_db(model):
                                       sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
                                       sa.Column('title', sa.types.Unicode(constants.NAME_MAX_LENGTH), primary_key=True, default=u''),
                                       sa.Column('description', sa.types.Unicode(constants.DESCRIPTION_MAX_LENGTH), primary_key=False, default=u''),
-                                      sa.Column('organization_id', sa.types.UnicodeText, sa.ForeignKey(model.Group.id), primary_key=False, default=None),
+                                      sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
                                       sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
-                                      sa.Column('accepted_dataset_id', sa.types.UnicodeText, sa.ForeignKey(model.Package.id), primary_key=False, default=None),
+                                      sa.Column('accepted_dataset_id', sa.types.UnicodeText, primary_key=False, default=None),
                                       sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
                                       sa.Column('closed', sa.types.Boolean, primary_key=False, default=False),
                                       sa.Column('close_circumstance', sa.types.Unicode(constants.CLOSE_CIRCUMSTANCE_MAX_LENGTH), primary_key=False, default=u'')
@@ -135,10 +111,7 @@ def init_db(model):
         # Create the table only if it does not exist
         datarequests_table.create(checkfirst=True)
 
-        model.meta.mapper(DataRequest, datarequests_table, properties={
-            'organization': sa.orm.relation(model.Group),
-            'package': sa.orm.relation(model.Package)
-        })
+        model.meta.mapper(DataRequest, datarequests_table)
 
         update_db(model)
 
@@ -220,17 +193,8 @@ def update_db(model):
     '''
     meta = MetaData(bind=model.Session.get_bind(), reflect=True)
 
-    # Check to see if foreign key constraints exists and create them if they do not exists
-    if 'datarequests' in meta.tables and not any(x for x in meta.tables['datarequests'].foreign_key_constraints if x.name == 'datarequests_organization_id_fkey'):
-        log.info("DataRequests-UpdateDB: 'datarequests_organization_id_fkey' foreign_key does not exist, adding...")
-        DDL('ALTER TABLE "datarequests" ADD CONSTRAINT "datarequests_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "group" ("id")').execute(model.Session.get_bind())
-
-    if 'datarequests' in meta.tables and not any(x for x in meta.tables['datarequests'].foreign_key_constraints if x.name == 'datarequests_accepted_dataset_id_fkey'):
-        log.info("DataRequests-UpdateDB: 'datarequests_accepted_dataset_id_fkey' foreign_key does not exist, adding...")
-        DDL('ALTER TABLE "datarequests" ADD CONSTRAINT "datarequests_accepted_dataset_id_fkey" FOREIGN KEY ("accepted_dataset_id") REFERENCES "package" ("id")').execute(model.Session.get_bind())
-
     # Check to see if columns exists and create them if they do not exists
-    if tk.h.closing_circumstances_enabled:
+    if closing_circumstances_enabled:
         if 'datarequests' in meta.tables and 'close_circumstance' not in meta.tables['datarequests'].columns:
             log.info("DataRequests-UpdateDB: 'close_circumstance' field does not exist, adding...")
             DDL('ALTER TABLE "datarequests" ADD COLUMN "close_circumstance" varchar(100) NULL').execute(model.Session.get_bind())
