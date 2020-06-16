@@ -306,7 +306,7 @@ class DataRequestsUI(base.BaseController):
                 c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
 
             if tk.h.closing_circumstances_enabled:
-                # This is required so the form can set the currently selected close_curcumstance option in the select dropdown
+                # This is required so the form can set the currently selected close_circumstance option in the select dropdown
                 c.datarequest['close_circumstance'] = request.POST.get('close_circumstance', None)
 
             return tk.render('datarequests/close.html')

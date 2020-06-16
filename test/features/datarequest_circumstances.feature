@@ -36,7 +36,7 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select vlosing circumstance with condition 'To be released as open data at a later date', approx publishing date is required
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance with condition 'To be released as open data at a later date', approx publishing date is required
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"

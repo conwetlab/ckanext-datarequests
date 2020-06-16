@@ -195,10 +195,11 @@ def update_db(model):
 
     # Check to see if columns exists and create them if they do not exists
     if closing_circumstances_enabled:
-        if 'datarequests' in meta.tables and 'close_circumstance' not in meta.tables['datarequests'].columns:
-            log.info("DataRequests-UpdateDB: 'close_circumstance' field does not exist, adding...")
-            DDL('ALTER TABLE "datarequests" ADD COLUMN "close_circumstance" varchar(100) NULL').execute(model.Session.get_bind())
+        if 'datarequests' in meta.tables:
+            if 'close_circumstance' not in meta.tables['datarequests'].columns:
+                log.info("DataRequests-UpdateDB: 'close_circumstance' field does not exist, adding...")
+                DDL('ALTER TABLE "datarequests" ADD COLUMN "close_circumstance" varchar({0}) NULL'.format(constants.CLOSE_CIRCUMSTANCE_MAX_LENGTH)).execute(model.Session.get_bind())
 
-        if 'datarequests' in meta.tables and 'approx_publishing_date' not in meta.tables['datarequests'].columns:
-            log.info("DataRequests-UpdateDB: 'approx_publishing_date' field does not exist, adding...")
-            DDL('ALTER TABLE "datarequests" ADD COLUMN "approx_publishing_date" timestamp NULL').execute(model.Session.get_bind())
+            if 'approx_publishing_date' not in meta.tables['datarequests'].columns:
+                log.info("DataRequests-UpdateDB: 'approx_publishing_date' field does not exist, adding...")
+                DDL('ALTER TABLE "datarequests" ADD COLUMN "approx_publishing_date" timestamp NULL').execute(model.Session.get_bind())
