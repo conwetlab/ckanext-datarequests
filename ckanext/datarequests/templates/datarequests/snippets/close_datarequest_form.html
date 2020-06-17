@@ -26,7 +26,7 @@
             </select>
           </div>
         </div>
-        {{ form.input('approx_publishing_date', id='field-approx_publishing_date', label=_('Approx Publishing Date'), type='date', error=errors.approx_publishing_date) }}
+        {{ form.input('approx_publishing_date', id='field-approx_publishing_date', label=_('Approximate Publishing Date'), placeholder="yyyy-mm-dd", type='date', error=errors.approx_publishing_date) }}
       {% endif %}
   {% endblock %}
 

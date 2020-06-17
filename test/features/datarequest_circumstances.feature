@@ -36,7 +36,7 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance with condition 'To be released as open data at a later date', approx publishing date is required
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance with condition 'To be released as open data at a later date', Approximate publishing date is required
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
@@ -44,7 +44,7 @@ Feature: Datarequest-circumstances
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
         And I should see "The form contains invalid entries" within 1 seconds    
-        And I should see "Approx publishing date cannot be empty" within 1 seconds
+        And I should see "Approximate publishing date cannot be empty" within 1 seconds
         
         Examples: Users  
         | User                  |
@@ -52,7 +52,7 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Requestor initiated closure', accepted dataset or approx publishing date is not required
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Requestor initiated closure', accepted dataset or Approximate publishing date is not required
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
@@ -66,7 +66,7 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
     
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Open dataset already exists', the approx publishing date element is not visible
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Open dataset already exists', the Approximate publishing date element is not visible
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
@@ -92,7 +92,7 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Data openly available elsewhere', the accepted dataset and approx publishing date elements are not visible
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I select closing circumstance 'Data openly available elsewhere', the accepted dataset and Approximate publishing date elements are not visible
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
@@ -123,14 +123,14 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I close a datarequest with approx publishing date, the approx publishing date should be visible on datarequest page
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I close a datarequest with Approximate publishing date, the Approximate publishing date should be visible on datarequest page
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "To be released as open data at a later date" from "close_circumstance" 
         And I fill in "approx_publishing_date" with "2025-06-01"
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        Then I should see "Approx Publishing Date" within 1 seconds 
+        Then I should see "Approximate Publishing Date" within 1 seconds 
         
         Examples: Users  
         | User                  |
@@ -152,14 +152,14 @@ Feature: Datarequest-circumstances
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users, when I close a datarequest with no accepted dataset or approx publishing date, they should not be visibe on datarequest page
+    Scenario Outline: Data request creator, Sysadmin and Admin users, when I close a datarequest with no accepted dataset or Approximate publishing date, they should not be visibe on datarequest page
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         Then I should not see "Accepted Dataset" within 1 seconds 
-        Then I should not see "Approx Publishing Date" within 1 seconds 
+        Then I should not see "Approximate Publishing Date" within 1 seconds 
         
         Examples: Users  
         | User                  |
