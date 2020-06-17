@@ -21,6 +21,7 @@ import constants
 import ckan.plugins.toolkit as tk
 import ckanext.datarequests.db as db
 import plugin as datarequests
+import datetime
 
 
 def validate_datarequest(context, request_data):
@@ -67,16 +68,23 @@ def validate_datarequest_closing(context, request_data):
         condition = request_data.get('condition', None)
         if condition:
             if condition == 'nominate_dataset' and request_data.get('accepted_dataset_id', '') == '':
-                raise tk.ValidationError({tk._('Accepted Dataset'): [tk._('Accepted dataset cannot be empty')]})
-            elif condition == 'nominate_approximate_date' and request_data.get('approx_publishing_date', '') == '':
-                raise tk.ValidationError({tk._('Approximate Publishing Date'): [tk._('Approximate publishing date cannot be empty')]})
+                raise tk.ValidationError({tk._('Accepted dataset'): [tk._('Accepted dataset cannot be empty')]})
+            elif condition == 'nominate_approximate_date':
+                if request_data.get('approx_publishing_date', '') == '':
+                    raise tk.ValidationError({tk._('Approximate publishing date'): [tk._('Approximate publishing date cannot be empty')]})
+                try:
+                    # This validation is required for the Safari browser as the date type input is not supported and falls back to using a text type input
+                    # SQLAlchemy throws an error if the date value is not in the format yyyy-mm-dd
+                    datetime.datetime.strptime(request_data.get('approx_publishing_date', ''), '%Y-%m-%d')
+                except ValueError:
+                    raise tk.ValidationError({tk._('Approximate publishing date'): [tk._('Approximate publishing date must be in format yyyy-mm-dd')]})
 
     accepted_dataset_id = request_data.get('accepted_dataset_id', '')
     if accepted_dataset_id:
         try:
             tk.get_validator('package_name_exists')(accepted_dataset_id, context)
         except Exception:
-            raise tk.ValidationError({tk._('Accepted Dataset'): [tk._('Dataset not found')]})
+            raise tk.ValidationError({tk._('Accepted dataset'): [tk._('Dataset not found')]})
 
 
 def validate_comment(context, request_data):
