@@ -263,7 +263,7 @@ class DataRequestsUI(base.BaseController):
             log.warn(e)
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
-            log.warn(e) 
+            log.warn(e)
             tk.abort(403, tk._('You are not authorized to delete the Data Request %s'
                                % id))
 
@@ -305,6 +305,10 @@ class DataRequestsUI(base.BaseController):
             for dataset in base_datasets:
                 c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
 
+            if tk.h.closing_circumstances_enabled:
+                # This is required so the form can set the currently selected close_circumstance option in the select dropdown
+                c.datarequest['close_circumstance'] = request.POST.get('close_circumstance', None)
+
             return tk.render('datarequests/close.html')
 
         try:
@@ -317,6 +321,10 @@ class DataRequestsUI(base.BaseController):
                 data_dict = {}
                 data_dict['accepted_dataset_id'] = request.POST.get('accepted_dataset_id', None)
                 data_dict['id'] = id
+                if tk.h.closing_circumstances_enabled:
+                    data_dict['close_circumstance'] = request.POST.get('close_circumstance', None)
+                    data_dict['approx_publishing_date'] = request.POST.get('approx_publishing_date', None)
+                    data_dict['condition'] = request.POST.get('condition', None)
 
                 tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
                 tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=data_dict['id']))
@@ -425,4 +433,3 @@ class DataRequestsUI(base.BaseController):
     def unfollow(self, datarequest_id):
         # Method is not called
         pass
-        
