@@ -114,7 +114,7 @@ Feature: Datarequest-circumstances
         # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
         Then I execute the script "document.getElementById('field-accepted_dataset_id').value = document.getElementById('field-accepted_dataset_id').options[1].value" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        Then I should see "Accepted Dataset" within 1 seconds 
+        Then I should see "Accepted dataset" within 1 seconds 
         And I should see "A Wonderful Story" within 1 seconds 
         
         Examples: Users  
@@ -137,13 +137,14 @@ Feature: Datarequest-circumstances
         | SysAdmin              |
         | DataRequestOrgAdmin   |
 
+    @wip
     Scenario Outline: Data request creator, Sysadmin and Admin users, when I close a datarequest with closing circumstance 'Requestor initiated closure', the circumstance should be visible on the datarequest page
         Given "<User>" as the persona
         When I log in and create a datarequest 
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        Then I should see "Close Circumstance" within 1 seconds 
+        Then I should see "Close circumstance" within 1 seconds 
         Then I should see "Requestor initiated closure" within 1 seconds 
         
         Examples: Users  
@@ -158,7 +159,7 @@ Feature: Datarequest-circumstances
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        Then I should not see "Accepted Dataset" within 1 seconds 
+        Then I should not see "Accepted dataset" within 1 seconds 
         Then I should not see "Approximate publishing date" within 1 seconds 
         
         Examples: Users  
