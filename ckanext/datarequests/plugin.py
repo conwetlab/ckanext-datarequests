@@ -36,6 +36,7 @@ def get_config_bool_value(config_name, default_value=False):
     value = value if type(value) == bool else value != 'False'
     return value
 
+
 def is_fontawesome_4():
     if hasattr(h, 'ckan_version'):
         ckan_version = float(h.ckan_version()[0:3])
@@ -43,8 +44,10 @@ def is_fontawesome_4():
     else:
         return False
 
+
 def get_plus_icon():
     return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
+
 
 def get_question_icon():
     return 'question-circle' if is_fontawesome_4() else 'question-sign'
@@ -66,9 +69,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
     def __init__(self, name=None):
         self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
-        self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')        
+        self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
         self.is_description_required = get_config_bool_value('ckan.datarequests.description_required', False)
+        self.closing_circumstances_enabled = get_config_bool_value('ckan.datarequests.enable_closing_circumstances', False)
 
     ######################################################################
     ############################## IACTIONS ##############################
@@ -134,6 +138,15 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         # Register this plugin's fanstatic directory with CKAN.
         tk.add_resource('fanstatic', 'datarequest')
+
+    def update_config_schema(self, schema):
+        if self.closing_circumstances_enabled:
+            ignore_missing = tk.get_validator('ignore_missing')
+            schema.update({
+                # This is a custom configuration option
+                'ckan.datarequests.closing_circumstances': [ignore_missing, unicode],
+            })
+        return schema
 
     ######################################################################
     ############################## IROUTES ###############################
@@ -217,7 +230,9 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
             'get_plus_icon': get_plus_icon,
             'is_following_datarequest': helpers.is_following_datarequest,
-            'is_description_required': self.is_description_required
+            'is_description_required': self.is_description_required,
+            'closing_circumstances_enabled': self.closing_circumstances_enabled,
+            'get_closing_circumstances': helpers.get_closing_circumstances
         }
 
     ######################################################################
@@ -247,10 +262,10 @@ class DataRequestsPlugin(p.SingletonPlugin):
         plugin
         '''
         directory = self.i18n_directory()
-        return [ d for
-                 d in os.listdir(directory)
-                 if os.path.isdir(os.path.join(directory, d))
-        ]
+        return [d for
+                d in os.listdir(directory)
+                if os.path.isdir(os.path.join(directory, d))
+                ]
 
     def i18n_domain(self):
         '''Change the gettext domain handled by this plugin
