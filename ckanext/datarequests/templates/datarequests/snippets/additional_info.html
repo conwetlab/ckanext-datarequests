@@ -22,14 +22,14 @@
         {% if datarequest.closed %}
           {% if h.closing_circumstances_enabled %}
             <tr>
-              <th scope="row" class="dataset-label">{{ _('Close Circumstance') }}</th>
+              <th scope="row" class="dataset-label">{{ _('Close circumstance') }}</th>
               <td class="dataset-details" title="{{ datarequest.close_circumstance }}">
                 {{ datarequest.close_circumstance if datarequest.close_circumstance else _('None') }}
               </td>
             </tr>
             {% if datarequest.approx_publishing_date %}
               <tr>
-                <th scope="row" class="dataset-label">{{ _('Approximate Publishing Date') }}</th>
+                <th scope="row" class="dataset-label">{{ _('Approximate publishing date') }}</th>
                 <td class="dataset-details" title="{{ datarequest.approx_publishing_date }}">
                   {{ h.render_datetime(datarequest.approx_publishing_date) }}
                 </td>
@@ -37,7 +37,7 @@
             {% endif %}
             {% if datarequest.accepted_dataset %}
               <tr>
-                <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
+                <th scope="row" class="dataset-label">{{ _('Accepted dataset') }}</th>
                 <td class="dataset-details">
                   {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
                 </td>
@@ -45,7 +45,7 @@
             {% endif %}
           {% else %}
             <tr>
-              <th scope="row" class="dataset-label">{{ _('Accepted Dataset') }}</th>
+              <th scope="row" class="dataset-label">{{ _('Accepted dataset') }}</th>
               <td class="dataset-details">
               {% if datarequest.accepted_dataset %}
                 {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
