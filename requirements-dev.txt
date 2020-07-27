@@ -8,9 +8,20 @@ nose_parameterized==0.3.3
 profanityfilter
 lxml==4.5.2
 splinter>=0.13.0
+xlrd==1.0.0
+python-magic==0.4.12
+messytables==0.15.2
+progressbar==2.3
+SQLAlchemy>=0.6.6
+requests==2.11.1
+six==1.11.0
 -e git+https://github.com/qld-gov-au/ckanext-data-qld@develop#egg=ckanext-data_qld
 -e git+https://github.com/ckan/ckantoolkit@release-0.0.4#egg=ckantoolkit
 -e git+https://github.com/ckan/ckanapi@ckanapi-4.3#egg=ckanapi
 -e git+https://github.com/ckan/ckanext-scheming@release-1.2.0#egg=ckanext-scheming
 -e git+https://github.com/qld-gov-au/ckanext-data-qld-theme@develop#egg=ckanext-data_qld_theme
 -e git+https://github.com/qld-gov-au/ckanext-ytp-comments@develop#egg=ckanext-ytp-comments
+-e git+https://github.com/qld-gov-au/ckanext-qa@develop#egg=ckanext-qa
+-e git+https://github.com/qld-gov-au/ckanext-archiver.git@develop#egg=ckanext-archiver
+-e git+https://github.com/qld-gov-au/ckanext-report.git@0.1#egg=ckanext-report
+
