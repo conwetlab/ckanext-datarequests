@@ -18,6 +18,12 @@ CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
 # Initialise the Comments database tables
 paster --plugin=ckanext-ytp-comments initdb --config=/app/ckan/default/production.ini
 
+# Initialise the archiver database tables
+paster --plugin=ckanext-archiver archiver init --config=/app/ckan/default/production.ini
+
+# Initialise the reporting database tables
+paster --plugin=ckanext-report report initdb --config=/app/ckan/default/production.ini
+
 # Initialise the QA database tables
 paster --plugin=ckanext-qa qa init --config=/app/ckan/default/production.ini
 
