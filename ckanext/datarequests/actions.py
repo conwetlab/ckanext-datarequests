@@ -18,16 +18,14 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
-import ckan.lib.base as base
-import ckan.model as model
-import ckan.plugins as plugins
 import constants
 import datetime
 import cgi
 import db
 import logging
 import validator
-import ckan.lib.mailer as mailer
+from ckan import model, plugins
+from ckan.lib import base, mailer
 
 from pylons import config
 
@@ -201,7 +199,7 @@ def create_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -230,7 +228,7 @@ def create_datarequest(context, data_dict):
     datarequest_dict = _dictize_datarequest(data_req)
 
     if datarequest_dict['organization']:
-        users = set([user['id'] for user in datarequest_dict['organization']['users']])
+        users = {user['id'] for user in datarequest_dict['organization']['users']}
         users.discard(context['auth_user_obj'].id)
         _send_mail(users, 'new_datarequest', datarequest_dict)
 
@@ -250,7 +248,7 @@ def show_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -302,7 +300,7 @@ def update_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -455,7 +453,7 @@ def list_datarequests(context, data_dict):
                 'display_name': organization.get('display_name'),
                 'count': no_processed_organization_facet[organization_id]
             })
-        except:
+        except Exception:
             pass
 
     state_facet = []
@@ -493,7 +491,7 @@ def delete_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -538,7 +536,7 @@ def close_datarequest(context, data_dict):
     :type accepted_dataset_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
 
@@ -821,11 +819,11 @@ def delete_datarequest_comment(context, data_dict):
 
 def follow_datarequest(context, data_dict):
     '''
-    Action to follow a data request. Access rights will be cheked before 
+    Action to follow a data request. Access rights will be cheked before
     following a datarequest and a NotAuthorized exception will be risen if the
     user is not allowed to follow the given datarequest. ValidationError will
     be risen if the datarequest ID is not included or if the user is already
-    following the datarequest. ObjectNotFound will be risen if the given 
+    following the datarequest. ObjectNotFound will be risen if the given
     datarequest does not exist.
 
     :param id: The ID of the datarequest to be followed
@@ -873,11 +871,11 @@ def follow_datarequest(context, data_dict):
 
 def unfollow_datarequest(context, data_dict):
     '''
-    Action to unfollow a data request. Access rights will be cheked before 
+    Action to unfollow a data request. Access rights will be cheked before
     unfollowing a datarequest and a NotAuthorized exception will be risen if
     the user is not allowed to unfollow the given datarequest. ValidationError
-    will be risen if the datarequest ID is not included in the request. 
-    ObjectNotFound will be risen if the user is not following the given 
+    will be risen if the datarequest ID is not included in the request.
+    ObjectNotFound will be risen if the user is not following the given
     datarequest.
 
     :param id: The ID of the datarequest to be unfollowed

@@ -17,8 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckanext.datarequests.actions as actions
-import ckanext.datarequests.constants as constants
+from ckanext.datarequests import actions, constants
 import datetime
 import test_actions_data as test_data
 import unittest
@@ -95,7 +94,6 @@ class ActionsTest(unittest.TestCase):
         else:
             self.assertIsNone(response['close_time'])
 
-
     ######################################################################
     ################################# AUX ################################
     ######################################################################
@@ -149,7 +147,6 @@ class ActionsTest(unittest.TestCase):
         actions.tk.check_access.assert_called_once_with(action, self.context, request_data)
         actions.db.Comment.get.assert_called_once_with(id=request_data['id'])
 
-
     ######################################################################
     ######################### GET INVOLVED USERS #########################
     ######################################################################
@@ -175,7 +172,7 @@ class ActionsTest(unittest.TestCase):
 
         result = actions._get_datarequest_involved_users(self.context, datarequest)
 
-        self.assertEquals(set(['user-2', 'user-3']), result)
+        self.assertEquals({'user-2', 'user-3'}, result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
         list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
@@ -201,7 +198,7 @@ class ActionsTest(unittest.TestCase):
 
         result = actions._get_datarequest_involved_users(self.context, datarequest)
 
-        self.assertEquals(set(['user-1', 'user-2', 'user-3']), result)
+        self.assertEquals({'user-1', 'user-2', 'user-3'}, result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
         list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
@@ -227,11 +224,10 @@ class ActionsTest(unittest.TestCase):
 
         result = actions._get_datarequest_involved_users(self.context, datarequest)
 
-        self.assertEquals(set(['user-1', 'user-2', 'user-3', 'user-4']), result)
+        self.assertEquals({'user-1', 'user-2', 'user-3', 'user-4'}, result)
 
         actions.db.DataRequestFollower.get.assert_called_once_with(datarequest_id=datarequest_id)
         list_comments_mock.assert_called_once_with({'ignore_auth': True, 'model': self.context['model']}, {'datarequest_id': datarequest_id})
-
 
     ######################################################################
     ############################# SEND MAIL ##############################
@@ -258,7 +254,7 @@ class ActionsTest(unittest.TestCase):
 
         actions._send_mail(users, action_type, datarequest)
 
-        for i, user in enumerate(users):
+        for i, _ in enumerate(users):
             extra_args = {
                 'datarequest': datarequest,
                 'user': get_users_side_effect[i],
@@ -269,7 +265,6 @@ class ActionsTest(unittest.TestCase):
             base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
 
             mailer_mock.mail_user.assert_any_call(get_users_side_effect[i], subject, body)
-
 
     @patch('ckanext.datarequests.actions.config')
     @patch('ckanext.datarequests.actions.mailer')
@@ -301,7 +296,6 @@ class ActionsTest(unittest.TestCase):
         base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
 
         mailer_mock.mail_user.assert_any_call(user, subject, body)
-
 
     ######################################################################
     ################################# NEW ################################
@@ -364,7 +358,7 @@ class ActionsTest(unittest.TestCase):
 
         self.context['session'].add.assert_called_once_with(datarequest)
         self.context['session'].commit.assert_called_once()
-        send_mail_mock.assert_called_once_with(set(['user_1', 'user_2']), 'new_datarequest', result)
+        send_mail_mock.assert_called_once_with({'user_1', 'user_2'}, 'new_datarequest', result)
 
         # Check the object stored in the database
         self.assertEquals(self.context['auth_user_obj'].id, datarequest.user_id)
@@ -375,7 +369,6 @@ class ActionsTest(unittest.TestCase):
 
         # Check the returned object
         self._check_basic_response(datarequest, result, default_user, default_org, default_pkg)
-
 
     ######################################################################
     ################################ SHOW ################################
@@ -438,7 +431,6 @@ class ActionsTest(unittest.TestCase):
         pkg_checked = True if accepted_dataset_id else False
 
         self._test_show_datarequest_found(datarequest, org_checked, pkg_checked)
-
 
     ######################################################################
     ############################### UPDATE ###############################
@@ -511,7 +503,6 @@ class ActionsTest(unittest.TestCase):
         pkg = default_pkg if accepted_dataset_id else None
         self._check_basic_response(datarequest, result, default_user, org, pkg)
 
-
     ######################################################################
     ################################ LIST ################################
     ######################################################################
@@ -539,13 +530,11 @@ class ActionsTest(unittest.TestCase):
         (test_data.list_datarequests_test_case_17,)
     ])
     def test_list_datarequests(self, test_case):
-
         content = test_case['content']
         expected_ddbb_params = test_case['expected_ddbb_params']
         ddbb_response = test_case['ddbb_response']
         expected_response = test_case['expected_response']
         _organization_show = test_case['organization_show_func']
-        _user_show = test_case.get('user_show_func', None)
 
         # Set the mocks
         actions.db.DataRequest.get_ordered_by_date.return_value = ddbb_response
@@ -576,7 +565,7 @@ class ActionsTest(unittest.TestCase):
             organization_show.assert_any_call({'ignore_auth': True}, {'id': content['organization_id']})
             expected_organization_show_calls += 1
 
-        # The reamining ones to include the display name into the facets
+        # The remaining ones to include the display name into the facets
         if 'organization' in expected_response['facets']:
             expected_organization_show_calls += len(expected_response['facets']['organization']['items'])
             for organization_facet in expected_response['facets']['organization']['items']:
@@ -619,7 +608,6 @@ class ActionsTest(unittest.TestCase):
             # The items are the same ones
             for item in items:
                 self.assertIn(item, response['facets'][facet]['items'])
-
 
     ######################################################################
     ############################### DELETE ###############################
@@ -666,7 +654,6 @@ class ActionsTest(unittest.TestCase):
         pkg = default_pkg if accepted_dataset_id else None
         self._check_basic_response(datarequest, result, default_user, org, pkg)
 
-
     ######################################################################
     ################################ CLOSE ###############################
     ######################################################################
@@ -704,7 +691,7 @@ class ActionsTest(unittest.TestCase):
         send_mail_patch = patch('ckanext.datarequests.actions._send_mail')
         send_mail_mock = send_mail_patch.start()
         self.addCleanup(send_mail_patch.stop)
-        
+
         get_datarequest_involved_users_patch = patch('ckanext.datarequests.actions._get_datarequest_involved_users')
         get_datarequest_involved_users_mock = get_datarequest_involved_users_patch.start()
         self.addCleanup(get_datarequest_involved_users_patch.stop)
@@ -740,7 +727,6 @@ class ActionsTest(unittest.TestCase):
         send_mail_mock.assert_called_once_with(get_datarequest_involved_users_mock.return_value, 'close_datarequest', result)
         get_datarequest_involved_users_mock.assert_called_once_with(self.context, result)
 
-
     ######################################################################
     ############################### COMMENT ##############################
     ######################################################################
@@ -751,7 +737,7 @@ class ActionsTest(unittest.TestCase):
     def test_comment_no_id(self):
         self._test_no_id(actions.comment_datarequest)
 
-    def test_comment_invalid(self, function=actions.comment_datarequest, check_access=constants.COMMENT_DATAREQUEST, 
+    def test_comment_invalid(self, function=actions.comment_datarequest, check_access=constants.COMMENT_DATAREQUEST,
                              request_data=test_data.comment_request_data):
         '''
         This function is also used to check invalid content when a comment is updated
@@ -810,7 +796,6 @@ class ActionsTest(unittest.TestCase):
         send_mail_mock.assert_called_once_with(get_datarequest_involved_users_mock.return_value, 'new_comment', datarequest_dict)
         get_datarequest_involved_users_mock.assert_called_once_with(self.context, datarequest_dict)
 
-
     ######################################################################
     ############################ SHOW COMMENT ############################
     ######################################################################
@@ -839,7 +824,6 @@ class ActionsTest(unittest.TestCase):
         # Check that the response is OK
         self._check_comment(comment, result, default_user)
 
-
     ######################################################################
     ############################ LIST COMMENTS ###########################
     ######################################################################
@@ -858,9 +842,7 @@ class ActionsTest(unittest.TestCase):
     ])
     def test_comment_list(self, sort=None, desc=False):
         # Configure mock
-        comments = []
-        for i in range(0, 5):
-            comments.append(test_data._generate_basic_comment())
+        comments = [test_data._generate_basic_comment() for _ in range(0, 5)]
 
         actions.db.Comment.get_ordered_by_date.return_value = comments
 
@@ -884,7 +866,6 @@ class ActionsTest(unittest.TestCase):
         # Check that the response is OK
         for i in range(0, len(results)):
             self._check_comment(comments[i], results[i], default_user)
-
 
     ######################################################################
     ########################### UPDATE COMMENT ###########################
@@ -938,7 +919,6 @@ class ActionsTest(unittest.TestCase):
 
         # Check the result
         self._check_comment(comment, result, default_user)
-
 
     ######################################################################
     ########################### DELETE COMMENT ###########################
@@ -1031,8 +1011,8 @@ class ActionsTest(unittest.TestCase):
     def test_unfollow_not_authorized(self):
         self._test_not_authorized(actions.unfollow_datarequest, constants.UNFOLLOW_DATAREQUEST, test_data.follow_data_request_data)
 
-    def test_follow_no_id(self):
-        self._test_no_id(actions.follow_datarequest)
+    def test_unfollow_no_id(self):
+        self._test_no_id(actions.unfollow_datarequest)
 
     def test_unfollow_not_following(self):
         # Configure the mock
@@ -1061,4 +1041,3 @@ class ActionsTest(unittest.TestCase):
         self.context['session'].commit.assert_called_once()
 
         self.assertTrue(result)
-

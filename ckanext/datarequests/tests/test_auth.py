@@ -18,8 +18,7 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
-import ckanext.datarequests.constants as constants
-import ckanext.datarequests.auth as auth
+from ckanext.datarequests import auth, constants
 import unittest
 
 from mock import MagicMock
@@ -46,8 +45,9 @@ request_data_comment = {
 }
 
 request_follow = {
-       'datarequest_id': 'example_uuid_v4', 
+    'datarequest_id': 'example_uuid_v4',
 }
+
 
 class AuthTest(unittest.TestCase):
 
