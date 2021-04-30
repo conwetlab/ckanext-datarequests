@@ -23,7 +23,7 @@ import functools
 import re
 import six
 
-from six.moves.urllib import urlencode
+from six.moves.urllib.parse import urlencode
 
 from ckan import model, plugins
 from ckan.common import request
