@@ -127,7 +127,7 @@ commands:
       ahoy cli "behave ${*:-/app/test/features}" || \
       [ "${ALLOW_BDD_FAIL:-0}" -eq 1 ]
       ahoy stop-mailmock
-      ahoy stop-ckan-job-worker     
+      ahoy stop-ckan-job-worker
 
 
   start-mailmock:
@@ -147,8 +147,9 @@ commands:
     cmd: |
       ahoy title 'Starting CKAN background job worker'
       ahoy cli "cd /usr/lib/ckan/default/src/ckan && \
-                paster jobs clear --config=/app/ckan/default/production.ini && \
-                paster jobs worker default --config=/app/ckan/default/production.ini"
+                export CKAN_CLI=/app/ckan/default/production.ini &&
+                /app/scripts/ckan_cli jobs clear && \
+                /app/scripts/ckan_cli jobs worker default"
 
   stop-ckan-job-worker:
     usage: Stops CKAN background job worker
