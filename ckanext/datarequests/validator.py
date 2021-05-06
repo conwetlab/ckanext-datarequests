@@ -19,7 +19,7 @@
 
 import constants
 import ckan.plugins.toolkit as tk
-import ckanext.datarequests.db as db
+from ckanext.datarequests import db
 import plugin as datarequests
 import datetime
 

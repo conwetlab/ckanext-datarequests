@@ -6,17 +6,16 @@
 set -e
 
 CKAN_ACTION_URL=http://ckan:3000/api/action
-CKAN_INI_FILE=/app/ckan/default/production.ini
+export CKAN_INI=/app/ckan/default/production.ini
 
-. /app/ckan/default/bin/activate \
-    && cd /app/ckan/default/src/ckan
+. /app/ckan/default/bin/activate
 
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
-API_KEY=$(paster --plugin=ckan user admin -c ${CKAN_INI_FILE} | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
+API_KEY=$(/app/scripts/ckan_cli user admin | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
 
-# # 
+# #
 ##
-# BEGIN: Add sysadmin config values. 
+# BEGIN: Add sysadmin config values.
 # This needs to be done before closing datarequests as they require the below config values
 #
 echo "Adding ckan.datarequests.closing_circumstances:"
@@ -37,10 +36,10 @@ TEST_ORG_TITLE="Test"
 
 echo "Creating test users for ${TEST_ORG_TITLE} Organisation:"
 
-paster --plugin=ckan user add ckan_user email=ckan_user@localhost password=password -c ${CKAN_INI_FILE}
-paster --plugin=ckan user add test_org_admin email=test_org_admin@localhost password=password -c ${CKAN_INI_FILE}
-paster --plugin=ckan user add test_org_editor email=test_org_editor@localhost password=password -c ${CKAN_INI_FILE}
-paster --plugin=ckan user add test_org_member email=test_org_member@localhost password=password -c ${CKAN_INI_FILE}
+/app/scripts/ckan_cli user add ckan_user email=ckan_user@localhost password=password
+/app/scripts/ckan_cli user add test_org_admin email=test_org_admin@localhost password=password
+/app/scripts/ckan_cli user add test_org_editor email=test_org_editor@localhost password=password
+/app/scripts/ckan_cli user add test_org_member email=test_org_member@localhost password=password
 
 echo "Creating ${TEST_ORG_TITLE} Organisation:"
 
@@ -78,9 +77,9 @@ DR_ORG_TITLE="Open Data Administration (data requests)"
 
 echo "Creating test users for ${DR_ORG_TITLE} Organisation:"
 
-paster --plugin=ckan user add dr_admin email=dr_admin@localhost password=password -c ${CKAN_INI_FILE}
-paster --plugin=ckan user add dr_editor email=dr_editor@localhost password=password -c ${CKAN_INI_FILE}
-paster --plugin=ckan user add dr_member email=dr_member@localhost password=password -c ${CKAN_INI_FILE}
+/app/scripts/ckan_cli user add dr_admin email=dr_admin@localhost password=password
+/app/scripts/ckan_cli user add dr_editor email=dr_editor@localhost password=password
+/app/scripts/ckan_cli user add dr_member email=dr_member@localhost password=password
 
 echo "Creating ${DR_ORG_TITLE} Organisation:"
 
@@ -138,8 +137,8 @@ curl -L -s --header "Authorization: ${API_KEY}" \
 # END.
 #
 
-# Use CKAN's built-in paster command for creating some test datasets...
-paster create-test-data -c ${CKAN_INI_FILE}
+# Use CKAN's built-in commands for creating some test datasets...
+/app/scripts/ckan_cli create-test-data
 
 # Datasets need to be assigned to an organisation
 

@@ -187,7 +187,7 @@ def init_db(model):
 
 
 def update_db(model):
-    '''    
+    '''
     A place to make any datarequest table updates via SQL commands
     This is required because adding new columns to sqlalchemy metadata will not get created if the table already exists
     '''

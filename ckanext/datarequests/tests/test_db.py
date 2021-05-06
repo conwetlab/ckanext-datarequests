@@ -18,10 +18,10 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
-import ckanext.datarequests.db as db
+from ckanext.datarequests import db
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 class DBTest(unittest.TestCase):
@@ -115,8 +115,8 @@ class DBTest(unittest.TestCase):
         title_column_value = MagicMock()
         description_column_value = MagicMock()
         setattr(table, time_column, time_column_value)
-        setattr(table, 'title', title_column_value)
-        setattr(table, 'description', description_column_value)
+        table.title = title_column_value
+        table.description = description_column_value
 
         # Call the method
         result = table.get_ordered_by_date(**params)
@@ -355,4 +355,3 @@ class DBTest(unittest.TestCase):
         query.filter_by.assert_called_once_with(**params)
         model.Session.query.assert_called_once_with(count)
         db.func.count.assert_called_once_with(db.DataRequestFollower.id)
-

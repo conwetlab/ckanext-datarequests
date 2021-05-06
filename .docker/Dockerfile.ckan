@@ -30,7 +30,8 @@ RUN fix-permissions /app/ckan \
     && chmod +x /app/scripts/create-test-data.sh \
     && chmod +x /app/scripts/init.sh \
     && chmod +x /app/scripts/init-ext.sh \
-    && chmod +x /app/scripts/serve.sh
+    && chmod +x /app/scripts/serve.sh \
+    && chmod +x /app/scripts/ckan_cli
 
 # Add current extension and files.
 COPY ckanext /app/ckanext
