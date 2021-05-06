@@ -164,7 +164,7 @@ class ValidatorTest(unittest.TestCase):
         show_datarequest.side_effect = self._tk.ObjectNotFound('Store Not found')
 
         self._test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
-                                  'Data Request not found')
+                                   'Data Request not found')
 
     def test_comment_valid(self):
         show_datarequest = validator.tk.get_action.return_value

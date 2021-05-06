@@ -783,7 +783,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Execute the test
         self._test_close(organization, post_content, exception.error_dict,
-                        {'Accepted Dataset': 'error1, error2'}, close_datarequest)
+                         {'Accepted Dataset': 'error1, error2'}, close_datarequest)
 
     ######################################################################
     ############################### COMMENT ##############################
