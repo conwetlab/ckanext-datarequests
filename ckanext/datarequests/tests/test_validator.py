@@ -146,6 +146,9 @@ class ValidatorTest(unittest.TestCase):
         ({'comment': generate_string(validator.constants.COMMENT_MAX_LENGTH + 1)}, 'Comment',
             'Comments must be a maximum of %d characters long' % validator.constants.COMMENT_MAX_LENGTH)
     ])
+    def test_comment_invalid_good_datarequest(self, request_data, field, message):
+        self.test_comment_invalid(request_data, field, message)
+
     def test_comment_invalid(self, request_data, field, message):
         context = {}
         request_data['datarequest_id'] = 'exmaple'
