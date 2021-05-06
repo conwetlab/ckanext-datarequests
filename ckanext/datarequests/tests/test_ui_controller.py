@@ -187,7 +187,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.new()
 
         # Authorize function has been called
-        controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, 
+        controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
                                                            self.expected_context, None)
 
         if authorized:
@@ -693,7 +693,10 @@ class UIControllerTest(unittest.TestCase):
         (None,),
         ('organization_uuidv4',)
     ])
-    def test_close(self, organization, post_content={}, errors={}, errors_summary={}, close_datarequest=MagicMock()):
+    def test_close_datarequest(self, organization):
+        self._test_close(organization)
+
+    def _test_close(self, organization, post_content={}, errors={}, errors_summary={}, close_datarequest=MagicMock()):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
         controller.request.POST = post_content
@@ -782,7 +785,7 @@ class UIControllerTest(unittest.TestCase):
         close_datarequest = MagicMock(side_effect=exception)
 
         # Execute the test
-        self.test_close(organization, post_content, exception.error_dict,
+        self._test_close(organization, post_content, exception.error_dict,
                         {'Accepted Dataset': 'error1, error2'}, close_datarequest)
 
 
@@ -944,7 +947,7 @@ class UIControllerTest(unittest.TestCase):
         result = self.controller_instance.delete_comment('datarequest_id', comment_id)
 
         # Assertions
-        controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT, 
+        controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT,
                                                            self.expected_context, {'id': comment_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to delete this comment')
         self.assertEquals(0, controller.tk.render.call_count)
