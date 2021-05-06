@@ -101,14 +101,25 @@ def _dictize_datarequest(datarequest):
     data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
         datarequest_id=datarequest.id)
 
+    if tk.h.closing_circumstances_enabled:
+        data_dict['close_circumstance'] = datarequest.close_circumstance
+        data_dict['approx_publishing_date'] = datarequest.approx_publishing_date
+
     return data_dict
 
 
-def _undictize_datarequest_basic(data_request, data_dict):
-    data_request.title = data_dict['title']
-    data_request.description = data_dict['description']
+def _undictize_datarequest_basic(datarequest, data_dict):
+    datarequest.title = data_dict['title']
+    datarequest.description = data_dict['description']
     organization = data_dict['organization_id']
-    data_request.organization_id = organization if organization else None
+    datarequest.organization_id = organization if organization else None
+    _undictize_datarequest_closing_circumstances(datarequest, data_dict)
+
+
+def _undictize_datarequest_closing_circumstances(datarequest, data_dict):
+    if tk.h.closing_circumstances_enabled:
+        datarequest.close_circumstance = data_dict.get('close_circumstance') or None
+        datarequest.approx_publishing_date = data_dict.get('approx_publishing_date') or None
 
 
 def _dictize_comment(comment):
@@ -131,7 +142,7 @@ def _undictize_comment_basic(comment, data_dict):
 def _get_datarequest_involved_users(context, datarequest_dict):
 
     datarequest_id = datarequest_dict['id']
-    new_context = {'ignore_auth': True, 'model': context['model'] }
+    new_context = {'ignore_auth': True, 'model': context['model']}
 
     # Creator + Followers + People who has commented + Organization Staff
     users = set()
@@ -141,7 +152,7 @@ def _get_datarequest_involved_users(context, datarequest_dict):
 
     if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
-    
+
     # Notifications are not sent to the user that performs the action
     users.discard(context['auth_user_obj'].id)
 
@@ -214,7 +225,7 @@ def create_datarequest(context, data_dict):
     data_req.open_time = datetime.datetime.utcnow()
 
     session.add(data_req)
-    session.commit()    
+    session.commit()
 
     datarequest_dict = _dictize_datarequest(data_req)
 
@@ -562,8 +573,9 @@ def close_datarequest(context, data_dict):
         raise tk.ValidationError([tk._('This Data Request is already closed')])
 
     data_req.closed = True
-    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
+    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id') or None
     data_req.close_time = datetime.datetime.utcnow()
+    _undictize_datarequest_closing_circumstances(data_req, data_dict)
 
     session.add(data_req)
     session.commit()
@@ -806,6 +818,7 @@ def delete_datarequest_comment(context, data_dict):
 
     return _dictize_comment(comment)
 
+
 def follow_datarequest(context, data_dict):
     '''
     Action to follow a data request. Access rights will be cheked before 
@@ -856,6 +869,7 @@ def follow_datarequest(context, data_dict):
     session.commit()
 
     return True
+
 
 def unfollow_datarequest(context, data_dict):
     '''

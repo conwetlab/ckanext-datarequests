@@ -20,10 +20,13 @@
 import constants
 import sqlalchemy as sa
 import uuid
+import logging
+import ckan.plugins.toolkit as tk
 
-from sqlalchemy import func
+from sqlalchemy import func, MetaData, DDL
 from sqlalchemy.sql.expression import or_
 
+log = logging.getLogger(__name__)
 DataRequest = None
 Comment = None
 DataRequestFollower = None
@@ -38,6 +41,8 @@ def init_db(model):
     global DataRequest
     global Comment
     global DataRequestFollower
+    global closing_circumstances_enabled
+    closing_circumstances_enabled = tk.h.closing_circumstances_enabled
 
     if DataRequest is None:
 
@@ -88,22 +93,27 @@ def init_db(model):
 
         # FIXME: References to the other tables...
         datarequests_table = sa.Table('datarequests', model.meta.metadata,
-            sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
-            sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-            sa.Column('title', sa.types.Unicode(constants.NAME_MAX_LENGTH), primary_key=True, default=u''),
-            sa.Column('description', sa.types.Unicode(constants.DESCRIPTION_MAX_LENGTH), primary_key=False, default=u''),
-            sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
-            sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
-            sa.Column('accepted_dataset_id', sa.types.UnicodeText, primary_key=False, default=None),
-            sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
-            sa.Column('closed', sa.types.Boolean, primary_key=False, default=False)
-        )
+                                      sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
+                                      sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+                                      sa.Column('title', sa.types.Unicode(constants.NAME_MAX_LENGTH), primary_key=True, default=u''),
+                                      sa.Column('description', sa.types.Unicode(constants.DESCRIPTION_MAX_LENGTH), primary_key=False, default=u''),
+                                      sa.Column('organization_id', sa.types.UnicodeText, primary_key=False, default=None),
+                                      sa.Column('open_time', sa.types.DateTime, primary_key=False, default=None),
+                                      sa.Column('accepted_dataset_id', sa.types.UnicodeText, primary_key=False, default=None),
+                                      sa.Column('close_time', sa.types.DateTime, primary_key=False, default=None),
+                                      sa.Column('closed', sa.types.Boolean, primary_key=False, default=False),
+                                      sa.Column('close_circumstance', sa.types.Unicode(constants.CLOSE_CIRCUMSTANCE_MAX_LENGTH), primary_key=False, default=u'')
+                                      if closing_circumstances_enabled else None,
+                                      sa.Column('approx_publishing_date', sa.types.DateTime, primary_key=False, default=None)
+                                      if closing_circumstances_enabled else None
+                                      )
 
         # Create the table only if it does not exist
         datarequests_table.create(checkfirst=True)
 
-        model.meta.mapper(DataRequest, datarequests_table,)
+        model.meta.mapper(DataRequest, datarequests_table)
 
+        update_db(model)
 
     if Comment is None:
         class _Comment(model.DomainObject):
@@ -132,12 +142,12 @@ def init_db(model):
 
         # FIXME: References to the other tables...
         comments_table = sa.Table('datarequests_comments', model.meta.metadata,
-            sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-            sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
-            sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-            sa.Column('time', sa.types.DateTime, primary_key=True, default=u''),
-            sa.Column('comment', sa.types.Unicode(constants.COMMENT_MAX_LENGTH), primary_key=False, default=u'')
-        )
+                                  sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+                                  sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
+                                  sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+                                  sa.Column('time', sa.types.DateTime, primary_key=True, default=u''),
+                                  sa.Column('comment', sa.types.Unicode(constants.COMMENT_MAX_LENGTH), primary_key=False, default=u'')
+                                  )
 
         # Create the table only if it does not exist
         comments_table.create(checkfirst=True)
@@ -164,14 +174,32 @@ def init_db(model):
 
         # FIXME: References to the other tables...
         followers_table = sa.Table('datarequests_followers', model.meta.metadata,
-            sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-            sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
-            sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
-            sa.Column('time', sa.types.DateTime, primary_key=True, default=u'')
-        )
+                                   sa.Column('id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+                                   sa.Column('user_id', sa.types.UnicodeText, primary_key=False, default=u''),
+                                   sa.Column('datarequest_id', sa.types.UnicodeText, primary_key=True, default=uuid4),
+                                   sa.Column('time', sa.types.DateTime, primary_key=True, default=u'')
+                                   )
 
         # Create the table only if it does not exist
         followers_table.create(checkfirst=True)
 
         model.meta.mapper(DataRequestFollower, followers_table,)
 
+
+def update_db(model):
+    '''    
+    A place to make any datarequest table updates via SQL commands
+    This is required because adding new columns to sqlalchemy metadata will not get created if the table already exists
+    '''
+    meta = MetaData(bind=model.Session.get_bind(), reflect=True)
+
+    # Check to see if columns exists and create them if they do not exists
+    if closing_circumstances_enabled:
+        if 'datarequests' in meta.tables:
+            if 'close_circumstance' not in meta.tables['datarequests'].columns:
+                log.info("DataRequests-UpdateDB: 'close_circumstance' field does not exist, adding...")
+                DDL('ALTER TABLE "datarequests" ADD COLUMN "close_circumstance" varchar({0}) NULL'.format(constants.CLOSE_CIRCUMSTANCE_MAX_LENGTH)).execute(model.Session.get_bind())
+
+            if 'approx_publishing_date' not in meta.tables['datarequests'].columns:
+                log.info("DataRequests-UpdateDB: 'approx_publishing_date' field does not exist, adding...")
+                DDL('ALTER TABLE "datarequests" ADD COLUMN "approx_publishing_date" timestamp NULL').execute(model.Session.get_bind())

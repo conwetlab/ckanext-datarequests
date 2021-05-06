@@ -51,11 +51,11 @@ commands:
 
   restart:
     usage: Restart all stopped and running Docker containers.
-    cmd: docker-compose restart
+    cmd: docker-compose restart "$@"
 
   logs:
     usage: Show Docker logs.
-    cmd: docker-compose logs "$@"
+    cmd: docker-compose logs -f "$@"
 
   pull:
     usage: Pull latest docker images.
