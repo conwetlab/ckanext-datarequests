@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckanext.datarequests.constants as constants
+from ckanext.datarequests import constants
 import ckanext.datarequests.controllers.ui_controller as controller
 import unittest
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 INDEX_FUNCTION = 'index'
@@ -83,7 +83,6 @@ class UIControllerTest(unittest.TestCase):
         controller.base = self._base
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
-
     ######################################################################
     ################################# AUX ################################
     ######################################################################
@@ -122,7 +121,6 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.render.call_count)
         self.assertIsNone(result)
 
-
     ######################################################################
     ################################# NEW ################################
     ######################################################################
@@ -160,8 +158,8 @@ class UIControllerTest(unittest.TestCase):
 
     @parameterized.expand([
         (False, False),
-        (True,  False),
-        (True,  True)
+        (True, False),
+        (True, True)
     ])
     def test_new_post_content(self, authorized, validation_error):
         datarequest_id = 'this-represents-an-uuidv4()'
@@ -219,7 +217,6 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
 
-
     ######################################################################
     ################################ SHOW ################################
     ######################################################################
@@ -232,17 +229,17 @@ class UIControllerTest(unittest.TestCase):
 
     @parameterized.expand({
         (False, False, None),
-        (False, True,  None),
-        (True,  False, None),
-        (True,  True,  None),
+        (False, True, None),
+        (True, False, None),
+        (True, True, None),
         (False, False, 'uudiv4', False),
-        (False, True,  'uudiv4', False),
-        (True,  False, 'uudiv4', False),
-        (True,  True,  'uudiv4', False),
+        (False, True, 'uudiv4', False),
+        (True, False, 'uudiv4', False),
+        (True, True, 'uudiv4', False),
         (False, False, 'uudiv4', True),
-        (False, True,  'uudiv4', True),
-        (True,  False, 'uudiv4', True),
-        (True,  True,  'uudiv4', True)
+        (False, True, 'uudiv4', True),
+        (True, False, 'uudiv4', True),
+        (True, True, 'uudiv4', True)
     })
     def test_show_found(self, user_show_exception, organization_show_exception, accepted_dataset, package_show_exception=False):
 
@@ -314,7 +311,6 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.render.assert_called_once_with('datarequests/show.html')
         self.assertEquals(controller.tk.render.return_value, result)
 
-
     ######################################################################
     ############################### UPDATE ###############################
     ######################################################################
@@ -354,8 +350,8 @@ class UIControllerTest(unittest.TestCase):
 
     @parameterized.expand([
         (False, False),
-        (True,  False),
-        (True,  True)
+        (True, False),
+        (True, True)
     ])
     def test_update_post_content(self, authorized, validation_error):
         datarequest_id = 'this-represents-an-uuidv4()'
@@ -431,7 +427,6 @@ class UIControllerTest(unittest.TestCase):
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
-
 
     ######################################################################
     ################################ INDEX ###############################
@@ -607,7 +602,7 @@ class UIControllerTest(unittest.TestCase):
         silly_page = 72
         query_param = 'q={0}&'.format(query) if query else ''
         self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
-                          page_arguments['url'](q=query,page=silly_page))
+                          page_arguments['url'](q=query, page=silly_page))
 
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
@@ -635,7 +630,6 @@ class UIControllerTest(unittest.TestCase):
         expected_user = controller.c.user_dict if hasattr(controller.c, 'user_dict') else None
         self.assertEquals(controller.tk.render.return_value, result)
         controller.tk.render.assert_called_once_with(expected_render_page, extra_vars={'user_dict': expected_user, 'group_type': 'organization'})
-
 
     ######################################################################
     ############################### DELETE ###############################
@@ -678,7 +672,6 @@ class UIControllerTest(unittest.TestCase):
             action='index')
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
-
     ######################################################################
     ################################ CLOSE ###############################
     ######################################################################
@@ -696,10 +689,14 @@ class UIControllerTest(unittest.TestCase):
     def test_close_datarequest(self, organization):
         self._test_close(organization)
 
-    def _test_close(self, organization, post_content={}, errors={}, errors_summary={}, close_datarequest=MagicMock()):
+    def _test_close(self, organization, post_content=None, errors=None, errors_summary=None, close_datarequest=None):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        controller.request.POST = post_content
+        controller.request.POST = post_content or {}
+        errors = errors or {}
+        errors_summary = errors_summary or {}
+        if not close_datarequest:
+            close_datarequest = MagicMock()
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -786,8 +783,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Execute the test
         self._test_close(organization, post_content, exception.error_dict,
-                        {'Accepted Dataset': 'error1, error2'}, close_datarequest)
-
+                         {'Accepted Dataset': 'error1, error2'}, close_datarequest)
 
     ######################################################################
     ############################### COMMENT ##############################
@@ -898,8 +894,11 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.get_action.assert_any_call(constants.UPDATE_DATAREQUEST_COMMENT)
 
         if new_comment or update_comment:
-            default_action.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else ''})
+            default_action.assert_called_once_with(
+                self.expected_context, {
+                    'datarequest_id': datarequest_id,
+                    'comment': comment, 'id': comment_id if update_comment else ''
+                })
 
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
@@ -915,9 +914,9 @@ class UIControllerTest(unittest.TestCase):
             # Check controller.c values
             self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
 
-            errors_summary = {}
-            for key, error in comment_or_update_exception.error_dict.items():
-                    errors_summary[key] = ', '.join(error)
+            errors_summary = {
+                key: ', '.join(error)
+                for key, error in comment_or_update_exception.error_dict.items()}
 
             self.assertEquals(errors_summary, controller.c.errors_summary)
 
@@ -933,7 +932,6 @@ class UIControllerTest(unittest.TestCase):
 
             if update_comment:
                 self.assertEquals(comment_id, controller.c.updated_comment['id'])
-
 
     ######################################################################
     ########################### DELETE COMMENT ###########################

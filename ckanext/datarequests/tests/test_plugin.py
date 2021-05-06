@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckanext.datarequests.plugin as plugin
-import ckanext.datarequests.constants as constants
+from ckanext.datarequests import plugin, constants
 import unittest
 
 from mock import MagicMock, patch
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 TOTAL_ACTIONS = 13
 COMMENTS_ACTIONS = 5
@@ -214,68 +213,81 @@ class DataRequestPluginTest(unittest.TestCase):
         self.plg_instance.before_map(mapa)
 
         self.assertEquals(mapa_calls, mapa.connect.call_count)
-        mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
+        mapa.connect.assert_any_call(
+            'datarequests_index', "/%s" % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='index', conditions=dict(method=['GET']))
+            action='index', conditions={'method': ['GET']})
 
-        mapa.connect.assert_any_call('/%s/new' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/new' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='new', conditions=dict(method=['GET', 'POST']))
+            action='new', conditions={'method': ['GET', 'POST']})
 
-        mapa.connect.assert_any_call('show_datarequest', '/%s/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            'show_datarequest', '/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']), ckan_icon=mock_icon)
+            action='show', conditions={'method': ['GET']}, ckan_icon=mock_icon)
 
-        mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='update', conditions=dict(method=['GET', 'POST']))
+            action='update', conditions={'method': ['GET', 'POST']})
 
-        mapa.connect.assert_any_call('/%s/delete/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/delete/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='delete', conditions=dict(method=['POST']))
+            action='delete', conditions={'method': ['POST']})
 
-        mapa.connect.assert_any_call('/%s/close/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/close/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='close', conditions=dict(method=['GET', 'POST']))
+            action='close', conditions={'method': ['GET', 'POST']})
 
-        mapa.connect.assert_any_call('organization_datarequests', 
+        mapa.connect.assert_any_call(
+            'organization_datarequests',
             '/organization/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='organization_datarequests', conditions=dict(method=['GET']), 
+            action='organization_datarequests', conditions={'method': ['GET']},
             ckan_icon=mock_icon)
 
-        mapa.connect.assert_any_call('user_datarequests',
+        mapa.connect.assert_any_call(
+            'user_datarequests',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='user_datarequests', conditions=dict(method=['GET']), 
+            action='user_datarequests', conditions={'method': ['GET']},
             ckan_icon=mock_icon)
 
-        mapa.connect.assert_any_call('user_datarequests',
+        mapa.connect.assert_any_call(
+            'user_datarequests',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='user_datarequests', conditions=dict(method=['GET']), 
+            action='user_datarequests', conditions={'method': ['GET']},
             ckan_icon=mock_icon)
 
-        mapa.connect('/%s/follow/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/follow/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='follow', conditions=dict(method=['POST']))
+            action='follow', conditions={'method': ['POST']})
 
-        mapa.connect('/%s/unfollow/{id}' % dr_basic_path,
+        mapa.connect.assert_any_call(
+            '/%s/unfollow/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='unfollow', conditions=dict(method=['POST']))
+            action='unfollow', conditions={'method': ['POST']})
 
         if comments_enabled == 'True':
-            mapa.connect.assert_any_call('comment_datarequest', '/%s/comment/{id}' % dr_basic_path,
+            mapa.connect.assert_any_call(
+                'comment_datarequest', '/%s/comment/{id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
+                action='comment', conditions={'method': ['GET', 'POST']}, ckan_icon='comment')
 
-            mapa.connect.assert_any_call('/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
+            mapa.connect.assert_any_call(
+                '/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                action='delete_comment', conditions=dict(method=['GET', 'POST']))
+                action='delete_comment', conditions={'method': ['GET', 'POST']})
 
     @parameterized.expand([
-        ('True',  'True'),
-        ('True',  'False'),
+        ('True', 'True'),
+        ('True', 'False'),
         ('False', 'True'),
         ('False', 'False')
     ])

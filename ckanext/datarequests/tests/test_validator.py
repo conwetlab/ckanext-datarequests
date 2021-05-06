@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckanext.datarequests.validator as validator
+from ckanext.datarequests import validator
 import unittest
 import random
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 def generate_string(length):
@@ -141,7 +141,7 @@ class ValidatorTest(unittest.TestCase):
         package_validator.assert_called_once_with(accepted_ds_id, context)
 
     @parameterized.expand([
-        ({},              'Comment', 'Comments must be a minimum of 1 character long'),
+        ({}, 'Comment', 'Comments must be a minimum of 1 character long'),
         ({'comment': ''}, 'Comment', 'Comments must be a minimum of 1 character long'),
         ({'comment': generate_string(validator.constants.COMMENT_MAX_LENGTH + 1)}, 'Comment',
             'Comments must be a maximum of %d characters long' % validator.constants.COMMENT_MAX_LENGTH)
@@ -164,7 +164,7 @@ class ValidatorTest(unittest.TestCase):
         show_datarequest.side_effect = self._tk.ObjectNotFound('Store Not found')
 
         self._test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
-                                  'Data Request not found')
+                                   'Data Request not found')
 
     def test_comment_valid(self):
         show_datarequest = validator.tk.get_action.return_value

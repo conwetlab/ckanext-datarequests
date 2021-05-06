@@ -19,16 +19,16 @@
 
 import logging
 
-import ckan.lib.base as base
-import ckan.model as model
-import ckan.plugins as plugins
-import ckan.lib.helpers as helpers
-import ckanext.datarequests.constants as constants
 import functools
 import re
+import six
 
+from six.moves.urllib.parse import urlencode
+
+from ckan import model, plugins
 from ckan.common import request
-from urllib import urlencode
+from ckan.lib import base, helpers
+from ckanext.datarequests import constants
 
 
 _link = re.compile(r'(?:(https?://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]*)(\s|$)', re.I)
@@ -48,7 +48,7 @@ def _get_errors_summary(errors):
 
 
 def _encode_params(params):
-    return [(k, v.encode('utf-8') if isinstance(v, basestring) else str(v))
+    return [(k, v.encode('utf-8') if isinstance(v, six.string_types) else str(v))
             for k, v in params]
 
 
@@ -84,7 +84,7 @@ class DataRequestsUI(base.BaseController):
     def _show_index(self, user_id, organization_id, include_organization_facet, url_func, file_to_render):
 
         def pager_url(state=None, sort=None, q=None, page=None):
-            params = list()
+            params = []
 
             if q:
                 params.append(('q', q))
@@ -220,7 +220,7 @@ class DataRequestsUI(base.BaseController):
             context_ignore_auth['ignore_auth'] = True
 
             return tk.render('datarequests/show.html')
-        except tk.ObjectNotFound as e:
+        except tk.ObjectNotFound:
             tk.abort(404, tk._('Data Request %s not found') % id)
         except tk.NotAuthorized as e:
             log.warn(e)
@@ -286,9 +286,11 @@ class DataRequestsUI(base.BaseController):
         # Basic intialization
         c.datarequest = {}
 
-        def _return_page(errors={}, errors_summary={}):
-            # Get datasets (if the data req belongs to an organization, only the one that
-            # belongs to the organization are shown)
+        def _return_page(errors=None, errors_summary=None):
+            errors = errors or {}
+            errors_summary = errors_summary or {}
+            # Get datasets (if the data req belongs to an organization,
+            # only the ones that belong to the organization are shown)
             organization_id = c.datarequest.get('organization_id', '')
             if organization_id:
                 base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id, 'include_datasets': True})['packages']
