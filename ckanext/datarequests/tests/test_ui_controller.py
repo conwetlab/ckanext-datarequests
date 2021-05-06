@@ -694,9 +694,9 @@ class UIControllerTest(unittest.TestCase):
         ('organization_uuidv4',)
     ])
     def test_close_datarequest(self, organization):
-        self.test_close(organization)
+        self._test_close(organization)
 
-    def test_close(self, organization, post_content={}, errors={}, errors_summary={}, close_datarequest=MagicMock()):
+    def _test_close(self, organization, post_content={}, errors={}, errors_summary={}, close_datarequest=MagicMock()):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
         controller.request.POST = post_content
@@ -785,7 +785,7 @@ class UIControllerTest(unittest.TestCase):
         close_datarequest = MagicMock(side_effect=exception)
 
         # Execute the test
-        self.test_close(organization, post_content, exception.error_dict,
+        self._test_close(organization, post_content, exception.error_dict,
                         {'Accepted Dataset': 'error1, error2'}, close_datarequest)
 
 

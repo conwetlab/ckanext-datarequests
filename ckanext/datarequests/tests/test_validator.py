@@ -147,9 +147,9 @@ class ValidatorTest(unittest.TestCase):
             'Comments must be a maximum of %d characters long' % validator.constants.COMMENT_MAX_LENGTH)
     ])
     def test_comment_invalid_good_datarequest(self, request_data, field, message):
-        self.test_comment_invalid(request_data, field, message)
+        self._test_comment_invalid(request_data, field, message)
 
-    def test_comment_invalid(self, request_data, field, message):
+    def _test_comment_invalid(self, request_data, field, message):
         context = {}
         request_data['datarequest_id'] = 'exmaple'
 
@@ -163,7 +163,7 @@ class ValidatorTest(unittest.TestCase):
         show_datarequest = validator.tk.get_action.return_value
         show_datarequest.side_effect = self._tk.ObjectNotFound('Store Not found')
 
-        self.test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
+        self._test_comment_invalid({'datarequest_id': 'non_existing_dr'}, 'Data Request',
                                   'Data Request not found')
 
     def test_comment_valid(self):
