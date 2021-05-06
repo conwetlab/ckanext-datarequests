@@ -22,7 +22,7 @@ from ckanext.datarequests import auth, constants
 import unittest
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 # Needed for the test
 context = {

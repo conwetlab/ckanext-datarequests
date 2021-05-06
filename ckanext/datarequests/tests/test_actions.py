@@ -23,7 +23,7 @@ import test_actions_data as test_data
 import unittest
 
 from mock import MagicMock, patch
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 class ActionsTest(unittest.TestCase):

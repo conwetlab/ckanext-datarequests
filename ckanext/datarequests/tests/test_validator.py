@@ -22,7 +22,7 @@ import unittest
 import random
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 def generate_string(length):

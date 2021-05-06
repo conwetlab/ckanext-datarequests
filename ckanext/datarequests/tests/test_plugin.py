@@ -21,7 +21,7 @@ from ckanext.datarequests import plugin, constants
 import unittest
 
 from mock import MagicMock, patch
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 TOTAL_ACTIONS = 13
 COMMENTS_ACTIONS = 5

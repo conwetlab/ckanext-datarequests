@@ -21,7 +21,7 @@ import unittest
 from ckanext.datarequests import db
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 class DBTest(unittest.TestCase):

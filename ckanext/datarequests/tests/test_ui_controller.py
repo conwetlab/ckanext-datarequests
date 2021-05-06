@@ -22,7 +22,7 @@ import ckanext.datarequests.controllers.ui_controller as controller
 import unittest
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 
 INDEX_FUNCTION = 'index'
