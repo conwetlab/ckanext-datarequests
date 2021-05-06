@@ -147,7 +147,7 @@ commands:
     cmd: |
       ahoy title 'Starting CKAN background job worker'
       ahoy cli "cd /usr/lib/ckan/default/src/ckan && \
-                export CKAN_CLI=/app/ckan/default/production.ini &&
+                export CKAN_INI=/app/ckan/default/production.ini &&
                 /app/scripts/ckan_cli jobs clear && \
                 /app/scripts/ckan_cli jobs worker default"
 
