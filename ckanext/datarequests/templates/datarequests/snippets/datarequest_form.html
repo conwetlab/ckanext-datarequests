@@ -19,7 +19,7 @@ then itself be extended to add/remove blocks of functionality. #}
     {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. Data Request Name'), value=title, error=errors['Title'], classes=['control-full', 'control-large'], is_required=true) }}
   {% endblock %}
 
-  {% block offering_description %}  
+  {% block offering_description %}
     {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description'], is_required=description_required) }}
   {% endblock %}
 
