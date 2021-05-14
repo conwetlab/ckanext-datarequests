@@ -195,8 +195,8 @@ class DataRequestPluginTest(unittest.TestCase):
     ])
     def test_before_map(self, comments_enabled):
 
-        urls_set = 12
-        mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 2
+        urls_set = 15
+        mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 3
 
         # Configure config and get instance
         plugin.config.get.return_value = comments_enabled
@@ -219,7 +219,12 @@ class DataRequestPluginTest(unittest.TestCase):
             action='index', conditions={'method': ['GET']})
 
         mapa.connect.assert_any_call(
-            '/%s/new' % dr_basic_path,
+            'datarequest.index', "/%s" % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='index', conditions={'method': ['GET']})
+
+        mapa.connect.assert_any_call(
+            'datarequest.new', '/%s/new' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='new', conditions={'method': ['GET', 'POST']})
 
@@ -229,17 +234,22 @@ class DataRequestPluginTest(unittest.TestCase):
             action='show', conditions={'method': ['GET']}, ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call(
-            '/%s/edit/{id}' % dr_basic_path,
+            'datarequest.show', '/%s/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='show', conditions={'method': ['GET']}, ckan_icon=mock_icon)
+
+        mapa.connect.assert_any_call(
+            'datarequest.update', '/%s/edit/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='update', conditions={'method': ['GET', 'POST']})
 
         mapa.connect.assert_any_call(
-            '/%s/delete/{id}' % dr_basic_path,
+            'datarequest.delete', '/%s/delete/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='delete', conditions={'method': ['POST']})
 
         mapa.connect.assert_any_call(
-            '/%s/close/{id}' % dr_basic_path,
+            'datarequest.close', '/%s/close/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='close', conditions={'method': ['GET', 'POST']})
 
@@ -265,12 +275,12 @@ class DataRequestPluginTest(unittest.TestCase):
             ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call(
-            '/%s/follow/{id}' % dr_basic_path,
+            'datarequest.follow', '/%s/follow/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='follow', conditions={'method': ['POST']})
 
         mapa.connect.assert_any_call(
-            '/%s/unfollow/{id}' % dr_basic_path,
+            'datarequest.unfollow', '/%s/unfollow/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='unfollow', conditions={'method': ['POST']})
 
@@ -281,7 +291,12 @@ class DataRequestPluginTest(unittest.TestCase):
                 action='comment', conditions={'method': ['GET', 'POST']}, ckan_icon='comment')
 
             mapa.connect.assert_any_call(
-                '/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
+                'datarequest.comment', '/%s/comment/{id}' % dr_basic_path,
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+                action='comment', conditions={'method': ['GET', 'POST']}, ckan_icon='comment')
+
+            mapa.connect.assert_any_call(
+                'datarequest.delete_comment', '/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='delete_comment', conditions={'method': ['GET', 'POST']})
 
