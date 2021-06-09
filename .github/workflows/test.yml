@@ -1,0 +1,27 @@
+---
+#based on https://raw.githubusercontent.com/ckan/ckanext-scheming/master/.github/workflows/test.yml
+# alternative https://github.com/ckan/ckan/blob/master/contrib/cookiecutter/ckan_extension/%7B%7Bcookiecutter.project%7D%7D/.github/workflows/test.yml
+name: Tests
+on:
+  push:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+
+    name: Data Requests build
+    runs-on: ubuntu-latest
+    container: integratedexperts/ci-builder
+
+    steps:
+      - uses: actions/checkout@v2
+        timeout-minutes: 2
+
+      - name: Build
+        run: .circleci/build.sh
+        timeout-minutes: 10
+
+      - name: Test
+        run: .circleci/test.sh
+        timeout-minutes: 15

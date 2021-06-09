@@ -69,7 +69,7 @@ services:
       <<: *default-environment
 
   redis:
-    image: amazeeio/redis
+    image: redis:3
     <<: *default-user
     environment:
       <<: *default-environment
@@ -78,9 +78,7 @@ services:
       - default
 
   solr:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile.solr
+    image: ckan/ckan-solr-dev:2.8
     user: '8983'
     ports:
       - "8983"

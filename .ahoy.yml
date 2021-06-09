@@ -14,7 +14,7 @@ commands:
       ahoy up -- --build --force-recreate
       ahoy install-dev
       ahoy install-site
-      # ahoy title "Build complete"
+      ahoy title "Build complete"
       ahoy doctor
       ahoy info 1
 
@@ -31,6 +31,8 @@ commands:
     usage: Build and start Docker containers.
     cmd: |
       docker-compose up -d "$@"
+      sleep 10
+      docker-compose logs
       ahoy cli "dockerize -wait tcp://ckan:3000 -timeout 1m"
       if docker-compose logs | grep -q "\[Error\]"; then docker-compose logs; exit 1; fi
       if docker-compose logs | grep -q "Exception"; then docker-compose logs; exit 1; fi
@@ -63,7 +65,7 @@ commands:
 
   cli:
     usage: Start a shell inside CLI container or run a command.
-    cmd: if \[ "${#}" -ne 0 \]; then docker exec -i $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate; $*"; else docker exec -it $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate && sh"; fi
+    cmd: if \[ "${#}" -ne 0 \]; then docker exec $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate; $*"; else docker exec $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate && sh"; fi
 
   doctor:
     usage: Find problems with current project setup.

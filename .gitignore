@@ -50,3 +50,4 @@ docs/_build/
 .env.local
 /test/screenshots
 !/test/screenshots/.gitkeep
+.idea

@@ -6,12 +6,12 @@
 set -e
 
 CKAN_ACTION_URL=http://ckan:3000/api/action
-export CKAN_INI=/app/ckan/default/production.ini
+CKAN_CLI=$WORKDIR/scripts/ckan_cli
 
-. /app/ckan/default/bin/activate
+. ${APP_DIR}/bin/activate
 
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
-API_KEY=$(/app/scripts/ckan_cli user admin | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
+API_KEY=$($CKAN_CLI user admin | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
 
 # #
 ##
@@ -36,10 +36,10 @@ TEST_ORG_TITLE="Test"
 
 echo "Creating test users for ${TEST_ORG_TITLE} Organisation:"
 
-/app/scripts/ckan_cli user add ckan_user email=ckan_user@localhost password=password
-/app/scripts/ckan_cli user add test_org_admin email=test_org_admin@localhost password=password
-/app/scripts/ckan_cli user add test_org_editor email=test_org_editor@localhost password=password
-/app/scripts/ckan_cli user add test_org_member email=test_org_member@localhost password=password
+$CKAN_CLI user add ckan_user email=ckan_user@localhost password=password
+$CKAN_CLI user add test_org_admin email=test_org_admin@localhost password=password
+$CKAN_CLI user add test_org_editor email=test_org_editor@localhost password=password
+$CKAN_CLI user add test_org_member email=test_org_member@localhost password=password
 
 echo "Creating ${TEST_ORG_TITLE} Organisation:"
 
@@ -77,9 +77,9 @@ DR_ORG_TITLE="Open Data Administration (data requests)"
 
 echo "Creating test users for ${DR_ORG_TITLE} Organisation:"
 
-/app/scripts/ckan_cli user add dr_admin email=dr_admin@localhost password=password
-/app/scripts/ckan_cli user add dr_editor email=dr_editor@localhost password=password
-/app/scripts/ckan_cli user add dr_member email=dr_member@localhost password=password
+$CKAN_CLI user add dr_admin email=dr_admin@localhost password=password
+$CKAN_CLI user add dr_editor email=dr_editor@localhost password=password
+$CKAN_CLI user add dr_member email=dr_member@localhost password=password
 
 echo "Creating ${DR_ORG_TITLE} Organisation:"
 
@@ -138,7 +138,7 @@ curl -L -s --header "Authorization: ${API_KEY}" \
 #
 
 # Use CKAN's built-in commands for creating some test datasets...
-/app/scripts/ckan_cli create-test-data
+$CKAN_CLI create-test-data
 
 # Datasets need to be assigned to an organisation
 
