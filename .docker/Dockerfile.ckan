@@ -29,7 +29,9 @@ COPY .docker/test.ini /app/ckan/default/production.ini
 COPY .docker/scripts /app/scripts
 
 RUN fix-permissions /app/ckan \
-    && chmod +x /app/scripts/*.sh
+    && chmod +x /app/scripts/*.sh\
+    && chmod +x /app/scripts/ckan_cli
+
 
 # Add current extension and files.
 COPY ckanext /app/ckanext
