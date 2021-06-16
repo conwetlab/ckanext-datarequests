@@ -54,7 +54,7 @@ TEST_ORG_TITLE="Test"
 
 echo "Creating test users for ${TEST_ORG_TITLE} Organisation:"
 
-add_user_if_needed ckan "CKAN User"_ckan_user@localhost password
+add_user_if_needed ckan "CKAN User" ckan_user@localhost password
 add_user_if_needed test_org_admin "Test Admin" test_org_admin@localhost password
 add_user_if_needed test_org_editor "Test Editor" test_org_editor@localhost password
 add_user_if_needed test_org_member "Test Member" test_org_member@localhost password
