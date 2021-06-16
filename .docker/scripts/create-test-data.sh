@@ -17,14 +17,14 @@ CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-password}"
 CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
 
 add_user_if_needed () {
-    echo "Adding user '$2' ($1) with email address [$4]"
+    echo "Adding user '$2' ($1) with email address [$3]"
     ckan_cli user "$1" | grep "$1" || ckan_cli user add "$1"\
         fullname="$2"\
         email="$3"\
         password="$4"
 }
 
-add_user_if_needed "$CKAN_USER_NAME" "$CKAN_DISPLAY_NAME" "$CKAN_USER_PASSWORD" "$CKAN_USER_EMAIL"
+add_user_if_needed "$CKAN_USER_NAME" "$CKAN_DISPLAY_NAME" "$CKAN_USER_EMAIL" "$CKAN_USER_PASSWORD"
 ckan_cli sysadmin add "${CKAN_USER_NAME}"
 
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
