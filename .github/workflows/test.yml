@@ -25,3 +25,16 @@ jobs:
       - name: Test
         run: .circleci/test.sh
         timeout-minutes: 15
+
+      - name: Retrieve screenshots
+        if: failure()
+        run: .circleci/process-artifacts.sh
+        timeout-minutes: 1
+
+      - name: Upload screenshots
+        if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: screenshots
+          path: /tmp/artifacts/behave/screenshots
+        timeout-minutes: 1

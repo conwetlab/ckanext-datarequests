@@ -10,13 +10,18 @@ commands:
       ahoy title "Building project"
       ahoy pre-flight
       ahoy clean
-      (docker network prune -f > /dev/null && docker network inspect amazeeio-network > /dev/null || docker network create amazeeio-network)
+      ahoy build-network
       ahoy up -- --build --force-recreate
-      ahoy install-dev
       ahoy install-site
       ahoy title "Build complete"
       ahoy doctor
       ahoy info 1
+
+  build-network:
+    usage: Ensure that the amazeeio network exists.
+    cmd: |
+      docker network prune -f > /dev/null
+      docker network inspect amazeeio-network > /dev/null || docker network create amazeeio-network
 
   info:
     usage: Print information about this project.
@@ -41,7 +46,7 @@ commands:
 
   down:
     usage: Stop Docker containers and remove container, images, volumes and networks.
-    cmd: "if [ -f \"docker-compose.yml\" ]; then docker-compose down --volumes; fi"
+    cmd: 'if [ -f "docker-compose.yml" ]; then docker-compose down --volumes; fi'
 
   start:
     usage: Start existing Docker containers.
@@ -57,7 +62,7 @@ commands:
 
   logs:
     usage: Show Docker logs.
-    cmd: docker-compose logs -f "$@"
+    cmd: docker-compose logs "$@"
 
   pull:
     usage: Pull latest docker images.
@@ -65,18 +70,17 @@ commands:
 
   cli:
     usage: Start a shell inside CLI container or run a command.
-    cmd: if \[ "${#}" -ne 0 \]; then docker exec $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate; $*"; else docker exec $(docker-compose ps -q ckan) sh -c ". /app/ckan/default/bin/activate && sh"; fi
+    cmd: if \[ "${#}" -ne 0 \]; then docker exec $(docker-compose ps -q ckan) sh -c '. ${VENV_DIR}/bin/activate; cd $APP_DIR;'" $*"; else docker exec $(docker-compose ps -q ckan) sh -c '. ${VENV_DIR}/bin/activate && cd $APP_DIR && sh'; fi
 
   doctor:
     usage: Find problems with current project setup.
     cmd: .docker/scripts/doctor.sh "$@"
 
-
   install-site:
     usage: Install a site.
     cmd: |
       ahoy title "Installing a fresh site"
-      ahoy cli "/app/scripts/init.sh"
+      ahoy cli "./scripts/init.sh"
 
   clean:
     usage: Remove containers and all build files.
@@ -95,15 +99,6 @@ commands:
       git ls-files --others -i --exclude-from=.git/info/exclude | xargs rm -Rf
       find . -type d -not -path "./.git/*" -empty -delete
 
-  install-dev:
-    usage: Install dependencies.
-    cmd: |
-      docker cp -L requirements-dev.txt $(docker-compose ps -q ckan):/app/.
-      docker cp -L .flake8 $(docker-compose ps -q ckan):/app/.
-      docker cp -L test $(docker-compose ps -q ckan):/app/.
-      ahoy cli "pip install -r /app/requirements-dev.txt"
-    hide: true
-
   flush-redis:
     usage: Flush Redis cache.
     cmd: docker exec -i $(docker-compose ps -q redis) redis-cli flushall > /dev/null
@@ -111,13 +106,13 @@ commands:
   lint:
     usage: Lint code.
     cmd: |
-      ahoy cli "flake8 ${@:-/app/ckanext}" || \
+      ahoy cli "flake8 ${@:-ckanext}" || \
       [ "${ALLOW_LINT_FAIL:-0}" -eq 1 ]
 
   test-unit:
     usage: Run unit tests.
     cmd: |
-      ahoy cli "nosetests" || \
+      ahoy cli 'nosetests --with-pylons=${CKAN_INI}' || \
       [ "${ALLOW_UNIT_FAIL:-0}" -eq 1 ]
 
   test-bdd:
@@ -126,7 +121,7 @@ commands:
       ahoy start-ckan-job-worker &
       ahoy start-mailmock &
       sleep 5 &&
-      ahoy cli "behave ${*:-/app/test/features}" || \
+      ahoy cli "behave ${*:-test/features}" || \
       [ "${ALLOW_BDD_FAIL:-0}" -eq 1 ]
       ahoy stop-mailmock
       ahoy stop-ckan-job-worker
@@ -148,10 +143,8 @@ commands:
     usage: Starts CKAN background job worker
     cmd: |
       ahoy title 'Starting CKAN background job worker'
-      ahoy cli "cd /usr/lib/ckan/default/src/ckan && \
-                export CKAN_INI=/app/ckan/default/production.ini &&
-                /app/scripts/ckan_cli jobs clear && \
-                /app/scripts/ckan_cli jobs worker default"
+      ahoy cli "ckan_cli jobs clear && \
+                ckan_cli jobs worker default"
 
   stop-ckan-job-worker:
     usage: Stops CKAN background job worker
