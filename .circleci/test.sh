@@ -11,7 +11,4 @@ echo "==> Run Unit tests"
 ahoy test-unit
 
 echo "==> Run BDD tests"
-ahoy install-site
-ahoy down
-ahoy up
 ahoy test-bdd || (ahoy logs; exit 1)
