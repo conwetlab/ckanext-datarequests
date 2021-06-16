@@ -17,6 +17,7 @@ CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-password}"
 CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
 
 add_user_if_needed () {
+    echo "Adding user '$2' ($1) with email address [$4]"
     ckan_cli user "$1" | grep "$1" || ckan_cli user add "$1"\
         fullname="$2"\
         email="$3"\
