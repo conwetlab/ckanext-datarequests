@@ -4,21 +4,11 @@
 #
 set -e
 
-CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
-CKAN_DISPLAY_NAME="${CKAN_DISPLAY_NAME:-Administrator}"
-CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-password}"
-CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
-
 if [ "$VENV_DIR" != "" ]; then
   . ${VENV_DIR}/bin/activate
 fi
 ckan_cli db clean
 ckan_cli db init
-ckan_cli user add "${CKAN_USER_NAME}"\
- fullname="${CKAN_DISPLAY_NAME}"\
- email="${CKAN_USER_EMAIL}"\
- password="${CKAN_USER_PASSWORD}"
-ckan_cli sysadmin add "${CKAN_USER_NAME}"
 
 # Initialise the Comments database tables
 PASTER_PLUGIN=ckanext-ytp-comments ckan_cli initdb

@@ -11,6 +11,17 @@ if [ "$VENV_DIR" != "" ]; then
   . ${VENV_DIR}/bin/activate
 fi
 
+CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
+CKAN_DISPLAY_NAME="${CKAN_DISPLAY_NAME:-Administrator}"
+CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-password}"
+CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
+
+ckan_cli user add "${CKAN_USER_NAME}"\
+ fullname="${CKAN_DISPLAY_NAME}"\
+ email="${CKAN_USER_EMAIL}"\
+ password="${CKAN_USER_PASSWORD}"
+ckan_cli sysadmin add "${CKAN_USER_NAME}"
+
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
 API_KEY=$(ckan_cli user admin | tr -d '\n' | sed -r 's/^(.*)apikey=(\S*)(.*)/\2/')
 
