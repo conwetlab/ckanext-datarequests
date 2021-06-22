@@ -31,7 +31,7 @@ Feature: Datarequest
         And I should see "Description cannot be empty" within 1 seconds
 
 
-    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a "Re-open" button on the data request detail page for closed data requests
+    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a 'Re-open' button on the data request detail page for closed data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Closed Request"
@@ -43,7 +43,7 @@ Feature: Datarequest
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Non-admin users should not see "Re-open" button on the data request detail page for closed data requests
+    Scenario Outline: Non-admin users should not see 'Re-open' button on the data request detail page for closed data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Closed Request"
@@ -59,7 +59,7 @@ Feature: Datarequest
         | TestOrgMember         |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a "Close" button on the data request detail page for opened data requests
+    Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Test Request"
@@ -71,7 +71,7 @@ Feature: Datarequest
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Non admin users cannot not see a "Close" button on the data request detail page for opened data requests
+    Scenario Outline: Non admin users cannot see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Test Request"
