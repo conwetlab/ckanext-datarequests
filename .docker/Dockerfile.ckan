@@ -14,6 +14,8 @@ RUN apk add --no-cache curl redis build-base \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz \
     && rm dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
 
+RUN rc-service redis start
+
 # Install CKAN.
 ENV CKAN_VERSION 2.8.8
 
