@@ -11,4 +11,4 @@ echo "==> Run Unit tests"
 ahoy test-unit
 
 echo "==> Run BDD tests"
-ahoy test-bdd || (ahoy cli 'ls -l $APP_DIR/*'; ahoy logs; exit 1)
+ahoy test-bdd || (ahoy cli 'ls -l $APP_DIR/test/*'; ahoy logs; exit 1)
