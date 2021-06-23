@@ -130,7 +130,7 @@ commands:
     usage: Starts email mock server used for email BDD tests
     cmd: |
       ahoy title 'Starting mailmock'
-      ahoy cli 'mailmock -p 8025 -o ${APP_DIR}/test/emails' # for debugging mailmock email output remove --no-stdout
+      ahoy cli 'mailmock -p 8025 -o ${APP_DIR}/test/emails --no-stdout' # for debugging mailmock email output remove --no-stdout
 
   stop-mailmock:
     usage: Stops email mock server used for email BDD tests

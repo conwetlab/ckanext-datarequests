@@ -38,11 +38,3 @@ jobs:
           name: screenshots
           path: /tmp/artifacts/behave/screenshots
         timeout-minutes: 1
-
-      - name: Upload emails
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: emails
-          path: /tmp/artifacts/behave/emails
-        timeout-minutes: 1

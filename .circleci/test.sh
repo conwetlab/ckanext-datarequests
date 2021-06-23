@@ -11,4 +11,4 @@ echo "==> Run Unit tests"
 ahoy test-unit
 
 echo "==> Run BDD tests"
-ahoy test-bdd || (ahoy cli 'find / -type d -name "*mail*"'; ahoy logs; exit 1)
+ahoy test-bdd || (ahoy logs; exit 1)
