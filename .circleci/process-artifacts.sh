@@ -10,7 +10,6 @@ ahoy cli "mkdir -p test/screenshots test/emails"
 
 # Copy from the app container to the build host for storage.
 mkdir -p /tmp/artifacts/behave
-CONTAINER="$(docker-compose ps -q ckan)"
-docker cp "$CONTAINER":test/screenshots /tmp/artifacts/behave/
-docker cp "$CONTAINER":test/emails /tmp/artifacts/behave/
-docker cp "$CONTAINER:mail/*" /tmp/artifacts/behave/emails/
+docker cp "$(docker-compose ps -q ckan)":test/screenshots /tmp/artifacts/behave/
+docker cp "$(docker-compose ps -q ckan)":test/emails /tmp/artifacts/behave/
+docker cp "$(docker-compose ps -q ckan)":"mail/*" /tmp/artifacts/behave/emails/
