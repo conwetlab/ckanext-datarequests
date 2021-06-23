@@ -57,10 +57,10 @@ else
 fi
 
 if [ "$COMMAND" = "ckan" ]; then
-    echo "Using 'ckan' command from $ENV_DIR..." >&2
+    echo "Using 'ckan' command from $ENV_DIR with config ${CKAN_INI}..." >&2
     exec $ENV_DIR/ckan -c ${CKAN_INI} "$@"
 elif [ "$COMMAND" = "paster" ]; then
-    echo "Using 'paster' command from $ENV_DIR..." >&2
+    echo "Using 'paster' command from $ENV_DIR with config ${CKAN_INI}..." >&2
     exec $ENV_DIR/paster --plugin=$PASTER_PLUGIN "$@" -c ${CKAN_INI}
 else
     echo "Unable to locate 'ckan' or 'paster' command in $ENV_DIR" >&2

@@ -19,7 +19,7 @@ PERSONAS = {
         'email': u'admin@localhost',
         'password': u'password'
     },
-    'Unathenticated': {
+    'Unauthenticated': {
         'name': u'',
         'email': u'',
         'password': u''
@@ -70,6 +70,7 @@ def before_all(context):
     context.attachment_dir = os.path.join(ROOT_PATH, 'test/fixtures')
     # The path where emails can be found.
     context.mail_path = os.path.join(ROOT_PATH, 'test/emails')
+
     # Set base url for all relative links.
     context.base_url = BASE_URL
 

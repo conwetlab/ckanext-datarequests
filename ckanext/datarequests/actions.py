@@ -175,7 +175,7 @@ def _send_mail(user_ids, action_type, datarequest):
             mailer.mail_user(user_data, subject, body)
 
         except Exception:
-            logging.exception("Error sending notification to {0}".format(user_id))
+            log.exception("Error sending notification to {0}".format(user_id))
 
 
 def create_datarequest(context, data_dict):
