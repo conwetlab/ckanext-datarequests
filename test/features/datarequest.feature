@@ -91,9 +91,9 @@ Feature: Datarequest
         Given "TestOrgEditor" as the persona
         When I log in and create a datarequest 
         When I wait for 3 seconds
-        Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
+        #Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
-        And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
+        #And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
         And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
 
 
