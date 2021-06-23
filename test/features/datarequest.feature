@@ -31,7 +31,7 @@ Feature: Datarequest
         And I should see "Description cannot be empty" within 1 seconds
 
 
-    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a "Re-open" button on the data request detail page for closed data requests
+    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a 'Re-open' button on the data request detail page for closed data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Closed Request"
@@ -43,7 +43,7 @@ Feature: Datarequest
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Non-admin users should not see "Re-open" button on the data request detail page for closed data requests
+    Scenario Outline: Non-admin users should not see 'Re-open' button on the data request detail page for closed data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Closed Request"
@@ -59,7 +59,7 @@ Feature: Datarequest
         | TestOrgMember         |
 
 
-    Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a "Close" button on the data request detail page for opened data requests
+    Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Test Request"
@@ -71,7 +71,7 @@ Feature: Datarequest
         | DataRequestOrgAdmin   |
 
 
-    Scenario Outline: Non admin users cannot not see a "Close" button on the data request detail page for opened data requests
+    Scenario Outline: Non admin users cannot see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Test Request"
@@ -91,9 +91,7 @@ Feature: Datarequest
         Given "TestOrgEditor" as the persona
         When I log in and create a datarequest 
         When I wait for 3 seconds
-        Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
-        And I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
-        And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
+        Then I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
         And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
 
 
@@ -104,8 +102,7 @@ Feature: Datarequest
         And I select "Requestor initiated closure" from "close_circumstance" 
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         When I wait for 3 seconds
-        Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
-        And I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
+        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
 
 
     Scenario: Re-Opening a data request will email the Admin users of the organisation and creator
@@ -116,9 +113,7 @@ Feature: Datarequest
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         And I press the element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
         When I wait for 3 seconds
-        Then I should receive an email at "dr_admin@localhost" with subject "Queensland Government Open Data - Data Request"
-        And I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been re-opened."
-        And I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
+        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been re-opened."
         And I should receive a base64 email at "admin@localhost" containing "A data request assigned to your organisation has been re-opened."
 
 
@@ -131,7 +126,5 @@ Feature: Datarequest
         Then I execute the script "document.getElementById('field-organizations').value = document.getElementById('field-organizations').options[1].value"
         And I press the element with xpath "//button[contains(string(), 'Update data request')]"
         When I wait for 3 seconds
-        Then I should receive an email at "admin@localhost" with subject "Queensland Government Open Data - Data Request"
-        And I should receive a base64 email at "admin@localhost" containing "A data request that was assigned to your organisation has been re-assigned to another organisation."
-        And I should receive an email at "test_org_admin@localhost" with subject "Queensland Government Open Data - Data Request"
+        Then I should receive a base64 email at "admin@localhost" containing "A data request that was assigned to your organisation has been re-assigned to another organisation."
         And I should receive a base64 email at "test_org_admin@localhost" containing "A new data request has been added and assigned to your organisation."

@@ -1,44 +1,46 @@
-FROM amazeeio/python:2.7-ckan-v0.23.1
-
-WORKDIR /app
+FROM amazeeio/python:2.7-ckan-21.6.0
 
 ARG SITE_URL
 ENV SITE_URL="${SITE_URL}"
+ENV VENV_DIR=/app/ckan/default
+ENV APP_DIR=/app
+ENV CKAN_INI=/app/ckan/default/production.ini
+
+WORKDIR "${APP_DIR}"
 
 ENV DOCKERIZE_VERSION v0.6.1
-RUN apk add --no-cache curl && curl -s -L -O https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz \
+RUN apk add --no-cache curl build-base \
+    && curl -s -L -O https://github.com/jwilder/dockerize/releases/download/${DOCKERIZE_VERSION}/dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz \
     && rm dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
 
 # Install CKAN.
-ENV CKAN_VERSION 2.8.3
-RUN . /app/ckan/default/bin/activate \
-    && cd /app/ckan/default \
+ENV CKAN_VERSION 2.8.8
+
+RUN . ${VENV_DIR}/bin/activate \
     && pip install setuptools==36.1 \
     && pip install -e "git+https://github.com/ckan/ckan.git@ckan-${CKAN_VERSION}#egg=ckan" \
-    && sed -i "s/psycopg2==2.4.5/psycopg2==2.7.7/g" "/app/ckan/default/src/ckan/requirements.txt" \
-    && pip install -r "/app/ckan/default/src/ckan/requirements.txt" \
-    && ln -s "/app/ckan/default/src/ckan/who.ini" "/app/ckan/default/who.ini" \
+    && sed -i "s/psycopg2==2.4.5/psycopg2==2.7.7/g" "${VENV_DIR}/src/ckan/requirements.txt" \
+    && pip install -r "${VENV_DIR}/src/ckan/requirements.txt" \
+    && ln -s "${VENV_DIR}/src/ckan/who.ini" "${VENV_DIR}/who.ini" \
     && deactivate \
-    && ln -s /app/ckan /usr/lib/ckan
+    && ln -s ${APP_DIR}/ckan /usr/lib/ckan \
+    && fix-permissions ${APP_DIR}/ckan
 
-COPY .docker/test.ini /app/ckan/default/production.ini
-
-COPY .docker/scripts /app/scripts
-
-RUN fix-permissions /app/ckan \
-    && chmod +x /app/scripts/create-test-data.sh \
-    && chmod +x /app/scripts/init.sh \
-    && chmod +x /app/scripts/init-ext.sh \
-    && chmod +x /app/scripts/serve.sh \
-    && chmod +x /app/scripts/ckan_cli
+COPY .docker/test.ini $CKAN_INI
 
 # Add current extension and files.
-COPY ckanext /app/ckanext
-COPY requirements.txt requirements-dev.txt setup.cfg setup.py /app/
+COPY . ${APP_DIR}/
+
+COPY .docker/scripts ${APP_DIR}/scripts
+
+COPY .docker/scripts/ckan_cli ${VENV_DIR}/bin/
+
+RUN chmod +x ${APP_DIR}/scripts/*.sh\
+    && chmod +x ${VENV_DIR}/bin/ckan_cli
 
 # Init current extension.
-RUN /app/scripts/init-ext.sh
+RUN ${APP_DIR}/scripts/init-ext.sh
 
 ENTRYPOINT ["/sbin/tini", "--", "/lagoon/entrypoints.sh"]
 CMD ["/app/scripts/serve.sh"]

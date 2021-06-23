@@ -40,6 +40,7 @@ nosetests.xml
 coverage.xml
 
 # Translations
+*.mo
 *.pot
 
 # Django stuff:
@@ -50,3 +51,4 @@ docs/_build/
 .env.local
 /test/screenshots
 !/test/screenshots/.gitkeep
+.idea
