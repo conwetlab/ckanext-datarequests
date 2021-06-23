@@ -1,4 +1,3 @@
-
 #!/usr/bin/env sh
 ##
 # Create some example content for extension BDD tests.

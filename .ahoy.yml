@@ -126,7 +126,6 @@ commands:
       ahoy stop-mailmock
       ahoy stop-ckan-job-worker
 
-
   start-mailmock:
     usage: Starts email mock server used for email BDD tests
     cmd: |
@@ -144,7 +143,7 @@ commands:
     cmd: |
       ahoy title 'Starting CKAN background job worker'
       ahoy cli "ckan_cli jobs clear && \
-                ckan_cli jobs worker default"
+                ckan_cli jobs worker"
 
   stop-ckan-job-worker:
     usage: Stops CKAN background job worker
@@ -186,5 +185,5 @@ entrypoint:
     export LAGOON_LOCALDEV_URL=http://ckanext-datarequests.docker.amazee.io
     [ -f .env ] && [ -s .env ] && export $(grep -v '^#' .env | xargs) && if [ -f .env.local ] && [ -s .env.local ]; then export $(grep -v '^#' .env.local | xargs); fi
     bash -e -c "$0" "$@"
-  - '{{cmd}}'
-  - '{{name}}'
+  - "{{cmd}}"
+  - "{{name}}"

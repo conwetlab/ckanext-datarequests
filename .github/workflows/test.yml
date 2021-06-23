@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
 
-    name: Data Requests build
+    name: Continuous Integration build
     runs-on: ubuntu-latest
     container: integratedexperts/ci-builder
 
