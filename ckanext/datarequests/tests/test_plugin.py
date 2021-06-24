@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-from ckanext.datarequests import plugin, constants
+from ckanext.datarequests import common, plugin, constants
 import unittest
 
 from mock import MagicMock, patch
@@ -40,7 +40,7 @@ class DataRequestPluginTest(unittest.TestCase):
         self.tk_patch = patch('ckanext.datarequests.plugin.tk')
         self.tk_mock = self.tk_patch.start()
 
-        self.config_patch = patch('ckanext.datarequests.plugin.config')
+        self.config_patch = patch('ckanext.datarequests.common.config')
         self.config_mock = self.config_patch.start()
 
         self.helpers_patch = patch('ckanext.datarequests.plugin.helpers')
@@ -79,7 +79,7 @@ class DataRequestPluginTest(unittest.TestCase):
         actions_len = TOTAL_ACTIONS if comments_enabled == 'True' else ACTIONS_NO_COMMENTS
 
         # Configure config and create instance
-        plugin.config.get.return_value = comments_enabled
+        common.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
         # Get actions
@@ -110,7 +110,7 @@ class DataRequestPluginTest(unittest.TestCase):
         auth_functions_len = TOTAL_ACTIONS if comments_enabled == 'True' else ACTIONS_NO_COMMENTS
 
         # Configure config and create instance
-        plugin.config.get.return_value = comments_enabled
+        common.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
         # Get auth functions
@@ -151,7 +151,7 @@ class DataRequestPluginTest(unittest.TestCase):
         mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 3
 
         # Configure config and get instance
-        plugin.config.get.return_value = comments_enabled
+        common.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
         mock_icon = 'icon'
@@ -261,7 +261,7 @@ class DataRequestPluginTest(unittest.TestCase):
     def test_helpers(self, comments_enabled, show_datarequests_badge):
 
         # Configure config and get instance
-        plugin.config = {
+        common.config = {
             'ckan.datarequests.comments': comments_enabled,
             'ckan.datarequests.show_datarequests_badge': show_datarequests_badge
         }
