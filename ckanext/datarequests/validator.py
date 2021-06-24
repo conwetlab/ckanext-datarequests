@@ -17,11 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import constants
-import ckan.plugins.toolkit as tk
-from ckanext.datarequests import db
-import plugin as datarequests
 import datetime
+
+import ckan.plugins.toolkit as tk
+from ckanext.datarequests import db, common, constants
 
 
 def validate_datarequest(context, request_data):
@@ -43,7 +42,7 @@ def validate_datarequest(context, request_data):
             errors[tk._('Title')] = [tk._('That title is already in use')]
 
     # Check description
-    if datarequests.get_config_bool_value('ckan.datarequests.description_required', False) and not request_data['description']:
+    if common.get_config_bool_value('ckan.datarequests.description_required', False) and not request_data['description']:
         errors[tk._('Description')] = [tk._('Description cannot be empty')]
 
     if len(request_data['description']) > constants.DESCRIPTION_MAX_LENGTH:
