@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import constants
 import sqlalchemy as sa
 import uuid
 import logging
 import ckan.plugins.toolkit as tk
+from ckanext.datarequests import constants
 
 from sqlalchemy import func, MetaData, DDL
 from sqlalchemy.sql.expression import or_

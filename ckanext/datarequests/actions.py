@@ -18,16 +18,16 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
-import constants
 import datetime
 import cgi
 import db
 import logging
 import validator
 from ckan import model, plugins
+from ckan.common import config
 from ckan.lib import base, mailer
+from ckanext.datarequests import constants
 
-from pylons import config
 
 c = plugins.toolkit.c
 log = logging.getLogger(__name__)
