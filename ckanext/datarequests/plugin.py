@@ -17,41 +17,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckan.lib.helpers as h
-import ckan.plugins as p
-import ckan.plugins.toolkit as tk
-import auth
-import actions
-import constants
-import helpers
 import os
 import six
 import sys
 
+import ckan.plugins as p
+import ckan.plugins.toolkit as tk
+from ckanext.datarequests import auth, actions, common, constants, helpers
+
 from functools import partial
-from pylons import config
-
-
-def get_config_bool_value(config_name, default_value=False):
-    value = config.get(config_name, default_value)
-    value = value if type(value) == bool else value != 'False'
-    return value
-
-
-def is_fontawesome_4():
-    if hasattr(h, 'ckan_version'):
-        ckan_version = float(h.ckan_version()[0:3])
-        return ckan_version >= 2.7
-    else:
-        return False
-
-
-def get_plus_icon():
-    return 'plus-square' if is_fontawesome_4() else 'plus-sign-alt'
-
-
-def get_question_icon():
-    return 'question-circle' if is_fontawesome_4() else 'question-sign'
 
 
 class DataRequestsPlugin(p.SingletonPlugin):
@@ -69,11 +43,11 @@ class DataRequestsPlugin(p.SingletonPlugin):
         pass
 
     def __init__(self, name=None):
-        self.comments_enabled = get_config_bool_value('ckan.datarequests.comments', True)
-        self._show_datarequests_badge = get_config_bool_value('ckan.datarequests.show_datarequests_badge')
+        self.comments_enabled = common.get_config_bool_value('ckan.datarequests.comments', True)
+        self._show_datarequests_badge = common.get_config_bool_value('ckan.datarequests.show_datarequests_badge')
         self.name = 'datarequests'
-        self.is_description_required = get_config_bool_value('ckan.datarequests.description_required', False)
-        self.closing_circumstances_enabled = get_config_bool_value('ckan.datarequests.enable_closing_circumstances', False)
+        self.is_description_required = common.get_config_bool_value('ckan.datarequests.description_required', False)
+        self.closing_circumstances_enabled = common.get_config_bool_value('ckan.datarequests.enable_closing_circumstances', False)
 
     ######################################################################
     ############################## IACTIONS ##############################
@@ -169,9 +143,9 @@ class DataRequestsPlugin(p.SingletonPlugin):
 
         # Show a Data Request
         m.connect('show_datarequest', '/{id}',
-                  action='show', conditions={'method': ['GET']}, ckan_icon=get_question_icon())
+                  action='show', conditions={'method': ['GET']}, ckan_icon=common.get_question_icon())
         m.connect('datarequest.show', '/{id}',
-                  action='show', conditions={'method': ['GET']}, ckan_icon=get_question_icon())
+                  action='show', conditions={'method': ['GET']}, ckan_icon=common.get_question_icon())
 
         # Update a Data Request
         m.connect('datarequest.update', '/edit/{id}',
@@ -204,7 +178,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
                       action='delete_comment', conditions={'method': ['GET', 'POST']})
 
         list_datarequests_map = SubMapper(
-            controller_map, conditions={'method': ['GET']}, ckan_icon=get_question_icon())
+            controller_map, conditions={'method': ['GET']}, ckan_icon=common.get_question_icon())
 
         # Data Requests that belong to an organization
         list_datarequests_map.connect(
@@ -229,7 +203,7 @@ class DataRequestsPlugin(p.SingletonPlugin):
             'get_comments_badge': helpers.get_comments_badge,
             'get_open_datarequests_number': helpers.get_open_datarequests_number,
             'get_open_datarequests_badge': partial(helpers.get_open_datarequests_badge, self._show_datarequests_badge),
-            'get_plus_icon': get_plus_icon,
+            'get_plus_icon': common.get_plus_icon,
             'is_following_datarequest': helpers.is_following_datarequest,
             'is_description_required': self.is_description_required,
             'closing_circumstances_enabled': self.closing_circumstances_enabled,
