@@ -17,7 +17,7 @@ PERSONAS = {
     'SysAdmin': {
         'name': u'admin',
         'email': u'admin@localhost',
-        'password': u'password'
+        'password': u'Password123!'
     },
     'Unauthenticated': {
         'name': u'',
@@ -28,22 +28,22 @@ PERSONAS = {
     'CKANUser': {
         'name': u'ckan_user',
         'email': u'ckan_user@localhost',
-        'password': u'password'
+        'password': u'Password123!'
     },
     'TestOrgAdmin': {
         'name': u'test_org_admin',
         'email': u'test_org_admin@localhost',
-        'password': u'password'
+        'password': u'Password123!'
     },
     'TestOrgEditor': {
         'name': u'test_org_editor',
         'email': u'test_org_editor@localhost',
-        'password': u'password'
+        'password': u'Password123!'
     },
     'TestOrgMember': {
         'name': u'test_org_member',
         'email': u'test_org_member@localhost',
-        'password': u'password'
+        'password': u'Password123!'
     },
     'DataRequestOrgAdmin': {
         'name': u'dr_admin',
