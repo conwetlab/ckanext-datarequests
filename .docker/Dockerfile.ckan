@@ -1,4 +1,4 @@
-FROM amazeeio/python:2.7-ckan-21.6.0
+FROM amazeeio/python:2.7-ckan-21.7.0
 
 ARG SITE_URL
 ENV SITE_URL="${SITE_URL}"

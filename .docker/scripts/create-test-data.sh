@@ -20,10 +20,10 @@ add_user_if_needed () {
     ckan_cli user "$1" | grep "$1" || ckan_cli user add "$1"\
         fullname="$2"\
         email="$3"\
-        password="$4"
+        password="${4:-Password123!}"
 }
 
-add_user_if_needed "$CKAN_USER_NAME" "$CKAN_DISPLAY_NAME" "$CKAN_USER_EMAIL" "$CKAN_USER_PASSWORD"
+add_user_if_needed "$CKAN_USER_NAME" "$CKAN_DISPLAY_NAME" "$CKAN_USER_EMAIL"
 ckan_cli sysadmin add "${CKAN_USER_NAME}"
 
 # We know the "admin" sysadmin account exists, so we'll use her API KEY to create further data
@@ -48,15 +48,15 @@ curl -LsH "Authorization: ${API_KEY}" \
 ##
 # BEGIN: Create a test organisation with test users for admin, editor and member
 #
-TEST_ORG_NAME=test
-TEST_ORG_TITLE="Test"
+TEST_ORG_NAME=test-organisation
+TEST_ORG_TITLE="Test Organisation"
 
 echo "Creating test users for ${TEST_ORG_TITLE} Organisation:"
 
-add_user_if_needed ckan_user "CKAN User" ckan_user@localhost password
-add_user_if_needed test_org_admin "Test Admin" test_org_admin@localhost password
-add_user_if_needed test_org_editor "Test Editor" test_org_editor@localhost password
-add_user_if_needed test_org_member "Test Member" test_org_member@localhost password
+add_user_if_needed ckan_user "CKAN User" ckan_user@localhost
+add_user_if_needed test_org_admin "Test Admin" test_org_admin@localhost
+add_user_if_needed test_org_editor "Test Editor" test_org_editor@localhost
+add_user_if_needed test_org_member "Test Member" test_org_member@localhost
 
 echo "Creating ${TEST_ORG_TITLE} Organisation:"
 
@@ -94,9 +94,9 @@ DR_ORG_TITLE="Open Data Administration (data requests)"
 
 echo "Creating test users for ${DR_ORG_TITLE} Organisation:"
 
-add_user_if_needed dr_admin "Data Request Admin" dr_admin@localhost password
-add_user_if_needed dr_editor "Data Request Editor" dr_editor@localhost password
-add_user_if_needed dr_member "Data Request Member" dr_member@localhost password
+add_user_if_needed dr_admin "Data Request Admin" dr_admin@localhost
+add_user_if_needed dr_editor "Data Request Editor" dr_editor@localhost
+add_user_if_needed dr_member "Data Request Member" dr_member@localhost
 
 echo "Creating ${DR_ORG_TITLE} Organisation:"
 
