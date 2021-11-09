@@ -18,7 +18,7 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 from ckanext.datarequests import constants
-import ckanext.datarequests.controllers.ui_controller as controller
+import ckanext.datarequests.controllers.controller_functions as controller
 import unittest
 
 from mock import MagicMock
@@ -204,7 +204,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
                 controller.helpers.url_for.assert_called_once_with(
-                    controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                     action='show', id=datarequest_id)
                 controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
@@ -415,7 +415,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
                 controller.helpers.url_for.assert_called_once_with(
-                    controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+                    controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                     action='show', id=datarequest_id)
                 controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
@@ -601,15 +601,15 @@ class UIControllerTest(unittest.TestCase):
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='organization_datarequests', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
                 action='user_datarequests', id=user)
 
         # Check the facets
@@ -662,7 +662,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Redirection
         controller.helpers.url_for.assert_called_once_with(
-            controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='index')
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
@@ -761,7 +761,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Checks
         controller.helpers.url_for.assert_called_once_with(
-            controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='show', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         self.assertIsNone(result)
@@ -973,7 +973,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Check redirection
         controller.helpers.url_for.assert_called_once_with(
-            controller='ckanext.datarequests.controllers.pylons_controller:DataRequestsUI',
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='comment', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 

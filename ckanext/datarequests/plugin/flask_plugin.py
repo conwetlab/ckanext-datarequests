@@ -4,7 +4,7 @@ import ckan.plugins as p
 from flask import Blueprint
 
 from ckanext.datarequests import constants
-from . import ui_controller
+from . import controller_functions
 
 
 datarequests_bp = Blueprint("datarequest", __name__)
@@ -20,52 +20,52 @@ class MixinPlugin(p.SingletonPlugin):
             (
                 "/" + constants.DATAREQUESTS_MAIN_PATH,
                 "index",
-                ui_controller.index,
+                controller_functions.index,
             ),
             (
                 "/{}/new".format(constants.DATAREQUESTS_MAIN_PATH),
                 "new",
-                ui_controller.new,
+                controller_functions.new,
             ),
             (
                 "/{}/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "show",
-                ui_controller.show,
+                controller_functions.show,
             ),
             (
                 "/{}/edit/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "update",
-                ui_controller.update,
+                controller_functions.update,
             ),
             (
                 "/{}/delete/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "delete",
-                ui_controller.delete,
+                controller_functions.delete,
             ),
             (
                 "/{}/close/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "close",
-                ui_controller.close,
+                controller_functions.close,
             ),
             (
                 "/{}/follow/<datarequest_id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "follow",
-                ui_controller.follow,
+                controller_functions.follow,
             ),
             (
                 "/{}/unfollow/<datarequest_id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "unfollow",
-                ui_controller.unfollow,
+                controller_functions.unfollow,
             ),
             (
                 "/organization/{}/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "organization",
-                ui_controller.organization,
+                controller_functions.organization,
             ),
             (
                 "/user/{}/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                 "user",
-                ui_controller.user,
+                controller_functions.user,
             ),
         ]
 
@@ -75,13 +75,13 @@ class MixinPlugin(p.SingletonPlugin):
                     (
                         "/{}/comment/<id>".format(constants.DATAREQUESTS_MAIN_PATH),
                         "comment",
-                        ui_controller.comment,
+                        controller_functions.comment,
                     ),
                     (
                         "/{}/comment/<datarequest_id>/delete/<comment_id>".format(
                             constants.DATAREQUESTS_MAIN_PATH),
                         "delete_comment",
-                        ui_controller.delete_comment,
+                        controller_functions.delete_comment,
                     ),
                 ]
             )

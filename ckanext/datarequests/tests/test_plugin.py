@@ -139,7 +139,7 @@ class DataRequestPluginTest(unittest.TestCase):
         # Test
         config = MagicMock()
         self.plg_instance.update_config(config)
-        plugin.tk.add_template_directory.assert_called_once_with(config, 'templates')
+        plugin.tk.add_template_directory.assert_called_once_with(config, '../templates')
 
     @parameterized.expand([
         ('True',),
