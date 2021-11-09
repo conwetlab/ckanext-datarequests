@@ -2,7 +2,7 @@
 
 from ckan.plugins.toolkit import BaseController
 
-from . import ui_controller
+from . import controller_functions
 
 
 class DataRequestsUI(BaseController):
