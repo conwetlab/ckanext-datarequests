@@ -11,7 +11,7 @@ Feature: Datarequest
         Then I should see an element with xpath "//a[contains(string(), 'Login to create data request')]"
 
 
-    Scenario: After logging in, the user is redirected to the datarequests page and the "Add Data Request" button is visible
+    Scenario: After logging in, the user is redirected to the datarequests page and the 'Add Data Request' button is visible
         Given "SysAdmin" as the persona
         When I go to datarequest page
         And I click the link with text "Login to create data request"
@@ -26,7 +26,7 @@ Feature: Datarequest
         And I fill in "title" with "Test data request"
         And I press the element with xpath "//button[contains(string(), 'Create data request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
-        And I should see "The form contains invalid entries" within 1 seconds    
+        And I should see "The form contains invalid entries" within 1 seconds
         And I should see an element with the css selector "span.error-block" within 1 seconds
         And I should see "Description cannot be empty" within 1 seconds
 
@@ -37,7 +37,7 @@ Feature: Datarequest
         And I press "Closed Request"
         Then I should see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | SysAdmin              |
         | DataRequestOrgAdmin   |
@@ -49,7 +49,7 @@ Feature: Datarequest
         And I press "Closed Request"
         Then I should not see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | CKANUser              |
         | DataRequestOrgEditor  |
@@ -65,7 +65,7 @@ Feature: Datarequest
         And I press "Test Request"
         Then I should see an element with xpath "//a[contains(string(), 'Close')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | SysAdmin              |
         | DataRequestOrgAdmin   |
@@ -77,7 +77,7 @@ Feature: Datarequest
         And I press "Test Request"
         Then I should not see an element with xpath "//a[contains(string(), 'Close')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | CKANUser              |
         | DataRequestOrgEditor  |
@@ -89,7 +89,7 @@ Feature: Datarequest
 
     Scenario: Creating a new data request will email the Admin users of the organisation
         Given "TestOrgEditor" as the persona
-        When I log in and create a datarequest 
+        When I log in and create a datarequest
         When I wait for 3 seconds
         Then I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
         And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
@@ -97,9 +97,9 @@ Feature: Datarequest
 
     Scenario: Closing a data request will email the creator
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
+        When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
-        And I select "Requestor initiated closure" from "close_circumstance" 
+        And I select "Requestor initiated closure" from "close_circumstance"
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         When I wait for 3 seconds
         Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
@@ -107,9 +107,9 @@ Feature: Datarequest
 
     Scenario: Re-Opening a data request will email the Admin users of the organisation and creator
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
+        When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
-        And I select "Requestor initiated closure" from "close_circumstance" 
+        And I select "Requestor initiated closure" from "close_circumstance"
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         And I press the element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
         When I wait for 3 seconds
@@ -119,7 +119,7 @@ Feature: Datarequest
 
      Scenario: Re-assigning a data request will email the Admin users of the assigned organisation and un-assigned organisation
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
+        When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Manage')]"
         When I wait for 3 seconds
         # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
