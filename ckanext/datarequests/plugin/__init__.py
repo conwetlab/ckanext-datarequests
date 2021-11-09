@@ -110,13 +110,13 @@ class DataRequestsPlugin(MixinPlugin, p.SingletonPlugin):
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
         # that CKAN will use this plugin's custom templates.
-        tk.add_template_directory(config, 'templates')
+        tk.add_template_directory(config, '../templates')
 
         # Register this plugin's fanstatic directory with CKAN.
-        tk.add_public_directory(config, 'public')
+        tk.add_public_directory(config, '../public')
 
         # Register this plugin's fanstatic directory with CKAN.
-        tk.add_resource('fanstatic', 'datarequest')
+        tk.add_resource('fanstatic', '../datarequest')
 
     def update_config_schema(self, schema):
         if self.closing_circumstances_enabled:
@@ -163,7 +163,7 @@ class DataRequestsPlugin(MixinPlugin, p.SingletonPlugin):
         # assume plugin is called ckanext.<myplugin>.<...>.PluginClass
         extension_module_name = '.'.join(self.__module__.split('.')[:3])
         module = sys.modules[extension_module_name]
-        return os.path.join(os.path.dirname(module.__file__), 'i18n')
+        return os.path.join(os.path.dirname(module.__file__), '..', 'i18n')
 
     def i18n_locales(self):
         '''Change the list of locales that this plugin handles
