@@ -23,34 +23,6 @@ Feature: Datarequest
         And I should see "Description cannot be empty" within 1 seconds
 
 
-    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a 'Re-open' button on the data request detail page for closed data requests
-        Given "<User>" as the persona
-        When I log in and go to datarequest page
-        And I press "Closed Request"
-        Then I should see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-
-        Examples: Users
-        | User                  |
-        | SysAdmin              |
-        | DataRequestOrgAdmin   |
-
-
-    Scenario Outline: Non-admin users should not see 'Re-open' button on the data request detail page for closed data requests
-        Given "<User>" as the persona
-        When I log in and go to datarequest page
-        And I press "Closed Request"
-        Then I should not see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-
-        Examples: Users
-        | User                  |
-        | CKANUser              |
-        | DataRequestOrgEditor  |
-        | DataRequestOrgMember  |
-        | TestOrgAdmin          |
-        | TestOrgEditor         |
-        | TestOrgMember         |
-
-
     Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
@@ -95,18 +67,6 @@ Feature: Datarequest
         And I press the element with xpath "//button[contains(string(), 'Close data request')]"
         When I wait for 3 seconds
         Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
-
-
-    Scenario: Re-Opening a data request will email the Admin users of the organisation and creator
-        Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest
-        And I press the element with xpath "//a[contains(string(), 'Close')]"
-        And I select "Requestor initiated closure" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        And I press the element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been re-opened."
-        And I should receive a base64 email at "admin@localhost" containing "A data request assigned to your organisation has been re-opened."
 
 
      Scenario: Re-assigning a data request will email the Admin users of the assigned organisation and un-assigned organisation
