@@ -16,7 +16,7 @@ Feature: Datarequest
         When I log in and go to datarequest page
         And I click the link with text that contains "Add Data Request"
         And I fill in "title" with "Test data request"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Create Data Request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
         And I should see "The form contains invalid entries" within 1 seconds
         And I should see an element with the css selector "span.error-block" within 1 seconds
