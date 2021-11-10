@@ -32,7 +32,8 @@ Feature: Comments
         Given "SysAdmin" as the persona
         When I log in
         And I go to data request "Test Request" comments
-        And I press the element with xpath "//a[contains(@href, '/delete') and contains(string(), 'Delete']"
+        And I submit a comment with subject "Comment for deletion" and comment "This is a data request comment to test deletion"
+        And I press the element with xpath "//a[contains(@href, '/delete')]/i[contains(@class, 'icon-remove')]"
         Then I should see "Are you sure you want to delete this comment?" within 1 seconds
         Then I press the element with xpath "//button[contains(string(), 'Confirm')]"
         Then I should not see "This comment was deleted." within 2 seconds
