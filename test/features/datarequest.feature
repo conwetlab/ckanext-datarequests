@@ -50,32 +50,18 @@ Feature: Datarequest
         | TestOrgMember         |
 
 
-    Scenario: Creating a new data request will email the Admin users of the organisation
+    Scenario: Creating a new data request will show the data request afterward
         Given "TestOrgEditor" as the persona
         When I log in and create a datarequest
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
-        And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
+        Then I should see "Open" within 1 seconds
+        And I should see an element with xpath "//a[contains(string(), 'Close')]"
 
 
-    Scenario: Closing a data request will email the creator
+    Scenario: Closing a data request will show the data request afterward
         Given "DataRequestOrgAdmin" as the persona
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance"
         And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
-
-
-     Scenario: Re-assigning a data request will email the Admin users of the assigned organisation and un-assigned organisation
-        Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest
-        And I press the element with xpath "//a[contains(string(), 'Manage')]"
-        When I wait for 3 seconds
-        # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
-        Then I execute the script "document.getElementById('field-organizations').value = document.getElementById('field-organizations').options[1].value"
-        And I press the element with xpath "//button[contains(string(), 'Update data request')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "admin@localhost" containing "A data request that was assigned to your organisation has been re-assigned to another organisation."
-        And I should receive a base64 email at "test_org_admin@localhost" containing "A new data request has been added and assigned to your organisation."
+        Then I should see "Closed" within 1 seconds
+        And I should not see an element with xpath "//a[contains(string(), 'Close')]"
