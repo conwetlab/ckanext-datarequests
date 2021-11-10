@@ -71,6 +71,11 @@ def comment_form_not_visible(context):
     """)
 
 
+@step('I go to the data requests page')
+def go_to_data_requests_page(context):
+    when_i_visit_url(context, '/datarequest')
+
+
 @step(u'I go to data request "{subject}"')
 def go_to_data_request(context, subject):
     context.execute_steps(u"""
