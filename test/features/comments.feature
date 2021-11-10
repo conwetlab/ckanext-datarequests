@@ -6,7 +6,6 @@ Feature: Comments
         Given "CKANUser" as the persona
         When I log in
         And I go to data request "Test Request" comments
-        Then I should see the add comment form
         Then I submit a comment with subject "Test subject" and comment "This is a test comment"
         Then I should see "This is a test comment" within 10 seconds
 
@@ -15,7 +14,6 @@ Feature: Comments
         Given "CKANUser" as the persona
         When I log in
         And I go to data request "Test Request" comments
-        Then I should see the add comment form
         Then I submit a comment with subject "Test Request" and comment "This is a test data request comment"
         When I wait for 5 seconds
         Then I should receive a base64 email at "test_org_admin@localhost" containing "Data request subject: Test Request"
@@ -26,7 +24,6 @@ Feature: Comments
         Given "CKANUser" as the persona
         When I log in
         And I go to data request "Test Request" comments
-        Then I should see the add comment form
         Then I submit a comment with subject "Test subject" and comment "Soccer balls"
         Then I should see "Comment blocked due to profanity" within 5 seconds
 

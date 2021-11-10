@@ -58,16 +58,16 @@ def title_random_text(context):
 @step(u'I should see the add comment form')
 def comment_form_visible(context):
     context.execute_steps(u"""
-        Then I should see an element with xpath "//input[@name='subject']"
-        And I should see an element with xpath "//textarea[@name='comment']"
+        Then I should see an element with xpath "//form[contains(@class, 'form')]//input[@name='subject']"
+        And I should see an element with xpath "//form[contains(@class, 'form')]//textarea[@name='comment']"
     """)
 
 
 @step(u'I should not see the add comment form')
 def comment_form_not_visible(context):
     context.execute_steps(u"""
-        Then I should not see an element with xpath "//input[@name='subject']"
-        And I should not see an element with xpath "//textarea[@name='comment']"
+        Then I should not see an element with xpath "//form[contains(@class, 'form')]//input[@name='subject']"
+        And I should not see an element with xpath "//form[contains(@class, 'form')]//textarea[@name='comment']"
     """)
 
 
