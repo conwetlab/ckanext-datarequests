@@ -53,8 +53,7 @@ Feature: Datarequest
     Scenario: Creating a new data request will show the data request afterward
         Given "TestOrgEditor" as the persona
         When I log in and create a datarequest
-        Then I should see "Open" within 1 seconds
-        And I should see an element with xpath "//i[contains(@class, 'icon-unlock')]"
+        Then I should see an element with xpath "//i[contains(@class, 'icon-unlock')]"
         And I should see an element with xpath "//a[contains(string(), 'Close')]"
 
 
