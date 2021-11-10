@@ -25,7 +25,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Open dataset already exists" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
         And I should see "The form contains invalid entries" within 1 seconds
         And I should see "Accepted dataset cannot be empty" within 1 seconds
@@ -41,7 +41,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "To be released as open data at a later date" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
         And I should see "The form contains invalid entries" within 1 seconds
         And I should see "Approximate publishing date cannot be empty" within 1 seconds
@@ -57,7 +57,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see an element with xpath "//span[contains(@class,'label-closed') and contains(string(), 'Closed')]" within 2 seconds
 
         Examples: Users
@@ -113,7 +113,7 @@ Feature: Datarequest-circumstances
         And I select "Open dataset already exists" from "close_circumstance"
         # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
         Then I execute the script "document.getElementById('field-accepted_dataset_id').value = document.getElementById('field-accepted_dataset_id').options[1].value"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see "Accepted dataset" within 1 seconds
         And I should see "A Wonderful Story" within 1 seconds
 
@@ -129,7 +129,7 @@ Feature: Datarequest-circumstances
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "To be released as open data at a later date" from "close_circumstance"
         And I fill in "approx_publishing_date" with "2025-06-01"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see "Approximate publishing date" within 1 seconds
 
         Examples: Users
@@ -143,7 +143,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see "Close circumstance" within 1 seconds
         Then I should see "Requestor initiated closure" within 1 seconds
 
@@ -158,7 +158,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance"
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should not see "Accepted dataset" within 1 seconds
         Then I should not see "Approximate publishing date" within 1 seconds
 
