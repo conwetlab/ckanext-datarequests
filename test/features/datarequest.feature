@@ -8,21 +8,13 @@ Feature: Datarequest
 
     Scenario: When visiting the datarequests page as a non-logged in user, the 'Add Data Request' button is not visible
         When I go to datarequest page
-        Then I should not see an element with xpath "//a[contains(string(), 'Add data request')]"
-
-
-    Scenario: After logging in, the user is redirected to the datarequests page and the 'Add Data Request' button is visible
-        Given "SysAdmin" as the persona
-        When I go to datarequest page
-        And I click the link with text "Login to create data request"
-        And I enter my credentials and login
-        Then I should see an element with xpath "//a[contains(string(), 'Add data request', 'i')]"
+        Then I should not see an element with xpath "//a[contains(string(), 'Add data request', 'i')]"
 
 
     Scenario: Data requests submitted without a description will produce an error message
         Given "SysAdmin" as the persona
         When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
+        And I press the element with xpath "//a[contains(string(), 'Add data request', 'i')]"
         And I fill in "title" with "Test data request"
         And I press the element with xpath "//button[contains(string(), 'Create data request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
