@@ -142,7 +142,7 @@ commands:
   start-ckan-job-worker:
     usage: Starts CKAN background job worker
     cmd: |
-      ahoy title 'Starting CKAN background job worker'
+      ahoy title 'Starting default CKAN background job worker'
       ahoy cli "ckan_cli jobs clear && \
                 ckan_cli jobs worker"
 
@@ -183,7 +183,7 @@ entrypoint:
   - "-c"
   - "-e"
   - |
-    export LAGOON_LOCALDEV_URL=http://ckanext-datarequests.docker.amazee.io
+    export LAGOON_LOCALDEV_URL=http://$PROJECT.docker.amazee.io
     [ -f .env ] && [ -s .env ] && export $(grep -v '^#' .env | xargs) && if [ -f .env.local ] && [ -s .env.local ]; then export $(grep -v '^#' .env.local | xargs); fi
     bash -e -c "$0" "$@"
   - "{{cmd}}"

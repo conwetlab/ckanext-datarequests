@@ -4,7 +4,7 @@ import ckan.plugins as p
 from flask import Blueprint
 
 from ckanext.datarequests import constants
-from . import controller_functions
+from ckanext.datarequests.controllers import controller_functions
 
 
 datarequests_bp = Blueprint("datarequest", __name__)
