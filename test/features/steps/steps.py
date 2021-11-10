@@ -20,7 +20,6 @@ def log_in(context):
         When I go to homepage
         And I click the link with text that contains "Log in"
         And I enter my credentials and login
-        Then I should see an element with xpath "//a[contains(string(), 'Log out')]"
     """)
 
 
@@ -31,6 +30,7 @@ def submit_login(context):
         When I fill in "login" with "$name"
         And I fill in "password" with "$password"
         And I press the element with xpath "//button[contains(string(), 'Login')]"
+        Then I should see an element with xpath "//a[@title='Log out']"
     """)
 
 
