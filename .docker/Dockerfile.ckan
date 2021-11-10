@@ -1,6 +1,7 @@
 FROM amazeeio/python:2.7-ckan-21.7.0
 
 ARG SITE_URL
+ARG CKAN_VERSION
 ENV SITE_URL="${SITE_URL}"
 ENV VENV_DIR=/app/ckan/default
 ENV APP_DIR=/app
@@ -15,7 +16,6 @@ RUN apk add --no-cache curl build-base \
     && rm dockerize-alpine-linux-amd64-${DOCKERIZE_VERSION}.tar.gz
 
 # Install CKAN.
-ENV CKAN_VERSION 2.8.8
 
 RUN . ${VENV_DIR}/bin/activate \
     && pip install setuptools==36.1 \
