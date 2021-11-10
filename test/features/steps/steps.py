@@ -1,8 +1,7 @@
 from behave import step
-from behaving.web.steps import *  # noqa: F401, F403
 from behaving.personas.steps import *  # noqa: F401, F403
+from behaving.web.steps import *  # noqa: F401, F403
 from behaving.web.steps.url import when_i_visit_url
-from behaving.mail.steps import *
 import random
 import email
 import quopri
@@ -54,6 +53,72 @@ def title_random_text(context):
     context.execute_steps(u"""
         When I fill in "title" with "Test Title {0}"
     """.format(random.randrange(100000)))
+
+
+@step(u'I should see the add comment form')
+def comment_form_visible(context):
+    context.execute_steps(u"""
+        Then I should see an element with xpath "//input[@name='subject']"
+        And I should see an element with xpath "//textarea[@name='comment']"
+    """)
+
+
+@step(u'I should not see the add comment form')
+def comment_form_not_visible(context):
+    context.execute_steps(u"""
+        Then I should not see an element with xpath "//input[@name='subject']"
+        And I should not see an element with xpath "//textarea[@name='comment']"
+    """)
+
+
+@step(u'I go to data request "{subject}"')
+def go_to_data_request(context, subject):
+    context.execute_steps(u"""
+        When I go to the data requests page
+        And I click the link with text "%s"
+        Then I should see "%s" within 5 seconds
+    """ % (subject, subject))
+
+
+@step(u'I go to data request "{subject}" comments')
+def go_to_data_request_comments(context, subject):
+    context.execute_steps(u"""
+        When I go to data request "%s"
+        And I click the link with text that contains "Comments"
+    """ % (subject))
+
+
+@step(u'I submit a comment with subject "{subject}" and comment "{comment}"')
+def submit_comment_with_subject_and_comment(context, subject, comment):
+    """
+    There can be multiple comment forms per page (add, edit, reply) each with fields named "subject" and "comment"
+    This step overcomes a limitation of the fill() method which only fills a form field by name
+    :param context:
+    :param subject:
+    :param comment:
+    :return:
+    """
+    context.browser.execute_script(
+        "document.querySelector('form.form input[name=\"subject\"]').value = '%s';" % subject)
+    context.browser.execute_script(
+        "document.querySelector('form.form textarea[name=\"comment\"]').value = '%s';" % comment)
+    context.browser.execute_script(
+        "document.querySelector('form.form .form-actions input[type=\"submit\"]').click();")
+
+
+@step(u'I submit a reply with comment "{comment}"')
+def submit_reply_with_comment(context, comment):
+    """
+    There can be multiple comment forms per page (add, edit, reply) each with fields named "subject" and "comment"
+    This step overcomes a limitation of the fill() method which only fills a form field by name
+    :param context:
+    :param comment:
+    :return:
+    """
+    context.browser.execute_script(
+        "document.querySelector('.comment-wrapper form textarea[name=\"comment\"]').value = '%s';" % comment)
+    context.browser.execute_script(
+        "document.querySelector('.comment-wrapper form .form-actions input[type=\"submit\"]').click();")
 
 
 # The default behaving step does not convert base64 emails
