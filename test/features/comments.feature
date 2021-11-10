@@ -28,12 +28,12 @@ Feature: Comments
         Then I should see "Comment blocked due to profanity" within 5 seconds
 
     @comment-delete
-    Scenario: When an Org Admin visits a data request belonging to their organisation, they can delete a comment and should not see text 'This comment was deleted.'
-        Given "TestOrgAdmin" as the persona
+    Scenario: When an Sysadmin visits a data request, they can delete a comment and should not see text 'This comment was deleted.'
+        Given "SysAdmin" as the persona
         When I log in
         And I go to data request "Test Request" comments
         And I press the element with xpath "//a[contains(@href, '/delete') and contains(string(), 'Delete']"
         Then I should see "Are you sure you want to delete this comment?" within 1 seconds
         Then I press the element with xpath "//button[contains(string(), 'Confirm')]"
         Then I should not see "This comment was deleted." within 2 seconds
-        And I should see "Comment deleted by Test Admin." within 2 seconds
+        And I should see "Comment deleted by Administrator." within 2 seconds
