@@ -54,6 +54,7 @@ Feature: Datarequest
         Given "TestOrgEditor" as the persona
         When I log in and create a datarequest
         Then I should see "Open" within 1 seconds
+        And I should see an element with xpath "//i[contains(@class, 'icon-unlock')]"
         And I should see an element with xpath "//a[contains(string(), 'Close')]"
 
 
@@ -63,5 +64,5 @@ Feature: Datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Requestor initiated closure" from "close_circumstance"
         And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
-        Then I should see "Closed" within 1 seconds
+        Then I should see an element with xpath "//i[contains(@class, 'icon-lock')]"
         And I should not see an element with xpath "//a[contains(string(), 'Close')]"
