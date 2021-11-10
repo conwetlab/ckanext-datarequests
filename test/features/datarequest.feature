@@ -6,9 +6,9 @@ Feature: Datarequest
         Then the browser's URL should contain "/datarequest"
 
 
-    Scenario: When visiting the datarequests page as a non-logged in user, the button at the top of the page reads Login to create a data request
+    Scenario: When visiting the datarequests page as a non-logged in user, the 'Add Data Request' button is not visible
         When I go to datarequest page
-        Then I should see an element with xpath "//a[contains(string(), 'Login to create data request')]"
+        Then I should not see an element with xpath "//a[contains(string(), 'Add data request')]"
 
 
     Scenario: After logging in, the user is redirected to the datarequests page and the 'Add Data Request' button is visible
@@ -16,7 +16,7 @@ Feature: Datarequest
         When I go to datarequest page
         And I click the link with text "Login to create data request"
         And I enter my credentials and login
-        Then I should see an element with xpath "//a[contains(string(), 'Add data request')]"
+        Then I should see an element with xpath "//a[contains(string(), 'Add data request', 'i')]"
 
 
     Scenario: Data requests submitted without a description will produce an error message
