@@ -103,8 +103,10 @@ def submit_comment_with_subject_and_comment(context, subject, comment):
     :param comment:
     :return:
     """
-    context.browser.execute_script(
-        "document.querySelector('form.form input[name=\"subject\"]').value = '%s';" % subject)
+    context.browser.execute_script("""
+        subject_field = document.querySelector('form.form input[name=\"subject\"]');
+        if (subject_field) { subject_field.value = '%s'; }
+        """ % subject)
     context.browser.execute_script(
         "document.querySelector('form.form textarea[name=\"comment\"]').value = '%s';" % comment)
     context.browser.execute_script(
