@@ -1,7 +1,7 @@
 FROM amazeeio/python:2.7-ckan-21.7.0
 
-ARG SITE_URL
-ARG CKAN_VERSION
+ARG SITE_URL=http://ckan:3000/
+ARG CKAN_VERSION=2.8.8
 ENV SITE_URL="${SITE_URL}"
 ENV VENV_DIR=/app/ckan/default
 ENV APP_DIR=/app
