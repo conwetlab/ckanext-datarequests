@@ -24,7 +24,7 @@ Feature: Comments
         Given "CKANUser" as the persona
         When I log in
         And I go to data request "Test Request" comments
-        Then I submit a comment with subject "Test subject" and comment "Soccer balls"
+        Then I submit a comment with subject "Test subject" and comment "Balaam saddled his ass"
         Then I should see "Comment blocked due to profanity" within 5 seconds
 
     @comment-delete
