@@ -140,7 +140,10 @@ def should_receive_base64_email_containing_text(context, address, text):
         mail = email.message_from_string(mail)
         payload = mail.get_payload()
         payload += "=" * ((4 - len(payload) % 4) % 4)  # do fix the padding error issue
-        decoded_payload = quopri.decodestring(payload).decode('base64')
+        payload_bytes = quopri.decodestring(payload)
+        if len(payload_bytes) > 0:
+            payload_bytes += b'='  # do fix the padding error issue
+        decoded_payload = payload_bytes.decode('base64')
         print('decoded_payload: ', decoded_payload)
         return text in decoded_payload
 
