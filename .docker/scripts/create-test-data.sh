@@ -126,7 +126,7 @@ curl -LsH "Authorization: ${API_KEY}" \
 echo "Creating test Data Request:"
 
 curl -LsH "Authorization: ${API_KEY}" \
-    --data "title=Test Request&description=This is an example&organization_id=${DR_ORG_ID}" \
+    --data "title=Test Request&description=This is an example&organization_id=${TEST_ORG_ID}" \
     ${CKAN_ACTION_URL}/create_datarequest
 
 echo "Creating closed Data Request:"
