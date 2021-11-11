@@ -19,8 +19,12 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
         self._check_ckan_version = tk.check_ckan_version
         tk.check_ckan_version = lambda version: False
 
+        self.config_patch = patch('ckanext.datarequests.common.config')
+        self.config_mock = self.config_patch.start()
+
     def tearDown(self):
         tk.check_ckan_version = self._check_ckan_version
+        self.config_patch.stop()
 
     @parameterized.expand([
         ('True',),
