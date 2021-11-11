@@ -16,12 +16,6 @@ x-environment:
   AMAZEEIO: AMAZEEIO
   no_proxy: "ckan,postgres,postgres-datastore,redis,solr,chrome,mailhog.docker.amazee.io"
 
-x-user:
-  &default-user
-  # The default user under which the containers should run.
-  # Change this if you are on linux and run with another user than id `1000`.
-  user: '1000'
-
 services:
 
   ckan:
@@ -69,7 +63,6 @@ services:
 
   redis:
     image: redis:6-alpine
-    <<: *default-user
     environment:
       <<: *default-environment
     networks:
@@ -78,7 +71,6 @@ services:
 
   solr:
     image: ckan/ckan-solr-dev:2.8
-    user: '8983'
     ports:
       - "8983"
     environment:
@@ -93,7 +85,6 @@ services:
     depends_on:
       - ckan
     <<: *default-volumes
-    <<: *default-user
     environment:
       <<: *default-environment
     networks:
