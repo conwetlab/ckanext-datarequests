@@ -9,24 +9,6 @@ Feature: Comments
         Then I submit a comment with subject "Test subject" and comment "This is a test comment"
         Then I should see "This is a test comment" within 10 seconds
 
-    @comment-add @comment-email
-    Scenario: When a logged-in user submits a comment on a Data Request the email should contain title and comment
-        Given "CKANUser" as the persona
-        When I log in
-        And I go to data request "Test Request" comments
-        Then I submit a comment with subject "Test Request" and comment "This is a test data request comment"
-        When I wait for 5 seconds
-        Then I should receive a base64 email at "test_org_admin@localhost" containing "Data request subject: Test Request"
-        And I should receive a base64 email at "test_org_admin@localhost" containing "Comment: This is a test data request comment"
-
-    @comment-add @comment-profane
-    Scenario: When a logged-in user submits a comment containing profanity on a Data Request they should receive an error message and the commment will not appear
-        Given "CKANUser" as the persona
-        When I log in
-        And I go to data request "Test Request" comments
-        Then I submit a comment with subject "Test subject" and comment "Balaam saddled his ass"
-        Then I should see "Comment blocked due to profanity" within 5 seconds
-
     @comment-delete
     Scenario: When an Sysadmin visits a data request, they can delete a comment and should not see text 'This comment was deleted.'
         Given "SysAdmin" as the persona
