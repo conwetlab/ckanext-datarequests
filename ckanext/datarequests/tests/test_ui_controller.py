@@ -18,7 +18,7 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 from ckanext.datarequests import constants
-import ckanext.datarequests.controllers.ui_controller as controller
+import ckanext.datarequests.controllers.controller_functions as controller
 import unittest
 
 from mock import MagicMock
@@ -26,8 +26,8 @@ from parameterized import parameterized
 
 
 INDEX_FUNCTION = 'index'
-ORGANIZATION_DATAREQUESTS_FUNCTION = 'organization_datarequests'
-USER_DATAREQUESTS_FUNCTION = 'user_datarequests'
+ORGANIZATION_DATAREQUESTS_FUNCTION = 'organization'
+USER_DATAREQUESTS_FUNCTION = 'user'
 
 
 class UIControllerTest(unittest.TestCase):
@@ -58,9 +58,6 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
-        self._base = controller.base
-        controller.base = MagicMock()
-
         self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
 
         self.expected_context = {
@@ -70,8 +67,6 @@ class UIControllerTest(unittest.TestCase):
             'auth_user_obj': controller.c.userobj
         }
 
-        self.controller_instance = controller.DataRequestsUI()
-
     def tearDown(self):
         controller.plugins = self._plugins
         controller.tk = self._tk
@@ -80,7 +75,6 @@ class UIControllerTest(unittest.TestCase):
         controller.model = self._model
         controller.request = self._request
         controller.helpers = self._helpers
-        controller.base = self._base
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
     ######################################################################
@@ -138,7 +132,7 @@ class UIControllerTest(unittest.TestCase):
         if not authorized:
             controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
 
-        result = self.controller_instance.new()
+        result = controller.new()
 
         controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST, self.expected_context, None)
 
@@ -182,7 +176,7 @@ class UIControllerTest(unittest.TestCase):
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
         }
-        result = self.controller_instance.new()
+        result = controller.new()
 
         # Authorize function has been called
         controller.tk.check_access.assert_called_once_with(constants.CREATE_DATAREQUEST,
@@ -222,10 +216,10 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_show_not_authorized(self):
-        self._test_not_authorized(self.controller_instance.show, 'view', constants.SHOW_DATAREQUEST)
+        self._test_not_authorized(controller.show, 'view', constants.SHOW_DATAREQUEST)
 
     def test_show_not_found(self):
-        self._test_not_found(self.controller_instance.show, constants.SHOW_DATAREQUEST)
+        self._test_not_found(controller.show, constants.SHOW_DATAREQUEST)
 
     @parameterized.expand({
         (False, False, None),
@@ -293,7 +287,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
-        result = self.controller_instance.show(datarequest_id)
+        result = controller.show(datarequest_id)
 
         # Authorize function has been called
         controller.tk.check_access.assert_called_once_with(constants.SHOW_DATAREQUEST, self.expected_context,
@@ -316,10 +310,10 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_update_not_authorized(self):
-        self._test_not_authorized(self.controller_instance.update, 'update', constants.UPDATE_DATAREQUEST)
+        self._test_not_authorized(controller.update, 'update', constants.UPDATE_DATAREQUEST)
 
     def test_update_not_found(self):
-        self._test_not_found(self.controller_instance.update, constants.UPDATE_DATAREQUEST)
+        self._test_not_found(controller.update, constants.UPDATE_DATAREQUEST)
 
     def test_update_no_post_content(self):
         controller.tk.response.location = None
@@ -332,7 +326,7 @@ class UIControllerTest(unittest.TestCase):
         show_datarequest.return_value = datarequest
 
         # Call the function
-        result = self.controller_instance.update(datarequest_id)
+        result = controller.update(datarequest_id)
 
         # Authorize function has been called
         controller.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST, self.expected_context, {'id': datarequest_id})
@@ -392,7 +386,7 @@ class UIControllerTest(unittest.TestCase):
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
         }
-        result = self.controller_instance.update(datarequest_id)
+        result = controller.update(datarequest_id)
 
         # Authorize function has been called
         controller.tk.check_access.assert_called_once_with(constants.UPDATE_DATAREQUEST, self.expected_context, {'id': datarequest_id})
@@ -438,7 +432,7 @@ class UIControllerTest(unittest.TestCase):
         controller.request.GET = {'organization': organization_name}
 
         # Call the function
-        result = self.controller_instance.index()
+        result = controller.index()
 
         # Assertions
         expected_data_req = {'organization_id': organization_name, 'limit': 10, 'offset': 0, 'sort': 'desc'}
@@ -452,7 +446,7 @@ class UIControllerTest(unittest.TestCase):
         controller.request.GET = controller.request.params = {'page': '2a'}
 
         # Call the function
-        result = self.controller_instance.index()
+        result = controller.index()
 
         # Assertions
         controller.tk.abort.assert_called_once_with(400, '"page" parameter must be an integer')
@@ -557,7 +551,7 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers.url_for.return_value = base_url
 
         # Call the function
-        function = getattr(self.controller_instance, func)
+        function = getattr(controller, func)
         result = function(**params)
 
         # Assertions
@@ -636,10 +630,10 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_delete_not_authorized(self):
-        self._test_not_authorized(self.controller_instance.delete, 'delete', constants.DELETE_DATAREQUEST)
+        self._test_not_authorized(controller.delete, 'delete', constants.DELETE_DATAREQUEST)
 
     def test_delete_not_found(self):
-        self._test_not_found(self.controller_instance.delete, constants.DELETE_DATAREQUEST)
+        self._test_not_found(controller.delete, constants.DELETE_DATAREQUEST)
 
     def test_delete(self):
         datarequest_id = 'example_uuidv4'
@@ -653,7 +647,7 @@ class UIControllerTest(unittest.TestCase):
         delete_datarequest.return_value = datarequest
 
         # Call the function
-        result = self.controller_instance.delete(datarequest_id)
+        result = controller.delete(datarequest_id)
 
         # Assertions
         # The result
@@ -677,10 +671,10 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_close_not_authorized(self):
-        self._test_not_authorized(self.controller_instance.close, 'close', constants.CLOSE_DATAREQUEST)
+        self._test_not_authorized(controller.close, 'close', constants.CLOSE_DATAREQUEST)
 
     def test_close_not_found(self):
-        self._test_not_found(self.controller_instance.close, constants.CLOSE_DATAREQUEST)
+        self._test_not_found(controller.close, constants.CLOSE_DATAREQUEST)
 
     @parameterized.expand([
         (None,),
@@ -722,7 +716,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
-        result = self.controller_instance.close(datarequest_id)
+        result = controller.close(datarequest_id)
 
         # Check that the methods has been called
         controller.tk.check_access.assert_called_once_with(constants.CLOSE_DATAREQUEST, self.expected_context, {'id': datarequest_id})
@@ -763,7 +757,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
-        result = self.controller_instance.close(datarequest_id)
+        result = controller.close(datarequest_id)
 
         # Checks
         controller.helpers.url_for.assert_called_once_with(
@@ -794,7 +788,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
 
         # Call the function
-        result = self.controller_instance.comment(datarequest_id)
+        result = controller.comment(datarequest_id)
 
         # Assertions
         controller.tk.check_access.assert_called_once_with(constants.LIST_DATAREQUEST_COMMENTS, self.expected_context, {'datarequest_id': datarequest_id})
@@ -807,7 +801,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Comment not found')
 
         # Call the function
-        result = self.controller_instance.comment(datarequest_id)
+        result = controller.comment(datarequest_id)
 
         # Assertions
         controller.tk.get_action(constants.COMMENT_DATAREQUEST)
@@ -874,7 +868,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.side_effect = _get_action
 
         # Call the function
-        result = self.controller_instance.comment(datarequest_id)
+        result = controller.comment(datarequest_id)
 
         # Check the result
         controller.tk.render.assert_called_once_with('datarequests/comment.html')
@@ -942,7 +936,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User not authorized')
 
         # Call the function
-        result = self.controller_instance.delete_comment('datarequest_id', comment_id)
+        result = controller.delete_comment('datarequest_id', comment_id)
 
         # Assertions
         controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT,
@@ -957,7 +951,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.return_value.side_effect = controller.tk.ObjectNotFound('Comment not found')
 
         # Call the function
-        result = self.controller_instance.delete_comment(datarequest_id, comment_id)
+        result = controller.delete_comment(datarequest_id, comment_id)
 
         # Assertions
         controller.tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)
@@ -970,7 +964,7 @@ class UIControllerTest(unittest.TestCase):
         comment_id = 'comment_uuidv4'
 
         # Call
-        self.controller_instance.delete_comment(datarequest_id, comment_id)
+        controller.delete_comment(datarequest_id, comment_id)
 
         # Check calls
         controller.tk.get_action.assert_called_once_with(constants.DELETE_DATAREQUEST_COMMENT)
@@ -988,7 +982,7 @@ class UIControllerTest(unittest.TestCase):
     ######################################################################
 
     def test_follow(self):
-        self.controller_instance.follow('example_uuidv4')
+        controller.follow('example_uuidv4')
 
     def test_unfollow(self):
-        self.controller_instance.unfollow('example_uuidv4')
+        controller.unfollow('example_uuidv4')

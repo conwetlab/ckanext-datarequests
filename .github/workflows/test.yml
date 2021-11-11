@@ -9,10 +9,14 @@ jobs:
   test:
     strategy:
       fail-fast: false
+      matrix:
+        ckan-version: [2.8.8]
 
-    name: Continuous Integration build
+    name: Continuous Integration build on CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest
     container: integratedexperts/ci-builder
+    env:
+      CKAN_VERSION: ${{ matrix.ckan-version }}
 
     steps:
       - uses: actions/checkout@v2
@@ -35,6 +39,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v2
         with:
-          name: screenshots
+          name: CKAN ${{ matrix.ckan-version }} screenshots
           path: /tmp/artifacts/behave/screenshots
         timeout-minutes: 1

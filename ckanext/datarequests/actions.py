@@ -52,7 +52,7 @@ def _get_user(user_id):
 def _get_organization(organization_id):
     try:
         organization_show = tk.get_action('organization_show')
-        return organization_show({'ignore_auth': True}, {'id': organization_id})
+        return organization_show({'ignore_auth': True}, {'id': organization_id, 'include_users': True})
     except Exception as e:
         log.warn(e)
 
