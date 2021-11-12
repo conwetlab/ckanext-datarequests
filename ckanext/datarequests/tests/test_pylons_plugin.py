@@ -16,7 +16,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
 
     @parameterized.expand([
         (True,),
-        (False)
+        (False,)
     ])
     def test_before_map(self, comments_enabled):
 
