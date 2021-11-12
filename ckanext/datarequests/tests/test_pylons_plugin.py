@@ -15,8 +15,8 @@ ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 class DataRequestPylonsPluginTest(unittest.TestCase):
 
     @parameterized.expand([
-        ('True',),
-        ('False')
+        (True,),
+        (False)
     ])
     def test_before_map(self, comments_enabled):
 
