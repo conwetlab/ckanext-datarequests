@@ -2,8 +2,8 @@
 
 import unittest
 
-import ckan.plugins.toolkit as tk
-from ckanext.datarequests import common, plugin
+from ckanext.datarequests import common
+from ckanext.datarequests.plugin import MixinPlugin
 
 from mock import MagicMock, patch
 from parameterized import parameterized
@@ -16,14 +16,10 @@ ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 class DataRequestPylonsPluginTest(unittest.TestCase):
 
     def setUp(self):
-        self._check_ckan_version = tk.check_ckan_version
-        tk.check_ckan_version = lambda version: False
-
         self.config_patch = patch('ckanext.datarequests.common.config')
         self.config_mock = self.config_patch.start()
 
     def tearDown(self):
-        tk.check_ckan_version = self._check_ckan_version
         self.config_patch.stop()
 
     @parameterized.expand([
@@ -37,7 +33,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
 
         # Configure config and get instance
         common.config.get.return_value = comments_enabled
-        self.plg_instance = plugin.DataRequestsPlugin()
+        self.plg_instance = MixinPlugin()
 
         mock_icon = 'icon'
         get_question_icon_patch = patch('ckanext.datarequests.common.get_question_icon', return_value=mock_icon)
