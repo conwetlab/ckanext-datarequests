@@ -20,7 +20,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
     ])
     def test_before_map(self, comments_enabled):
 
-        urls_set = 15
+        urls_set = 17
         mapa_calls = urls_set if comments_enabled else urls_set - 3
 
         # Configure config and get instance
@@ -86,6 +86,13 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
             ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call(
+            'datarequest.organization',
+            '/organization/%s/{id}' % dr_basic_path,
+            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
+            action='organization_datarequests', conditions={'method': ['GET']},
+            ckan_icon=mock_icon)
+
+        mapa.connect.assert_any_call(
             'user_datarequests',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
@@ -93,7 +100,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
             ckan_icon=mock_icon)
 
         mapa.connect.assert_any_call(
-            'user_datarequests',
+            'datarequest.user',
             '/user/%s/{id}' % dr_basic_path,
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='user_datarequests', conditions={'method': ['GET']},
