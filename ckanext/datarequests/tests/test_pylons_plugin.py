@@ -2,7 +2,7 @@
 
 import unittest
 
-from ckanext.datarequests.pylons_plugin import MixinPlugin
+from ckanext.datarequests.plugin.pylons_plugin import MixinPlugin
 
 from mock import MagicMock, patch
 from parameterized import parameterized
