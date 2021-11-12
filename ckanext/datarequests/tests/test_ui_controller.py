@@ -30,6 +30,16 @@ ORGANIZATION_DATAREQUESTS_FUNCTION = 'organization'
 USER_DATAREQUESTS_FUNCTION = 'user'
 
 
+def _patch_GET(params):
+    request_helpers.request.GET = params
+    request_helpers.request.args = params
+
+
+def _patch_POST(params):
+    request_helpers.request.POST = params
+    request_helpers.request.form = params
+
+
 class UIControllerTest(unittest.TestCase):
 
     def setUp(self):
@@ -46,8 +56,8 @@ class UIControllerTest(unittest.TestCase):
         self._c = controller.c
         controller.c = MagicMock()
 
-        self._request_helpers = request_helpers
-        controller.request_helpers = MagicMock()
+        self._request = request_helpers.request
+        request_helpers.request = MagicMock()
 
         self._model = controller.model
         controller.model = MagicMock()
@@ -68,7 +78,7 @@ class UIControllerTest(unittest.TestCase):
         controller.plugins = self._plugins
         controller.tk = self._tk
         controller.c = self._c
-        controller.request_helpers = self._request_helpers
+        request_helpers.request = self._request
         controller.model = self._model
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
@@ -122,7 +132,7 @@ class UIControllerTest(unittest.TestCase):
     def test_new_no_post(self, authorized):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.get_post_params.return_value = {}
+        _patch_POST({})
 
         # Raise exception if the user is not authorized to create a new data request
         if not authorized:
@@ -167,11 +177,11 @@ class UIControllerTest(unittest.TestCase):
             action.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = request_helpers.get_post_params.return_value = {
+        request_data = _patch_POST({
             'title': 'Example Title',
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
-        }
+        })
         result = controller.new()
 
         # Authorize function has been called
@@ -313,7 +323,7 @@ class UIControllerTest(unittest.TestCase):
     def test_update_no_post_content(self):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.get_post_params.return_value = {}
+        _patch_POST({})
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -375,12 +385,12 @@ class UIControllerTest(unittest.TestCase):
             update_datarequest.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = request_helpers.get_post_params.return_value = {
+        request_data = _patch_POST({
             'id': datarequest_id,
             'title': 'Example Title',
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
-        }
+        })
         result = controller.update(datarequest_id)
 
         # Authorize function has been called
@@ -423,7 +433,7 @@ class UIControllerTest(unittest.TestCase):
     def test_index_not_authorized(self):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
         organization_name = 'org'
-        request_helpers.get_query_params.return_value = {'organization': organization_name}
+        _patch_GET({'organization': organization_name})
 
         # Call the function
         result = controller.index()
@@ -437,7 +447,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_index_invalid_page(self):
-        request_helpers.get_query_params.return_value = {'page': '2a'}
+        _patch_GET({'page': '2a'})
 
         # Call the function
         result = controller.index()
@@ -503,11 +513,11 @@ class UIControllerTest(unittest.TestCase):
         constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
 
         # Get parameters
-        query_params = {}
+        _patch_GET({})
 
         # Set page
         if page:
-            query_params['page'] = page
+            request_helpers.request.GET['page'] = page
 
         # Set the organization in the correct place depending on the function
         if func == ORGANIZATION_DATAREQUESTS_FUNCTION:
@@ -519,16 +529,14 @@ class UIControllerTest(unittest.TestCase):
                 expected_data_dict['user_id'] = user
 
             if organization:
-                query_params['organization'] = organization
+                request_helpers.request.GET['organization'] = organization
                 expected_data_dict['organization_id'] = organization
 
         if sort:
-            query_params['sort'] = sort
+            request_helpers.request.GET['sort'] = sort
 
         if query:
-            query_params['q'] = query
-
-        request_helpers.get_query_params.return_value = query_params
+            request_helpers.request.GET['q'] = query
 
         # Mocking
         user_show = MagicMock()
@@ -678,7 +686,7 @@ class UIControllerTest(unittest.TestCase):
     def _test_close(self, organization, post_content=None, errors=None, errors_summary=None, close_datarequest=None):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.get_post_params.return_value = post_content or {}
+        _patch_POST(post_content or {})
         errors = errors or {}
         errors_summary = errors_summary or {}
         if not close_datarequest:
@@ -733,7 +741,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_datasets, controller.c.datasets)
 
     def test_close_post_no_error(self):
-        request_helpers.get_post_params.return_value = {'accepted_dataset': 'example_ds'}
+        _patch_POST({'accepted_dataset': 'example_ds'})
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -815,18 +823,18 @@ class UIControllerTest(unittest.TestCase):
     def test_comment_list(self, new_comment=False, update_comment=False,
                           comment_or_update_exception=None):
 
-        request_helpers.get_post_params.return_value = {}
+        _patch_POST({})
         datarequest_id = 'example_uuidv4'
         comment_id = 'comment_uuidv4'
         comment = 'example comment'
         new_comment_id = 'another_uuidv4'
 
         if new_comment or update_comment:
-            request_helpers.get_post_params.return_value = {
+            _patch_POST({
                 'datarequest_id': datarequest_id,
                 'comment': comment,
                 'comment-id': comment_id if update_comment else ''
-            }
+            })
 
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
         comments_list = [
