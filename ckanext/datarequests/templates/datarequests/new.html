@@ -3,7 +3,7 @@
 {% block subtitle %}{{ _('Create Data Request') }}{% endblock %}
 
 {% block breadcrumb_content %}
-  <li>{% link_for _('Data Requests'), controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index' %}</li>
+  <li>{% link_for _('Data Requests'), named_route='datarequest.index' %}</li>
   <li class="active"><a href="">{{ _('Create Data Request') }}</a></li>
 {% endblock %}
 
