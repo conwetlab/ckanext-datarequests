@@ -46,14 +46,11 @@ class UIControllerTest(unittest.TestCase):
         self._c = controller.c
         controller.c = MagicMock()
 
-        self._request = request_helpers.request
-        request_helpers.request = MagicMock()
+        self._request_helpers = request_helpers
+        controller.request_helpers = MagicMock()
 
         self._model = controller.model
         controller.model = MagicMock()
-
-        self._request = request_helpers.request
-        request_helpers.request = MagicMock()
 
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
@@ -71,7 +68,7 @@ class UIControllerTest(unittest.TestCase):
         controller.plugins = self._plugins
         controller.tk = self._tk
         controller.c = self._c
-        request_helpers.request = self._request
+        controller.request_helpers = self._request_helpers
         controller.model = self._model
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
@@ -426,7 +423,7 @@ class UIControllerTest(unittest.TestCase):
     def test_index_not_authorized(self):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
         organization_name = 'org'
-        request_helpers.request.GET = {'organization': organization_name}
+        request_helpers.get_query_params.return_value = {'organization': organization_name}
 
         # Call the function
         result = controller.index()
@@ -440,7 +437,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_index_invalid_page(self):
-        request_helpers.request.GET = request_helpers.request.params = {'page': '2a'}
+        request_helpers.get_query_params.return_value = {'page': '2a'}
 
         # Call the function
         result = controller.index()
@@ -506,11 +503,11 @@ class UIControllerTest(unittest.TestCase):
         constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
 
         # Get parameters
-        request_helpers.request.GET = request_helpers.request.params = {}
+        query_params = {}
 
         # Set page
         if page:
-            request_helpers.request.GET['page'] = page
+            query_params['page'] = page
 
         # Set the organization in the correct place depending on the function
         if func == ORGANIZATION_DATAREQUESTS_FUNCTION:
@@ -522,14 +519,16 @@ class UIControllerTest(unittest.TestCase):
                 expected_data_dict['user_id'] = user
 
             if organization:
-                request_helpers.request.GET['organization'] = organization
+                query_params['organization'] = organization
                 expected_data_dict['organization_id'] = organization
 
         if sort:
-            request_helpers.request.GET['sort'] = sort
+            query_params['sort'] = sort
 
         if query:
-            request_helpers.request.GET['q'] = query
+            query_params['q'] = query
+
+        request_helpers.get_query_params.return_value = query_params
 
         # Mocking
         user_show = MagicMock()
