@@ -6,7 +6,7 @@
 {% endif %}
 
 <div class="comment-wrapper">
-  <a href="{{ h.url_for(named_route='user.read', id=comment.user.get('name')) }}"
+  <a href="{% url_for named_route='user.read', id=comment.user.get('name') %}"
     class="comment-avatar">
     {{ h.gravatar(comment.user.get('email_hash'), 48) }}
   </a>
@@ -25,7 +25,7 @@
           </div>
         {% endif %}
         <div class="comment-header-text">
-          <a href="{{ h.url_for(named_route='user.read', id=comment.user.get('name')) }}" class="author">{{ comment.user.get('display_name') }}</a>
+          <a href="{% url_for named_route='user.read', id=comment.user.get('name') %}" class="author">{{ comment.user.get('display_name') }}</a>
           {% trans %}commented{% endtrans %}
           <span title="{{comment.time}}">{{ h.time_ago_from_timestamp(comment.time).lower() }}</span>
         </div>

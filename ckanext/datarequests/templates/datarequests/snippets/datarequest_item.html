@@ -16,14 +16,14 @@
             <i class="icon-unlock fa fa-unlock"></i> {% trans %}Open{% endtrans %}
           </span>
         {% endif %}
-        {{ h.link_to(h.truncate(title, truncate_title), h.url_for(named_route='datarequest.show', id=datarequest.get('id', ''))) }}
+        {{ h.link_to(h.truncate(title, truncate_title), h.url_for('datarequest.show', id=datarequest.get('id', ''))) }}
       </h3>
       {% if description %}
         <div>{{ description }}</div>
       {% endif %}
       <div class="datarequest-properties">
         {% if h.show_comments_tab() %}
-          <a href="{{ h.url_for(named_route='datarequest.comment', id=datarequest.get('id','')) }}" class="label label-default"><i class="icon-comment fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
+          <a href="{% url_for named_route='datarequest.comment', id=datarequest.get('id','') %}" class="label label-default"><i class="icon-comment fa fa-comment"></i> {{ h.get_comments_number(datarequest.get('id', '')) }}</span></a>
         {% endif %}
         <div class="divider"/>
         <span class="date-datarequests">{{ h.time_ago_from_timestamp(datarequest.open_time) }}</span>

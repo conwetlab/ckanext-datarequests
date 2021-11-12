@@ -212,7 +212,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
                 controller.helpers.url_for.assert_called_once_with(
-                    named_route='datarequest.show', id=datarequest_id)
+                    'datarequest.show', id=datarequest_id)
                 controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
@@ -422,7 +422,7 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
                 controller.helpers.url_for.assert_called_once_with(
-                    named_route='datarequest.show', id=datarequest_id)
+                    'datarequest.show', id=datarequest_id)
                 controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
@@ -607,13 +607,13 @@ class UIControllerTest(unittest.TestCase):
         # When URL function is called, helpers.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                named_route='datarequest.index')
+                'datarequest.index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                named_route='datarequest.organization', id=organization)
+                'datarequest.organization', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
             controller.helpers.url_for.assert_called_once_with(
-                named_route='datarequest.user', id=user)
+                'datarequest.user', id=user)
 
         # Check the facets
         expected_facet_titles = {}
@@ -665,7 +665,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Redirection
         controller.helpers.url_for.assert_called_once_with(
-            named_route='datarequest.index')
+            'datarequest.index')
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
     ######################################################################
@@ -763,7 +763,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Checks
         controller.helpers.url_for.assert_called_once_with(
-            named_route='datarequest.show', id=datarequest_id)
+            'datarequest.show', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
         self.assertIsNone(result)
 
@@ -974,7 +974,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Check redirection
         controller.helpers.url_for.assert_called_once_with(
-            named_route='datarequest.comment', id=datarequest_id)
+            'datarequest.comment', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
 
     ######################################################################

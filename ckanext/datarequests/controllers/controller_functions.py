@@ -39,17 +39,17 @@ def url_with_params(url, params):
 
 
 def search_url(params):
-    url = helpers.url_for(named_route='datarequest.index')
+    url = helpers.url_for('datarequest.index')
     return url_with_params(url, params)
 
 
 def org_datarequest_url(params, id):
-    url = helpers.url_for(named_route='datarequest.organization', id=id)
+    url = helpers.url_for('datarequest.organization', id=id)
     return url_with_params(url, params)
 
 
 def user_datarequest_url(params, id):
-    url = helpers.url_for(named_route='datarequest.user', id=id)
+    url = helpers.url_for('datarequest.user', id=id)
     return url_with_params(url, params)
 
 
@@ -153,7 +153,7 @@ def _process_post(action, context):
 
         try:
             result = tk.get_action(action)(context, data_dict)
-            tk.redirect_to(helpers.url_for(named_route='datarequest.show', id=result['id']))
+            tk.redirect_to(helpers.url_for('datarequest.show', id=result['id']))
 
         except tk.ValidationError as e:
             log.warn(e)
@@ -241,7 +241,7 @@ def delete(id):
         tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
         datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
         helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
-        tk.redirect_to(helpers.url_for(named_route='datarequest.index'))
+        tk.redirect_to(helpers.url_for('datarequest.index'))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Data Request %s not found') % id)
@@ -315,7 +315,7 @@ def close(id):
                 data_dict['condition'] = request_helpers.get_first_post_param('condition', None)
 
             tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-            tk.redirect_to(helpers.url_for(named_route='datarequest.show', id=data_dict['id']))
+            tk.redirect_to(helpers.url_for('datarequest.show', id=data_dict['id']))
         else:   # GET
             return _return_page()
 
@@ -408,7 +408,7 @@ def delete_comment(datarequest_id, comment_id):
         tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
         tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
         helpers.flash_notice(tk._('Comment has been deleted'))
-        tk.redirect_to(helpers.url_for(named_route='datarequest.comment', id=datarequest_id))
+        tk.redirect_to(helpers.url_for('datarequest.comment', id=datarequest_id))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Comment %s not found') % comment_id)
