@@ -2,7 +2,6 @@
 
 import unittest
 
-from ckanext.datarequests import common
 from ckanext.datarequests.plugin import MixinPlugin
 
 from mock import MagicMock, patch
@@ -15,13 +14,6 @@ ACTIONS_NO_COMMENTS = TOTAL_ACTIONS - COMMENTS_ACTIONS
 
 class DataRequestPylonsPluginTest(unittest.TestCase):
 
-    def setUp(self):
-        self.config_patch = patch('ckanext.datarequests.common.config')
-        self.config_mock = self.config_patch.start()
-
-    def tearDown(self):
-        self.config_patch.stop()
-
     @parameterized.expand([
         ('True',),
         ('False')
@@ -32,8 +24,8 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
         mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 3
 
         # Configure config and get instance
-        common.config.get.return_value = comments_enabled
         self.plg_instance = MixinPlugin()
+        self.plg_instance.comments_enabled = comments_enabled
 
         mock_icon = 'icon'
         get_question_icon_patch = patch('ckanext.datarequests.common.get_question_icon', return_value=mock_icon)
