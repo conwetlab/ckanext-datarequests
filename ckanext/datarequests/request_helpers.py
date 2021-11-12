@@ -12,11 +12,11 @@ def get_cookie(field_name, default=None):
 
 
 def get_query_params():
-    return getattr(request, 'GET', {}) or getattr(request, 'args', None)
+    return getattr(request, 'GET', None) or getattr(request, 'args', {})
 
 
 def get_post_params():
-    return getattr(request, 'POST', {}) or getattr(request, 'form', None)
+    return getattr(request, 'POST', None) or getattr(request, 'form', {})
 
 
 def get_first_post_param(field_name, default=None):
