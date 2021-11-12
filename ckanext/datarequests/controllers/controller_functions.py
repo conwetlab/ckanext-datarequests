@@ -10,7 +10,7 @@ from six.moves.urllib.parse import urlencode
 from ckan import model, plugins
 from ckan.common import request
 from ckan.lib import helpers
-from ckanext.datarequests import constants
+from ckanext.datarequests import constants, request_helpers
 
 
 _link = re.compile(r'(?:(https?://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]*)(\s|$)', re.I)
@@ -40,20 +40,17 @@ def url_with_params(url, params):
 
 
 def search_url(params):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='index')
+    url = helpers.url_for(named_route='datarequest.index')
     return url_with_params(url, params)
 
 
 def org_datarequest_url(params, id):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='organization_datarequests', id=id)
+    url = helpers.url_for(named_route='datarequest.organization', id=id)
     return url_with_params(url, params)
 
 
 def user_datarequest_url(params, id):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='user_datarequests', id=id)
+    url = helpers.url_for(named_route='datarequest.user', id=id)
     return url_with_params(url, params)
 
 
@@ -80,16 +77,16 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
 
     try:
         context = _get_context()
-        page = int(request.GET.get('page', 1))
+        page = int(request_helpers.get_first_query_param('page', 1))
         limit = constants.DATAREQUESTS_PER_PAGE
         offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
         data_dict = {'offset': offset, 'limit': limit}
 
-        state = request.GET.get('state', None)
+        state = request_helpers.get_first_query_param('state', None)
         if state:
             data_dict['closed'] = True if state == 'closed' else False
 
-        q = request.GET.get('q', '')
+        q = request_helpers.get_first_query_param('q', '')
         if q:
             data_dict['q'] = q
 
@@ -99,7 +96,7 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
         if user_id:
             data_dict['user_id'] = user_id
 
-        sort = request.GET.get('sort', 'desc')
+        sort = request_helpers.get_first_query_param('sort', 'desc')
         sort = sort if sort in ['asc', 'desc'] else 'desc'
         if sort is not None:
             data_dict['sort'] = sort
@@ -141,7 +138,7 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
 
 
 def index():
-    return _show_index(None, request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
+    return _show_index(None, request_helpers.get_first_query_param('organization', ''), True, search_url, 'datarequests/index.html')
 
 
 def _process_post(action, context):
@@ -157,7 +154,7 @@ def _process_post(action, context):
 
         try:
             result = tk.get_action(action)(context, data_dict)
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=result['id']))
+            tk.redirect_to(helpers.url_for(named_route='datarequest.show', id=result['id']))
 
         except tk.ValidationError as e:
             log.warn(e)
@@ -245,7 +242,7 @@ def delete(id):
         tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
         datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
         helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
-        tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
+        tk.redirect_to(helpers.url_for(named_route='datarequest.index'))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Data Request %s not found') % id)
@@ -266,7 +263,7 @@ def user(id):
     context = _get_context()
     c.user_dict = tk.get_action('user_show')(context, {'id': id, 'include_num_followers': True})
     url_func = functools.partial(user_datarequest_url, id=id)
-    return _show_index(id, request.GET.get('organization', ''), True, url_func, 'user/datarequests.html')
+    return _show_index(id, request_helpers.get_first_query_param('organization', ''), True, url_func, 'user/datarequests.html')
 
 
 def close(id):
@@ -319,7 +316,7 @@ def close(id):
                 data_dict['condition'] = request.POST.get('condition', None)
 
             tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=data_dict['id']))
+            tk.redirect_to(helpers.url_for(named_route='datarequest.show', id=data_dict['id']))
         else:   # GET
             return _return_page()
 
@@ -412,7 +409,7 @@ def delete_comment(datarequest_id, comment_id):
         tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
         tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
         helpers.flash_notice(tk._('Comment has been deleted'))
-        tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest_id))
+        tk.redirect_to(helpers.url_for(named_route='datarequest.comment', id=datarequest_id))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Comment %s not found') % comment_id)

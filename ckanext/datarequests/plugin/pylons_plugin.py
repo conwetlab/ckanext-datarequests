@@ -69,10 +69,16 @@ class MixinPlugin(p.SingletonPlugin):
         list_datarequests_map.connect(
             'organization_datarequests', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
             action='organization_datarequests')
+        list_datarequests_map.connect(
+            'datarequest.organization', '/organization/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+            action='organization_datarequests')
 
         # Data Requests that belong to a user
         list_datarequests_map.connect(
             'user_datarequests', '/user/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
+            action='user_datarequests')
+        list_datarequests_map.connect(
+            'datarequest.user', '/user/%s/{id}' % constants.DATAREQUESTS_MAIN_PATH,
             action='user_datarequests')
 
         return mapper
