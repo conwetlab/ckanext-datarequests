@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-from ckanext.datarequests import constants
+from ckanext.datarequests import constants, request_helpers
 import ckanext.datarequests.controllers.controller_functions as controller
 import unittest
 
@@ -46,8 +46,8 @@ class UIControllerTest(unittest.TestCase):
         self._c = controller.c
         controller.c = MagicMock()
 
-        self._request = controller.request
-        controller.request = MagicMock()
+        self._request = request_helpers.request
+        request_helpers.request = MagicMock()
 
         self._model = controller.model
         controller.model = MagicMock()
