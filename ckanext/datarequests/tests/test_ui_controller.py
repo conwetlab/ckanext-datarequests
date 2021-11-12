@@ -125,7 +125,7 @@ class UIControllerTest(unittest.TestCase):
     def test_new_no_post(self, authorized):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.request.POST = {}
+        request_helpers.get_post_params.return_value = {}
 
         # Raise exception if the user is not authorized to create a new data request
         if not authorized:
@@ -170,7 +170,7 @@ class UIControllerTest(unittest.TestCase):
             action.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = request_helpers.request.POST = {
+        request_data = request_helpers.get_post_params.return_value = {
             'title': 'Example Title',
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
@@ -316,7 +316,7 @@ class UIControllerTest(unittest.TestCase):
     def test_update_no_post_content(self):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.request.POST = {}
+        request_helpers.get_post_params.return_value = {}
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -378,7 +378,7 @@ class UIControllerTest(unittest.TestCase):
             update_datarequest.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = request_helpers.request.POST = {
+        request_data = request_helpers.get_post_params.return_value = {
             'id': datarequest_id,
             'title': 'Example Title',
             'description': 'Example Description',
@@ -679,7 +679,7 @@ class UIControllerTest(unittest.TestCase):
     def _test_close(self, organization, post_content=None, errors=None, errors_summary=None, close_datarequest=None):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        request_helpers.request.POST = post_content or {}
+        request_helpers.get_post_params.return_value = post_content or {}
         errors = errors or {}
         errors_summary = errors_summary or {}
         if not close_datarequest:
@@ -734,7 +734,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_datasets, controller.c.datasets)
 
     def test_close_post_no_error(self):
-        request_helpers.request.POST = {'accepted_dataset': 'example_ds'}
+        request_helpers.get_post_params.return_value = {'accepted_dataset': 'example_ds'}
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -816,14 +816,14 @@ class UIControllerTest(unittest.TestCase):
     def test_comment_list(self, new_comment=False, update_comment=False,
                           comment_or_update_exception=None):
 
-        request_helpers.request.POST = {}
+        request_helpers.get_post_params.return_value = {}
         datarequest_id = 'example_uuidv4'
         comment_id = 'comment_uuidv4'
         comment = 'example comment'
         new_comment_id = 'another_uuidv4'
 
         if new_comment or update_comment:
-            request_helpers.request.POST = {
+            request_helpers.get_post_params.return_value = {
                 'datarequest_id': datarequest_id,
                 'comment': comment,
                 'comment-id': comment_id if update_comment else ''
