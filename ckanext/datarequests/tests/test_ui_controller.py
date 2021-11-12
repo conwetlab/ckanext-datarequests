@@ -33,11 +33,13 @@ USER_DATAREQUESTS_FUNCTION = 'user'
 def _patch_GET(params):
     request_helpers.request.GET = params
     request_helpers.request.args = params
+    return params
 
 
 def _patch_POST(params):
     request_helpers.request.POST = params
     request_helpers.request.form = params
+    return params
 
 
 class UIControllerTest(unittest.TestCase):
