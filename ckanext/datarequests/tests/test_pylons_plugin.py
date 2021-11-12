@@ -2,7 +2,7 @@
 
 import unittest
 
-from ckanext.datarequests.plugin import MixinPlugin
+from ckanext.datarequests.pylons_plugin import MixinPlugin
 
 from mock import MagicMock, patch
 from parameterized import parameterized
@@ -21,7 +21,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
     def test_before_map(self, comments_enabled):
 
         urls_set = 15
-        mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 3
+        mapa_calls = urls_set if comments_enabled else urls_set - 3
 
         # Configure config and get instance
         self.plg_instance = MixinPlugin()
@@ -109,7 +109,7 @@ class DataRequestPylonsPluginTest(unittest.TestCase):
             controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
             action='unfollow', conditions={'method': ['POST']})
 
-        if comments_enabled == 'True':
+        if comments_enabled:
             mapa.connect.assert_any_call(
                 'comment_datarequest', '/%s/comment/{id}' % dr_basic_path,
                 controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
