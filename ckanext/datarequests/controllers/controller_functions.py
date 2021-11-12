@@ -8,7 +8,6 @@ import six
 from six.moves.urllib.parse import urlencode
 
 from ckan import model, plugins
-from ckan.common import request
 from ckan.lib import helpers
 from ckanext.datarequests import constants, request_helpers
 
@@ -143,14 +142,14 @@ def index():
 
 def _process_post(action, context):
     # If the user has submitted the form, the data request must be created
-    if request.POST:
+    if request_helpers.get_post_params():
         data_dict = {}
-        data_dict['title'] = request.POST.get('title', '')
-        data_dict['description'] = request.POST.get('description', '')
-        data_dict['organization_id'] = request.POST.get('organization_id', '')
+        data_dict['title'] = request_helpers.get_first_post_param('title', '')
+        data_dict['description'] = request_helpers.get_first_post_param('description', '')
+        data_dict['organization_id'] = request_helpers.get_first_post_param('organization_id', '')
 
         if action == constants.UPDATE_DATAREQUEST:
-            data_dict['id'] = request.POST.get('id', '')
+            data_dict['id'] = request_helpers.get_first_post_param('id', '')
 
         try:
             result = tk.get_action(action)(context, data_dict)
@@ -296,7 +295,7 @@ def close(id):
 
         if tk.h.closing_circumstances_enabled:
             # This is required so the form can set the currently selected close_circumstance option in the select dropdown
-            c.datarequest['close_circumstance'] = request.POST.get('close_circumstance', None)
+            c.datarequest['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
 
         return tk.render('datarequests/close.html')
 
@@ -306,14 +305,14 @@ def close(id):
 
         if c.datarequest.get('closed', False):
             tk.abort(403, tk._('This data request is already closed'))
-        elif request.POST:
+        elif request_helpers.get_post_params():
             data_dict = {}
-            data_dict['accepted_dataset_id'] = request.POST.get('accepted_dataset_id', None)
+            data_dict['accepted_dataset_id'] = request_helpers.get_first_post_param('accepted_dataset_id', None)
             data_dict['id'] = id
             if tk.h.closing_circumstances_enabled:
-                data_dict['close_circumstance'] = request.POST.get('close_circumstance', None)
-                data_dict['approx_publishing_date'] = request.POST.get('approx_publishing_date', None)
-                data_dict['condition'] = request.POST.get('condition', None)
+                data_dict['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
+                data_dict['approx_publishing_date'] = request_helpers.get_first_post_param('approx_publishing_date', None)
+                data_dict['condition'] = request_helpers.get_first_post_param('condition', None)
 
             tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
             tk.redirect_to(helpers.url_for(named_route='datarequest.show', id=data_dict['id']))
@@ -343,10 +342,10 @@ def comment(id):
         # Raises 404 Not Found if the data request does not exist
         c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict_dr_show)
 
-        comment_text = request.POST.get('comment', '')
-        comment_id = request.POST.get('comment-id', '')
+        comment_text = request_helpers.get_first_post_param('comment', '')
+        comment_id = request_helpers.get_first_post_param('comment-id', '')
 
-        if request.POST:
+        if request_helpers.get_post_params():
             action = constants.COMMENT_DATAREQUEST
             action_text = 'comment'
 

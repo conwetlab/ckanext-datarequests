@@ -52,8 +52,8 @@ class UIControllerTest(unittest.TestCase):
         self._model = controller.model
         controller.model = MagicMock()
 
-        self._request = controller.request
-        controller.request = MagicMock()
+        self._request = request_helpers.request
+        request_helpers.request = MagicMock()
 
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
@@ -71,9 +71,8 @@ class UIControllerTest(unittest.TestCase):
         controller.plugins = self._plugins
         controller.tk = self._tk
         controller.c = self._c
-        controller.request = self._request
+        request_helpers.request = self._request
         controller.model = self._model
-        controller.request = self._request
         controller.helpers = self._helpers
         controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
@@ -126,7 +125,7 @@ class UIControllerTest(unittest.TestCase):
     def test_new_no_post(self, authorized):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        controller.request.POST = {}
+        request_helpers.request.POST = {}
 
         # Raise exception if the user is not authorized to create a new data request
         if not authorized:
@@ -171,7 +170,7 @@ class UIControllerTest(unittest.TestCase):
             action.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = controller.request.POST = {
+        request_data = request_helpers.request.POST = {
             'title': 'Example Title',
             'description': 'Example Description',
             'organization_id': 'organization uuid4'
@@ -317,7 +316,7 @@ class UIControllerTest(unittest.TestCase):
     def test_update_no_post_content(self):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        controller.request.POST = {}
+        request_helpers.request.POST = {}
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -379,7 +378,7 @@ class UIControllerTest(unittest.TestCase):
             update_datarequest.return_value = {'id': datarequest_id}
 
         # Create the request
-        request_data = controller.request.POST = {
+        request_data = request_helpers.request.POST = {
             'id': datarequest_id,
             'title': 'Example Title',
             'description': 'Example Description',
@@ -427,7 +426,7 @@ class UIControllerTest(unittest.TestCase):
     def test_index_not_authorized(self):
         controller.tk.check_access.side_effect = controller.tk.NotAuthorized('User is not authorized')
         organization_name = 'org'
-        controller.request.GET = {'organization': organization_name}
+        request_helpers.request.GET = {'organization': organization_name}
 
         # Call the function
         result = controller.index()
@@ -441,7 +440,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertIsNone(result)
 
     def test_index_invalid_page(self):
-        controller.request.GET = controller.request.params = {'page': '2a'}
+        request_helpers.request.GET = request_helpers.request.params = {'page': '2a'}
 
         # Call the function
         result = controller.index()
@@ -507,11 +506,11 @@ class UIControllerTest(unittest.TestCase):
         constants.DATAREQUESTS_PER_PAGE = datarequests_per_page
 
         # Get parameters
-        controller.request.GET = controller.request.params = {}
+        request_helpers.request.GET = request_helpers.request.params = {}
 
         # Set page
         if page:
-            controller.request.GET['page'] = page
+            request_helpers.request.GET['page'] = page
 
         # Set the organization in the correct place depending on the function
         if func == ORGANIZATION_DATAREQUESTS_FUNCTION:
@@ -523,14 +522,14 @@ class UIControllerTest(unittest.TestCase):
                 expected_data_dict['user_id'] = user
 
             if organization:
-                controller.request.GET['organization'] = organization
+                request_helpers.request.GET['organization'] = organization
                 expected_data_dict['organization_id'] = organization
 
         if sort:
-            controller.request.GET['sort'] = sort
+            request_helpers.request.GET['sort'] = sort
 
         if query:
-            controller.request.GET['q'] = query
+            request_helpers.request.GET['q'] = query
 
         # Mocking
         user_show = MagicMock()
@@ -680,7 +679,7 @@ class UIControllerTest(unittest.TestCase):
     def _test_close(self, organization, post_content=None, errors=None, errors_summary=None, close_datarequest=None):
         controller.tk.response.location = None
         controller.tk.response.status_int = 200
-        controller.request.POST = post_content or {}
+        request_helpers.request.POST = post_content or {}
         errors = errors or {}
         errors_summary = errors_summary or {}
         if not close_datarequest:
@@ -735,7 +734,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(expected_datasets, controller.c.datasets)
 
     def test_close_post_no_error(self):
-        controller.request.POST = {'accepted_dataset': 'example_ds'}
+        request_helpers.request.POST = {'accepted_dataset': 'example_ds'}
 
         datarequest_id = 'example_uuidv4'
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
@@ -817,14 +816,14 @@ class UIControllerTest(unittest.TestCase):
     def test_comment_list(self, new_comment=False, update_comment=False,
                           comment_or_update_exception=None):
 
-        controller.request.POST = {}
+        request_helpers.request.POST = {}
         datarequest_id = 'example_uuidv4'
         comment_id = 'comment_uuidv4'
         comment = 'example comment'
         new_comment_id = 'another_uuidv4'
 
         if new_comment or update_comment:
-            controller.request.POST = {
+            request_helpers.request.POST = {
                 'datarequest_id': datarequest_id,
                 'comment': comment,
                 'comment-id': comment_id if update_comment else ''
