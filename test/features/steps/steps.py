@@ -170,7 +170,7 @@ def log_in_create_a_datarequest(context):
     context.execute_steps(u"""
         When I log in and go to datarequest page
         And I click the link with text that contains "Add Data Request"
-        And I fill in "title" with random text
+        And I fill in title with random text
         And I fill in "description" with "Test description"
         And I press the element with xpath "//button[contains(string(), 'Create Data Request')]"
     """)
