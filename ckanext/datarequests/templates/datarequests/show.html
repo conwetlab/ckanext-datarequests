@@ -22,10 +22,10 @@
 {% endblock %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('show_datarequest', _('Data Request'), id=datarequest_id) }}
+  {{ h.build_nav_icon('datarequest.show', _('Data Request'), id=datarequest_id, icon=h.get_question_icon()) }}
 
   {% if h.show_comments_tab() %}
-    {{ h.build_nav_icon('comment_datarequest', _('Comments') + ' ' + h.get_comments_badge(datarequest_id), id=datarequest_id) }}
+    {{ h.build_nav_icon('datarequest.comment', _('Comments') + ' ' + h.get_comments_badge(datarequest_id), id=datarequest_id, icon='comment') }}
   {% endif %}
 {% endblock %}
 
