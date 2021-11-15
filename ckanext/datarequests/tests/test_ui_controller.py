@@ -919,7 +919,7 @@ class UIControllerTest(unittest.TestCase):
 
             # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
 
-            updated_comment_id = controller.c.updated_comment.comment['id']
+            updated_comment_id = controller.c.updated_comment['comment']['id']
             if new_comment:
                 if comment_or_update_exception:
                     self.assertEquals('', updated_comment_id)
