@@ -1,4 +1,4 @@
-{% set focus = (updated_comment is not none and updated_comment.id == comment.id) %}
+{% set focus = (updated_comment is not none and 'id' in dir(updated_comment) and updated_comment.id == comment.id) %}
 {% set can_update = h.check_access('update_datarequest_comment', {'id':comment.id }) %}
 
 {% if focus %}
