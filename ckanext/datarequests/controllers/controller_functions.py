@@ -344,6 +344,7 @@ def comment(id):
 
         comment_text = request_helpers.get_first_post_param('comment', '')
         comment_id = request_helpers.get_first_post_param('comment-id', '')
+        updated_comment = None
 
         if request_helpers.get_post_params():
             action = constants.COMMENT_DATAREQUEST
@@ -377,14 +378,15 @@ def comment(id):
             # Other exceptions are not expected. Otherwise, the request will fail.
 
             # This is required to scroll the user to the appropriate comment
-            if 'updated_comment' in locals():
-                c.updated_comment = updated_comment
-            else:
-                c.updated_comment = {
+            if not updated_comment:
+                updated_comment = {
                     'id': comment_id,
                     'comment': comment_text
                 }
 
+        c.updated_comment = {
+            'comment': updated_comment
+        }
         # Comments should be retrieved once that the comment has been created
         get_comments_data_dict = {'datarequest_id': id}
         c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)

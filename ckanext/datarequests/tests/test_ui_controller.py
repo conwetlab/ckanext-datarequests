@@ -917,16 +917,17 @@ class UIControllerTest(unittest.TestCase):
 
         if new_comment or update_comment:
 
-            # self.assertEquals(comment, controller.c.updated_comment['comment'])
+            # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
 
+            updated_comment_id = controller.c.updated_comment.comment['id']
             if new_comment:
                 if comment_or_update_exception:
-                    self.assertEquals('', controller.c.updated_comment['id'])
+                    self.assertEquals('', updated_comment_id)
                 else:
-                    self.assertEquals(new_comment_id, controller.c.updated_comment['id'])
+                    self.assertEquals(new_comment_id, updated_comment_id)
 
             if update_comment:
-                self.assertEquals(comment_id, controller.c.updated_comment['id'])
+                self.assertEquals(comment_id, updated_comment_id)
 
     ######################################################################
     ########################### DELETE COMMENT ###########################
