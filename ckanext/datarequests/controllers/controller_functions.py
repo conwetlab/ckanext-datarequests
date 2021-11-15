@@ -241,7 +241,7 @@ def delete(id):
         tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
         datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
         helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
-        tk.redirect_to(helpers.url_for('datarequest.index'))
+        return tk.redirect_to(helpers.url_for('datarequest.index'))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Data Request %s not found') % id)
@@ -315,7 +315,7 @@ def close(id):
                 data_dict['condition'] = request_helpers.get_first_post_param('condition', None)
 
             tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-            tk.redirect_to(helpers.url_for('datarequest.show', id=data_dict['id']))
+            return tk.redirect_to(helpers.url_for('datarequest.show', id=data_dict['id']))
         else:   # GET
             return _return_page()
 
@@ -391,9 +391,7 @@ def comment(id):
         get_comments_data_dict = {'datarequest_id': id}
         c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
 
-        rendered_view = tk.render('datarequests/comment.html')
-        log.debug("Returning comment view: %s", rendered_view)
-        return rendered_view
+        return tk.render('datarequests/comment.html')
 
     except tk.ObjectNotFound as e:
         log.warn(e)
@@ -412,7 +410,7 @@ def delete_comment(datarequest_id, comment_id):
         tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
         tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
         helpers.flash_notice(tk._('Comment has been deleted'))
-        tk.redirect_to(helpers.url_for('datarequest.comment', id=datarequest_id))
+        return tk.redirect_to(helpers.url_for('datarequest.comment', id=datarequest_id))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Comment %s not found') % comment_id)
