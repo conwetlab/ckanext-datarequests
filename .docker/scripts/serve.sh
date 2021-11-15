@@ -7,6 +7,8 @@ dockerize -wait tcp://redis:6379 -timeout 1m
 
 sed -i "s@SITE_URL@${SITE_URL}@g" $CKAN_INI
 
+python -m smtpd -n -c DebuggingServer localhost:8025 &
+
 if [ "$VENV_DIR" != "" ]; then
   . ${VENV_DIR}/bin/activate
 fi
