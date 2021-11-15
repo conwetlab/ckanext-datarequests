@@ -391,7 +391,9 @@ def comment(id):
         get_comments_data_dict = {'datarequest_id': id}
         c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
 
-        return tk.render('datarequests/comment.html')
+        rendered_view = tk.render('datarequests/comment.html')
+        log.debug("Returning comment view: %s", rendered_view)
+        return rendered_view
 
     except tk.ObjectNotFound as e:
         log.warn(e)
