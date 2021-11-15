@@ -654,7 +654,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Assertions
         # The result
-        self.assertIsNone(result)
+        self.assertIsNotNone(result)
 
         # Functions has been called
         expected_data_dict = {'id': datarequest_id}
@@ -765,7 +765,7 @@ class UIControllerTest(unittest.TestCase):
         controller.helpers.url_for.assert_called_once_with(
             'datarequest.show', id=datarequest_id)
         controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
-        self.assertIsNone(result)
+        self.assertIsNotNone(result)
 
     @parameterized.expand([
         (None,),
