@@ -111,8 +111,7 @@ Feature: Datarequest-circumstances
         When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Open dataset already exists" from "close_circumstance"
-        # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
-        Then I execute the script "document.getElementById('field-accepted_dataset_id').value = document.getElementById('field-accepted_dataset_id').options[1].value"
+        And I select "annakarenina" from "accepted_dataset_id"
         And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see "Accepted dataset" within 1 seconds
         And I should see "A Wonderful Story" within 1 seconds
