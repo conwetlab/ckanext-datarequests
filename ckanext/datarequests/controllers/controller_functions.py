@@ -266,7 +266,7 @@ def close(id):
     data_dict = {'id': id}
     context = _get_context()
 
-    # Basic intialization
+    # Basic initialization
     c.datarequest = {}
 
     def _return_page(errors=None, errors_summary=None):
@@ -284,6 +284,7 @@ def close(id):
             # Expected for CKAN 2.3
             base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 500})['results']
 
+        log.debug("Dataset candidates for closing data request: %s", base_datasets)
         c.datasets = []
         c.errors = errors
         c.errors_summary = errors_summary
