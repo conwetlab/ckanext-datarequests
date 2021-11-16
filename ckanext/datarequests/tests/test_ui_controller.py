@@ -192,8 +192,12 @@ class UIControllerTest(unittest.TestCase):
 
         if authorized:
             self.assertEquals(0, controller.tk.abort.call_count)
-            self.assertEquals(controller.tk.redirect_to.return_value, result)
-            self.assertEquals(0, controller.tk.render.call_count)
+            if validation_error:
+                self.assertEquals(controller.tk.render.return_value, result)
+                controller.tk.render.assert_called_once_with('datarequests/new.html')
+            else:
+                self.assertEquals(controller.tk.redirect_to.return_value, result)
+                self.assertEquals(0, controller.tk.render.call_count)
 
             controller.tk.get_action.return_value.assert_called_once_with(self.expected_context, request_data)
 
