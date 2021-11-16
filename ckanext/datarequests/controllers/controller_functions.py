@@ -153,7 +153,7 @@ def _process_post(action, context):
 
         try:
             result = tk.get_action(action)(context, data_dict)
-            tk.redirect_to(helpers.url_for('datarequest.show', id=result['id']))
+            return tk.redirect_to(helpers.url_for('datarequest.show', id=result['id']))
 
         except tk.ValidationError as e:
             log.warn(e)
@@ -179,11 +179,8 @@ def new():
     # Check access
     try:
         tk.check_access(constants.CREATE_DATAREQUEST, context, None)
-        _process_post(constants.CREATE_DATAREQUEST, context)
-
-        # The form is always rendered
-        return tk.render('datarequests/new.html')
-
+        post_result = _process_post(constants.CREATE_DATAREQUEST, context)
+        return post_result or tk.render('datarequests/new.html')
     except tk.NotAuthorized as e:
         log.warn(e)
         tk.abort(403, tk._('Unauthorized to create a Data Request'))
