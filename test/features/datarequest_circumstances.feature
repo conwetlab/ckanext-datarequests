@@ -112,6 +112,7 @@ Feature: Datarequest-circumstances
         And I take a screenshot
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Open dataset already exists" from "close_circumstance"
+        And I wait for 1 seconds
         And I select by text "A Novel By Tolstoy" from "accepted_dataset_id"
         And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
         Then I should see "Accepted dataset" within 1 seconds
