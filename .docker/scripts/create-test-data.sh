@@ -166,11 +166,11 @@ echo "Assigning test Datasets to Organisation open-data-administration-data-requ
 
 curl -LsH "Authorization: ${API_KEY}" \
     --data "id=annakarenina&owner_org=${DR_ORG_ID}" \
-    ${CKAN_ACTION_URL}/package_patch >> /dev/null
+    ${CKAN_ACTION_URL}/package_patch
 
 curl -LsH "Authorization: ${API_KEY}" \
     --data "id=warandpeace&owner_org=${DR_ORG_ID}" \
-    ${CKAN_ACTION_URL}/package_patch >> /dev/null
+    ${CKAN_ACTION_URL}/package_patch
 ##
 # END.
 #
