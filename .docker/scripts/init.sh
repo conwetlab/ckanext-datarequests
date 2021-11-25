@@ -10,5 +10,11 @@ fi
 CLICK_ARGS="--yes" ckan_cli db clean
 ckan_cli db init
 
+CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
+CKAN_DISPLAY_NAME="${CKAN_DISPLAY_NAME:-Administrator}"
+CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
+CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-Password123!}"
+ckan_cli user add "$CKAN_USER_NAME" fullname="$CKAN_DISPLAY_NAME" email="$CKAN_USER_EMAIL" password="$CKAN_USER_PASSWORD"
+
 # Create some base test data
 . $APP_DIR/scripts/create-test-data.sh

@@ -12,7 +12,6 @@ fi
 
 CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
 CKAN_DISPLAY_NAME="${CKAN_DISPLAY_NAME:-Administrator}"
-CKAN_USER_PASSWORD="${CKAN_USER_PASSWORD:-password}"
 CKAN_USER_EMAIL="${CKAN_USER_EMAIL:-admin@localhost}"
 
 add_user_if_needed () {
