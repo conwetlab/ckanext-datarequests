@@ -276,14 +276,14 @@ def close(id):
         # only the ones that belong to the organization are shown)
         organization_id = c.datarequest.get('organization_id', '')
         if organization_id:
-            LOG.debug("Loading datasets for organisation %s...", organization_id)
+            log.debug("Loading datasets for organisation %s...", organization_id)
             base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id, 'include_datasets': True})['packages']
         else:
             # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
             # We assume that a user will close their data request with a recently added or modified dataset
             # In the future, we should fix this with an autocomplete form...
             # Expected for CKAN 2.3
-            LOG.debug("Loading first 500 datasets...")
+            log.debug("Loading first 500 datasets...")
             base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 500})['results']
 
         log.debug("Dataset candidates for closing data request: %s", base_datasets)
