@@ -9,6 +9,7 @@ if [ "$VENV_DIR" != "" ]; then
 fi
 CLICK_ARGS="--yes" ckan_cli db clean
 ckan_cli db init
+ckan_cli db upgrade
 
 CKAN_USER_NAME="${CKAN_USER_NAME:-admin}"
 CKAN_DISPLAY_NAME="${CKAN_DISPLAY_NAME:-Administrator}"
