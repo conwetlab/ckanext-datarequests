@@ -35,7 +35,7 @@
       <label class="control-label" for="field-accepted_dataset_id">{{ _("Accep. Dataset") }}</label>
       <div class="controls">
           Available datasets:
-          {% for dataset in datasets  %}
+          {% for dataset in datasets %}
             <p> Dataset: {{ dataset.get('title') }} ({{ dataset.get('name') }})</p>
           {% endfor %}
         <select id="field-accepted_dataset_id" name="accepted_dataset_id" data-module="autocomplete">
