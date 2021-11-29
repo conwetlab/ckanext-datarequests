@@ -38,6 +38,7 @@
           {% for dataset in datasets  %}
             <p> Dataset: {{ dataset.get('title') }} ({{ dataset.get('name') }})</p>
           {% endfor %}
+          Global object: {{ c }}
         <select id="field-accepted_dataset_id" name="accepted_dataset_id" data-module="autocomplete">
           <option value="" selected="selected">No Dataset</option>
           {% for dataset in datasets  %}
