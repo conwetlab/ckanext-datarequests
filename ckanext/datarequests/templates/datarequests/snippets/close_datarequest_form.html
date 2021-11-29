@@ -12,12 +12,12 @@
         {% resource 'datarequest/datarequest_close.js' %}
         {% set close_circumstances = h.get_closing_circumstances() %}
         {% set selected_close_circumstance = datarequest.get('close_circumstance', '') %}
-       
+
         <input type="hidden" id="field-condition" name="condition" />
         <div class="control-group control-full form-group">
           <label class="control-label" for="field-close_circumstance">{{ _("Circumstances") }}</label>
           <div class="controls">
-            <select id="field-close_circumstance" name="close_circumstance" >           
+            <select id="field-close_circumstance" name="close_circumstance" >
               {% for close_circumstance in close_circumstances  %}
                 {% set circumstance = close_circumstance.get('circumstance', '') %}
                 {% set condition = close_circumstance.get('condition', '') %}
@@ -34,8 +34,11 @@
     <div class="control-group control-full form-group">
       <label class="control-label" for="field-accepted_dataset_id">{{ _("Accep. Dataset") }}</label>
       <div class="controls">
+          {% for dataset in datasets  %}
+            <p> Dataset: {{ dataset.get('title') }} ({{ dataset.get('name') }})</p>
+          {% endfor %}
         <select id="field-accepted_dataset_id" name="accepted_dataset_id" data-module="autocomplete">
-    	  <option value="" selected="selected">No Dataset</option>
+          <option value="" selected="selected">No Dataset</option>
           {% for dataset in datasets  %}
             <option value="{{ dataset.get('name') }}">{{ dataset.get('title') }}</option>
           {% endfor %}

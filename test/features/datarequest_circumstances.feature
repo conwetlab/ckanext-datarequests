@@ -109,10 +109,10 @@ Feature: Datarequest-circumstances
     Scenario Outline: When I close a datarequest with accepted dataset, the accepted dataset should be visible on datarequest page
         Given "<User>" as the persona
         When I log in and create a datarequest
-        And I take a screenshot
         And I press the element with xpath "//a[contains(string(), 'Close')]"
         And I select "Open dataset already exists" from "close_circumstance"
         And I wait for 1 seconds
+        And I take a screenshot
         # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
         Then I execute the script "$('#field-accepted_dataset_id').val($('#field-accepted_dataset_id option:eq(1)').attr('value'))"
         And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
