@@ -704,15 +704,11 @@ class UIControllerTest(unittest.TestCase):
             datarequest['organization_id'] = organization
 
         show_datarequest = MagicMock(return_value=datarequest)
-        packages_org = [{'name': 'packo1', 'title': 'packo1'}, {'name': 'packo2', 'title': 'packo2'}]
-        organization_show = MagicMock(return_value={'packages': packages_org})
-        packages_no_org = [{'name': 'pack1', 'title': 'pack1'}, {'name': 'pack2', 'title': 'pack2'}]
-        package_search = MagicMock(return_value={'results': packages_no_org})
+        packages = [{'name': 'pack1', 'title': 'pack1'}, {'name': 'pack2', 'title': 'pack2'}]
+        package_search = MagicMock(return_value={'results': packages})
 
         def _get_action(action):
-            if action == 'organization_show':
-                return organization_show
-            elif action == 'package_search':
+            if action == 'package_search':
                 return package_search
             elif action == constants.SHOW_DATAREQUEST:
                 return show_datarequest
@@ -729,12 +725,12 @@ class UIControllerTest(unittest.TestCase):
         show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
 
         if organization:
-            organization_show.assert_called_once_with({'ignore_auth': True}, {'id': organization, 'include_datasets': True})
+            package_search.assert_called_once_with({'ignore_auth': True}, {'owner_org': organization})
         else:
             package_search.assert_called_once_with({'ignore_auth': True}, {'rows': 500})
 
         # Assertions
-        expected_datasets = packages_org if organization else packages_no_org
+        expected_datasets = packages
         controller.tk.render.assert_called_once_with('datarequests/close.html', extra_vars={'datasets': expected_datasets})
         self.assertEquals(result, controller.tk.render.return_value)
 
