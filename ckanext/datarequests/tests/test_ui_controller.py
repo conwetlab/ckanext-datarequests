@@ -734,7 +734,8 @@ class UIControllerTest(unittest.TestCase):
             package_search.assert_called_once_with({'ignore_auth': True}, {'rows': 500})
 
         # Assertions
-        controller.tk.render.assert_called_once_with('datarequests/close.html')
+        expected_datasets = packages_org if organization else packages_no_org
+        controller.tk.render.assert_called_once_with('datarequests/close.html', extra_vars={'datasets': expected_datasets})
         self.assertEquals(result, controller.tk.render.return_value)
 
         self.assertIsNone(controller.tk.response.location)
@@ -742,9 +743,6 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(errors, controller.c.errors)
         self.assertEquals(errors_summary, controller.c.errors_summary)
         self.assertEquals(datarequest, controller.c.datarequest)
-
-        expected_datasets = packages_org if organization else packages_no_org
-        self.assertEquals(expected_datasets, controller.c.datasets)
 
     def test_close_post_no_error(self):
         _patch_POST({'accepted_dataset': 'example_ds'})
