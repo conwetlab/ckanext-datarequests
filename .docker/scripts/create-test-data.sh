@@ -174,6 +174,7 @@ curl -LsH "Authorization: ${API_KEY}" \
 # END.
 #
 
+ckan_cli search-index rebuild
 
 if [ "$VENV_DIR" != "" ]; then
   deactivate
