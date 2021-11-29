@@ -157,7 +157,7 @@ curl -LsH "Authorization: ${API_KEY}" \
 #
 
 # Use CKAN's built-in commands for creating some test datasets...
-ckan_cli create-test-data
+ckan_cli create-test-data basic
 
 # Datasets need to be assigned to an organisation
 
