@@ -740,6 +740,8 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(errors_summary, controller.c.errors_summary)
         self.assertEquals(datarequest, controller.c.datarequest)
 
+        self.assertEquals(expected_datasets, controller.c.datasets)
+
     def test_close_post_no_error(self):
         _patch_POST({'accepted_dataset': 'example_ds'})
 
