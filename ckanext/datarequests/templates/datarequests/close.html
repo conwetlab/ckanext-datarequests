@@ -10,7 +10,7 @@
 
 {% block primary_content_inner %}
   <h1 class="{% block page_heading_class %}page-heading{% endblock %}">{% block page_heading %}{{ _('Close Data Request') }}{% endblock %}</h1>
-  {% snippet "datarequests/snippets/close_datarequest_form.html", datarequest=c.datarequest, datasets=datasets, errors=c.errors, errors_summary=c.errors_summary  %}
+  {% snippet "datarequests/snippets/close_datarequest_form.html", datarequest=c.datarequest, datasets=c.datasets, errors=c.errors, errors_summary=c.errors_summary  %}
 {% endblock %}
 
 {% block page_header %}{% endblock %}

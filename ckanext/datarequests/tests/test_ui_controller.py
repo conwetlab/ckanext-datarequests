@@ -731,7 +731,7 @@ class UIControllerTest(unittest.TestCase):
 
         # Assertions
         expected_datasets = packages
-        controller.tk.render.assert_called_once_with('datarequests/close.html', extra_vars={'datasets': expected_datasets})
+        controller.tk.render.assert_called_once_with('datarequests/close.html')
         self.assertEquals(result, controller.tk.render.return_value)
 
         self.assertIsNone(controller.tk.response.location)
