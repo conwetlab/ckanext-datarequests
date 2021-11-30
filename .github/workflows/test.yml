@@ -2,15 +2,14 @@
 #based on https://raw.githubusercontent.com/ckan/ckanext-scheming/master/.github/workflows/test.yml
 # alternative https://github.com/ckan/ckan/blob/master/contrib/cookiecutter/ckan_extension/%7B%7Bcookiecutter.project%7D%7D/.github/workflows/test.yml
 name: Tests
-on:
-  push:
+on: [push, pull_request]
 
 jobs:
   test:
     strategy:
       fail-fast: false
       matrix:
-        ckan-version: [2.8.8]
+        ckan-version: [2.8.8, 2.9.4]
 
     name: Continuous Integration build on CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest

@@ -40,7 +40,7 @@ setup(
     namespace_packages=['ckanext', 'ckanext.datarequests'],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=['nose>=1.3.0'],
+    setup_requires=[],
     install_requires=[
         # -*- Extra requirements: -*-
     ],
@@ -49,7 +49,6 @@ setup(
         'selenium==3.141.0',
         'coveralls==2.1.2'
     ],
-    test_suite='nosetests',
     entry_points='''
 
         [ckan.plugins]

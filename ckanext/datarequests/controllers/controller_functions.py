@@ -8,9 +8,8 @@ import six
 from six.moves.urllib.parse import urlencode
 
 from ckan import model, plugins
-from ckan.common import request
 from ckan.lib import helpers
-from ckanext.datarequests import constants
+from ckanext.datarequests import constants, request_helpers
 
 
 _link = re.compile(r'(?:(https?://)|(www\.))(\S+\b/?)([!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]*)(\s|$)', re.I)
@@ -40,20 +39,17 @@ def url_with_params(url, params):
 
 
 def search_url(params):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='index')
+    url = helpers.url_for('datarequest.index')
     return url_with_params(url, params)
 
 
 def org_datarequest_url(params, id):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='organization_datarequests', id=id)
+    url = helpers.url_for('datarequest.organization', id=id)
     return url_with_params(url, params)
 
 
 def user_datarequest_url(params, id):
-    url = helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                          action='user_datarequests', id=id)
+    url = helpers.url_for('datarequest.user', id=id)
     return url_with_params(url, params)
 
 
@@ -80,16 +76,16 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
 
     try:
         context = _get_context()
-        page = int(request.GET.get('page', 1))
+        page = int(request_helpers.get_first_query_param('page', 1))
         limit = constants.DATAREQUESTS_PER_PAGE
         offset = (page - 1) * constants.DATAREQUESTS_PER_PAGE
         data_dict = {'offset': offset, 'limit': limit}
 
-        state = request.GET.get('state', None)
+        state = request_helpers.get_first_query_param('state', None)
         if state:
             data_dict['closed'] = True if state == 'closed' else False
 
-        q = request.GET.get('q', '')
+        q = request_helpers.get_first_query_param('q', '')
         if q:
             data_dict['q'] = q
 
@@ -99,7 +95,7 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
         if user_id:
             data_dict['user_id'] = user_id
 
-        sort = request.GET.get('sort', 'desc')
+        sort = request_helpers.get_first_query_param('sort', 'desc')
         sort = sort if sort in ['asc', 'desc'] else 'desc'
         if sort is not None:
             data_dict['sort'] = sort
@@ -141,23 +137,23 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
 
 
 def index():
-    return _show_index(None, request.GET.get('organization', ''), True, search_url, 'datarequests/index.html')
+    return _show_index(None, request_helpers.get_first_query_param('organization', ''), True, search_url, 'datarequests/index.html')
 
 
 def _process_post(action, context):
     # If the user has submitted the form, the data request must be created
-    if request.POST:
+    if request_helpers.get_post_params():
         data_dict = {}
-        data_dict['title'] = request.POST.get('title', '')
-        data_dict['description'] = request.POST.get('description', '')
-        data_dict['organization_id'] = request.POST.get('organization_id', '')
+        data_dict['title'] = request_helpers.get_first_post_param('title', '')
+        data_dict['description'] = request_helpers.get_first_post_param('description', '')
+        data_dict['organization_id'] = request_helpers.get_first_post_param('organization_id', '')
 
         if action == constants.UPDATE_DATAREQUEST:
-            data_dict['id'] = request.POST.get('id', '')
+            data_dict['id'] = request_helpers.get_first_post_param('id', '')
 
         try:
             result = tk.get_action(action)(context, data_dict)
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=result['id']))
+            return tk.redirect_to(helpers.url_for('datarequest.show', id=result['id']))
 
         except tk.ValidationError as e:
             log.warn(e)
@@ -183,11 +179,8 @@ def new():
     # Check access
     try:
         tk.check_access(constants.CREATE_DATAREQUEST, context, None)
-        _process_post(constants.CREATE_DATAREQUEST, context)
-
-        # The form is always rendered
-        return tk.render('datarequests/new.html')
-
+        post_result = _process_post(constants.CREATE_DATAREQUEST, context)
+        return post_result or tk.render('datarequests/new.html')
     except tk.NotAuthorized as e:
         log.warn(e)
         tk.abort(403, tk._('Unauthorized to create a Data Request'))
@@ -245,7 +238,7 @@ def delete(id):
         tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
         datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
         helpers.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
-        tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='index'))
+        return tk.redirect_to(helpers.url_for('datarequest.index'))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Data Request %s not found') % id)
@@ -266,14 +259,14 @@ def user(id):
     context = _get_context()
     c.user_dict = tk.get_action('user_show')(context, {'id': id, 'include_num_followers': True})
     url_func = functools.partial(user_datarequest_url, id=id)
-    return _show_index(id, request.GET.get('organization', ''), True, url_func, 'user/datarequests.html')
+    return _show_index(id, request_helpers.get_first_query_param('organization', ''), True, url_func, 'user/datarequests.html')
 
 
 def close(id):
     data_dict = {'id': id}
     context = _get_context()
 
-    # Basic intialization
+    # Basic initialization
     c.datarequest = {}
 
     def _return_page(errors=None, errors_summary=None):
@@ -283,25 +276,29 @@ def close(id):
         # only the ones that belong to the organization are shown)
         organization_id = c.datarequest.get('organization_id', '')
         if organization_id:
-            base_datasets = tk.get_action('organization_show')({'ignore_auth': True}, {'id': organization_id, 'include_datasets': True})['packages']
+            log.debug("Loading datasets for organisation %s", organization_id)
+            search_data_dict = {'q': 'owner_org:' + organization_id}
         else:
             # FIXME: At this time, only the 500 last modified/created datasets are retrieved.
             # We assume that a user will close their data request with a recently added or modified dataset
             # In the future, we should fix this with an autocomplete form...
             # Expected for CKAN 2.3
-            base_datasets = tk.get_action('package_search')({'ignore_auth': True}, {'rows': 500})['results']
+            log.debug("Loading first 500 datasets...")
+            search_data_dict = {'rows': 500}
+        base_datasets = tk.get_action('package_search')({'ignore_auth': True}, search_data_dict)['results']
 
-        c.datasets = []
+        log.debug("Dataset candidates for closing data request: %s", base_datasets)
+        dataset_options = []
         c.errors = errors
         c.errors_summary = errors_summary
         for dataset in base_datasets:
-            c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
+            dataset_options.append({'name': dataset.get('name'), 'title': dataset.get('title')})
 
         if tk.h.closing_circumstances_enabled:
             # This is required so the form can set the currently selected close_circumstance option in the select dropdown
-            c.datarequest['close_circumstance'] = request.POST.get('close_circumstance', None)
+            c.datarequest['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
 
-        return tk.render('datarequests/close.html')
+        return tk.render('datarequests/close.html', extra_vars={'datasets': dataset_options})
 
     try:
         tk.check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
@@ -309,17 +306,17 @@ def close(id):
 
         if c.datarequest.get('closed', False):
             tk.abort(403, tk._('This data request is already closed'))
-        elif request.POST:
+        elif request_helpers.get_post_params():
             data_dict = {}
-            data_dict['accepted_dataset_id'] = request.POST.get('accepted_dataset_id', None)
+            data_dict['accepted_dataset_id'] = request_helpers.get_first_post_param('accepted_dataset_id', None)
             data_dict['id'] = id
             if tk.h.closing_circumstances_enabled:
-                data_dict['close_circumstance'] = request.POST.get('close_circumstance', None)
-                data_dict['approx_publishing_date'] = request.POST.get('approx_publishing_date', None)
-                data_dict['condition'] = request.POST.get('condition', None)
+                data_dict['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
+                data_dict['approx_publishing_date'] = request_helpers.get_first_post_param('approx_publishing_date', None)
+                data_dict['condition'] = request_helpers.get_first_post_param('condition', None)
 
             tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-            tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='show', id=data_dict['id']))
+            return tk.redirect_to(helpers.url_for('datarequest.show', id=data_dict['id']))
         else:   # GET
             return _return_page()
 
@@ -346,10 +343,11 @@ def comment(id):
         # Raises 404 Not Found if the data request does not exist
         c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict_dr_show)
 
-        comment_text = request.POST.get('comment', '')
-        comment_id = request.POST.get('comment-id', '')
+        comment_text = request_helpers.get_first_post_param('comment', '')
+        comment_id = request_helpers.get_first_post_param('comment-id', '')
+        updated_comment = None
 
-        if request.POST:
+        if request_helpers.get_post_params():
             action = constants.COMMENT_DATAREQUEST
             action_text = 'comment'
 
@@ -381,14 +379,15 @@ def comment(id):
             # Other exceptions are not expected. Otherwise, the request will fail.
 
             # This is required to scroll the user to the appropriate comment
-            if 'updated_comment' in locals():
-                c.updated_comment = updated_comment
-            else:
-                c.updated_comment = {
+            if not updated_comment:
+                updated_comment = {
                     'id': comment_id,
                     'comment': comment_text
                 }
 
+        c.updated_comment = {
+            'comment': updated_comment
+        }
         # Comments should be retrieved once that the comment has been created
         get_comments_data_dict = {'datarequest_id': id}
         c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
@@ -412,7 +411,7 @@ def delete_comment(datarequest_id, comment_id):
         tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
         tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
         helpers.flash_notice(tk._('Comment has been deleted'))
-        tk.redirect_to(helpers.url_for(controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='comment', id=datarequest_id))
+        return tk.redirect_to(helpers.url_for('datarequest.comment', id=datarequest_id))
     except tk.ObjectNotFound as e:
         log.warn(e)
         tk.abort(404, tk._('Comment %s not found') % comment_id)

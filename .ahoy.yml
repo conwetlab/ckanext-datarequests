@@ -112,7 +112,7 @@ commands:
   test-unit:
     usage: Run unit tests.
     cmd: |
-      ahoy cli 'nosetests --with-pylons=${CKAN_INI}' || \
+      ahoy cli 'pytest --ckan-ini=${CKAN_INI}' || \
       [ "${ALLOW_UNIT_FAIL:-0}" -eq 1 ]
 
   test-bdd:
@@ -140,7 +140,7 @@ commands:
       ahoy cli "killall -2 mailmock"
 
   start-ckan-job-worker:
-    usage: Starts CKAN background job worker
+    usage: Starts default CKAN background job worker
     cmd: |
       ahoy title 'Starting default CKAN background job worker'
       ahoy cli "ckan_cli jobs clear && \
