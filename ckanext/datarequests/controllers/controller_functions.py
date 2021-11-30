@@ -288,17 +288,17 @@ def close(id):
         base_datasets = tk.get_action('package_search')({'ignore_auth': True}, search_data_dict)['results']
 
         log.debug("Dataset candidates for closing data request: %s", base_datasets)
-        dataset_options = []
+        c.datasets = []
         c.errors = errors
         c.errors_summary = errors_summary
         for dataset in base_datasets:
-            dataset_options.append({'name': dataset.get('name'), 'title': dataset.get('title')})
+            c.datasets.append({'name': dataset.get('name'), 'title': dataset.get('title')})
 
         if tk.h.closing_circumstances_enabled:
             # This is required so the form can set the currently selected close_circumstance option in the select dropdown
             c.datarequest['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
 
-        return tk.render('datarequests/close.html', extra_vars={'datasets': dataset_options})
+        return tk.render('datarequests/close.html')
 
     try:
         tk.check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
