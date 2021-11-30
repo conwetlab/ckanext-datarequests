@@ -1,8 +1,8 @@
 {% ckan_extends %}
 
 {% block content_primary_nav %}
-  {% if h.ckan_version()[:3] <= '2.7' %}
-    {% set org_datasets_nav = 'organization_datasets' %}
+  {% if h.ckan_version()[:3] <= '2.8' %}
+    {% set org_datasets_nav = 'organization_read' %}
     {% set org_activity_nav = 'organization_activity' %}
     {% set org_about_nav = 'organization_about' %}
   {% else %}
