@@ -39,7 +39,7 @@
               <tr>
                 <th scope="row" class="dataset-label">{{ _('Accepted dataset') }}</th>
                 <td class="dataset-details">
-                  {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
+                  {% link_for datarequest.accepted_dataset['title'], named_route='package.read', id=datarequest.accepted_dataset.get('id') %}
                 </td>
               </tr>
             {% endif %}
@@ -48,7 +48,7 @@
               <th scope="row" class="dataset-label">{{ _('Accepted dataset') }}</th>
               <td class="dataset-details">
               {% if datarequest.accepted_dataset %}
-                {% link_for datarequest.accepted_dataset['title'], controller='package', action='read', id=datarequest.accepted_dataset.get('id') %}
+                {% link_for datarequest.accepted_dataset['title'], named_route='package.read', id=datarequest.accepted_dataset.get('id') %}
               {% else %}
                 {{ _('None') }}
               {% endif %}

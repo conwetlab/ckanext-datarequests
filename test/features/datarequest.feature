@@ -6,69 +6,32 @@ Feature: Datarequest
         Then the browser's URL should contain "/datarequest"
 
 
-    Scenario: When visiting the datarequests page as a non-logged in user, the button at the top of the page reads Login to create a data request
+    Scenario: When visiting the datarequests page as a non-logged in user, the 'Add Data Request' button is not visible
         When I go to datarequest page
-        Then I should see an element with xpath "//a[contains(string(), 'Login to create data request')]"
-
-
-    Scenario: After logging in, the user is redirected to the datarequests page and the "Add Data Request" button is visible
-        Given "SysAdmin" as the persona
-        When I go to datarequest page
-        And I click the link with text "Login to create data request"
-        And I enter my credentials and login
-        Then I should see an element with xpath "//a[contains(string(), 'Add data request')]"
+        Then I should not see an element with xpath "//a[contains(string(), 'Add data request', 'i')]"
 
 
     Scenario: Data requests submitted without a description will produce an error message
         Given "SysAdmin" as the persona
         When I log in and go to datarequest page
-        And I click the link with text that contains "Add data request"
+        And I click the link with text that contains "Add Data Request"
         And I fill in "title" with "Test data request"
-        And I press the element with xpath "//button[contains(string(), 'Create data request')]"
+        And I press the element with xpath "//button[contains(string(), 'Create Data Request')]"
         Then I should see an element with the css selector "div.error-explanation.alert.alert-error" within 2 seconds
-        And I should see "The form contains invalid entries" within 1 seconds    
+        And I should see "The form contains invalid entries" within 1 seconds
         And I should see an element with the css selector "span.error-block" within 1 seconds
         And I should see "Description cannot be empty" within 1 seconds
 
 
-    Scenario Outline: Sysadmin or Admin users of the assigned organisation for a data request can see a 'Re-open' button on the data request detail page for closed data requests
-        Given "<User>" as the persona
-        When I log in and go to datarequest page
-        And I press "Closed Request"
-        Then I should see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-
-        Examples: Users  
-        | User                  |
-        | SysAdmin              |
-        | DataRequestOrgAdmin   |
-
-
-    Scenario Outline: Non-admin users should not see 'Re-open' button on the data request detail page for closed data requests
-        Given "<User>" as the persona
-        When I log in and go to datarequest page
-        And I press "Closed Request"
-        Then I should not see an element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-
-        Examples: Users  
-        | User                  |
-        | CKANUser              |
-        | DataRequestOrgEditor  |
-        | DataRequestOrgMember  |
-        | TestOrgAdmin          |
-        | TestOrgEditor         |
-        | TestOrgMember         |
-
-
-    Scenario Outline: Data request creator, Sysadmin and Admin users of the assigned organisation for a data request can see a 'Close' button on the data request detail page for opened data requests
+    Scenario Outline: Data request creator and Sysadmin can see a 'Close' button on the data request detail page for opened data requests
         Given "<User>" as the persona
         When I log in and go to datarequest page
         And I press "Test Request"
         Then I should see an element with xpath "//a[contains(string(), 'Close')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | SysAdmin              |
-        | DataRequestOrgAdmin   |
 
 
     Scenario Outline: Non admin users cannot see a 'Close' button on the data request detail page for opened data requests
@@ -77,7 +40,7 @@ Feature: Datarequest
         And I press "Test Request"
         Then I should not see an element with xpath "//a[contains(string(), 'Close')]"
 
-        Examples: Users  
+        Examples: Users
         | User                  |
         | CKANUser              |
         | DataRequestOrgEditor  |
@@ -87,44 +50,18 @@ Feature: Datarequest
         | TestOrgMember         |
 
 
-    Scenario: Creating a new data request will email the Admin users of the organisation
+    Scenario: Creating a new data request will show the data request afterward
         Given "TestOrgEditor" as the persona
-        When I log in and create a datarequest 
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "A new data request has been added and assigned to your organisation."
-        And I should receive a base64 email at "admin@localhost" containing "A new data request has been added and assigned to your organisation."
+        When I log in and create a datarequest
+        Then I should see an element with xpath "//i[contains(@class, 'icon-unlock')]"
+        And I should see an element with xpath "//a[contains(string(), 'Close')]"
 
 
-    Scenario: Closing a data request will email the creator
+    Scenario: Closing a data request will show the data request afterward
         Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
+        When I log in and create a datarequest
         And I press the element with xpath "//a[contains(string(), 'Close')]"
-        And I select "Requestor initiated closure" from "close_circumstance" 
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been closed."
-
-
-    Scenario: Re-Opening a data request will email the Admin users of the organisation and creator
-        Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
-        And I press the element with xpath "//a[contains(string(), 'Close')]"
-        And I select "Requestor initiated closure" from "close_circumstance" 
-        And I press the element with xpath "//button[contains(string(), 'Close data request')]"
-        And I press the element with xpath "//a[@class='btn btn-success' and contains(string(), ' Re-open')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "dr_admin@localhost" containing "Your data request has been re-opened."
-        And I should receive a base64 email at "admin@localhost" containing "A data request assigned to your organisation has been re-opened."
-
-
-     Scenario: Re-assigning a data request will email the Admin users of the assigned organisation and un-assigned organisation
-        Given "DataRequestOrgAdmin" as the persona
-        When I log in and create a datarequest 
-        And I press the element with xpath "//a[contains(string(), 'Manage')]"
-        When I wait for 3 seconds
-        # Have to use JS to change the selected value as the behaving framework does not work with autocomplete dropdown
-        Then I execute the script "document.getElementById('field-organizations').value = document.getElementById('field-organizations').options[1].value"
-        And I press the element with xpath "//button[contains(string(), 'Update data request')]"
-        When I wait for 3 seconds
-        Then I should receive a base64 email at "admin@localhost" containing "A data request that was assigned to your organisation has been re-assigned to another organisation."
-        And I should receive a base64 email at "test_org_admin@localhost" containing "A new data request has been added and assigned to your organisation."
+        And I select "Requestor initiated closure" from "close_circumstance"
+        And I press the element with xpath "//button[contains(string(), 'Close Data Request')]"
+        Then I should see an element with xpath "//i[contains(@class, 'icon-lock')]"
+        And I should not see an element with xpath "//a[contains(string(), 'Close')]"

@@ -6,5 +6,5 @@
 
   {{ h.build_nav_icon(user_datasets_nav, _('Datasets'), id=user.name) }}
   {{ h.build_nav_icon(user_activity_nav, _('Activity Stream'), id=user.name) }}
-  {{ h.build_nav_icon('user_datarequests', _('Data Requests'), id=user.name) }}
+  {{ h.build_nav_icon('datarequest.user', _('Data Requests'), id=user.name, icon=h.get_question_icon()) }}
 {% endblock %}

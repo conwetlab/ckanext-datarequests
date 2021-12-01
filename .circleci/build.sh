@@ -21,4 +21,4 @@ export DOCTOR_CHECK_SSH=0
 export DOCTOR_CHECK_WEBSERVER=0
 export DOCTOR_CHECK_BOOTSTRAP=0
 
-ahoy build
+ahoy build || (ahoy logs; exit 1)

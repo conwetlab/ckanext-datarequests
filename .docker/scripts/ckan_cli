@@ -58,10 +58,17 @@ fi
 
 if [ "$COMMAND" = "ckan" ]; then
     echo "Using 'ckan' command from $ENV_DIR with config ${CKAN_INI}..." >&2
-    exec $ENV_DIR/ckan -c ${CKAN_INI} "$@"
+    # adjust args to match ckan expectations
+    COMMAND=$(echo "$1" | sed -e 's/create-test-data/seed/')
+    shift
+    exec $ENV_DIR/ckan -c ${CKAN_INI} $COMMAND "$@" $CLICK_ARGS
 elif [ "$COMMAND" = "paster" ]; then
     echo "Using 'paster' command from $ENV_DIR with config ${CKAN_INI}..." >&2
-    exec $ENV_DIR/paster --plugin=$PASTER_PLUGIN "$@" -c ${CKAN_INI}
+    # adjust args to match paster expectations
+    COMMAND=$1
+    shift
+    if [ "$1" = "show" ]; then shift; fi
+    exec $ENV_DIR/paster --plugin=$PASTER_PLUGIN $COMMAND "$@" -c ${CKAN_INI}
 else
     echo "Unable to locate 'ckan' or 'paster' command in $ENV_DIR" >&2
     exit 1
