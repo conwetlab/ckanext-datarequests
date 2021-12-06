@@ -20,15 +20,15 @@
 import ckan.lib.helpers as h
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
-import auth
-import actions
-import constants
-import helpers
+from . import auth
+from . import actions
+from . import constants
+from . import helpers
 import os
 import sys
 
 from functools import partial
-from pylons import config
+from ckan.plugins.toolkit import config
 
 
 def get_config_bool_value(config_name, default_value=False):

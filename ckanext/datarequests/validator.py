@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import constants
+from . import constants
 import ckan.plugins.toolkit as tk
 import ckanext.datarequests.db as db
 

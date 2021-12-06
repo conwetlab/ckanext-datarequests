@@ -19,7 +19,7 @@
 
 import ckan.model as model
 import ckan.plugins.toolkit as tk
-import db
+from . import db
 
 from ckan.common import c
 
