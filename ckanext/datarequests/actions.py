@@ -21,15 +21,15 @@
 import ckan.lib.base as base
 import ckan.model as model
 import ckan.plugins as plugins
-import constants
+from . import constants
 import datetime
 import cgi
-import db
+from . import db
 import logging
-import validator
+from . import validator
 import ckan.lib.mailer as mailer
 
-from pylons import config
+from ckan.plugins.toolkit import config
 
 c = plugins.toolkit.c
 log = logging.getLogger(__name__)
