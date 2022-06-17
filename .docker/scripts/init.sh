@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 ##
-# Initialise CKAN instance.
+# Initialise CKAN data for testing.
 #
 set -e
 
