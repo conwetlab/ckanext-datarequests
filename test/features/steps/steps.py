@@ -33,7 +33,7 @@ def submit_login(context):
     """)
 
 
-@stepu('I log in and go to datarequest page')
+@step(u'I log in and go to datarequest page')
 def log_in_go_to_datarequest(context):
     assert context.persona
     context.execute_steps(u"""
