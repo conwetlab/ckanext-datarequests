@@ -3,12 +3,13 @@ behave==1.2.6
 behaving==2.0.0
 Appium-Python-Client<=0.52
 ckanapi==4.3
+ckantoolkit>=0.0.4
 factory-boy==2.12.0
 flake8==3.8.3
 mock
 parameterized==0.8.1
 pytest-ckan
-splinter>=0.13.0
+splinter>=0.13.0,<0.17
 xlrd==1.2.0
 python-magic==0.4.18
 messytables==0.15.2
@@ -16,4 +17,4 @@ progressbar==2.5
 SQLAlchemy>=0.6.6
 requests==2.25.1
 six>=1.15.0
-git+https://github.com/ckan/ckantoolkit@release-0.0.4#egg=ckantoolkit
+

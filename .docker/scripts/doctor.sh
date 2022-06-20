@@ -75,7 +75,7 @@ main() {
     #      - container:amazeeio-ssh-agent
     #    ```
     # 4. When CLI container starts, the volume is mounted and an entrypoint script
-    #    adds SHH key into agent.
+    #    adds SSH key into agent.
     #    @see https://github.com/amazeeio/lagoon/blob/master/images/php/cli/10-ssh-agent.sh
     #
     #  Running `ssh-add -L` within CLI container should show that the SSH key
