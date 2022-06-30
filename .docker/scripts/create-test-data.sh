@@ -32,7 +32,6 @@ if [ "$API_KEY" = "None" ]; then
     API_KEY=$(ckan_cli user token add "${CKAN_USER_NAME}" test_setup |grep -v '^API Token created' | tr -d '[:space:]')
 fi
 
-# #
 ##
 # BEGIN: Add sysadmin config values.
 # This needs to be done before closing datarequests as they require the below config values
