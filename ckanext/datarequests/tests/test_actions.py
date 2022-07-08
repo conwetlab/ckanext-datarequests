@@ -38,9 +38,6 @@ class ActionsTest(unittest.TestCase):
         actions.tk.ValidationError = self._tk.ValidationError
         actions.tk.h.closing_circumstances_enabled = False
 
-        self._c = actions.c
-        actions.c = MagicMock()
-
         self._db = actions.db
         actions.db = MagicMock()
 
@@ -60,7 +57,6 @@ class ActionsTest(unittest.TestCase):
     def tearDown(self):
         # Unmock
         actions.tk = self._tk
-        actions.c = self._c
         actions.db = self._db
         actions.validator = self._validator
         actions.datetime = self._datetime
