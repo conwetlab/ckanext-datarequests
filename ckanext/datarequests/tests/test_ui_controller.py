@@ -215,9 +215,9 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
-                controller.helpers.url_for.assert_called_once_with(
+                controller.tk.url_for.assert_called_once_with(
                     'datarequest.show', id=datarequest_id)
-                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
@@ -425,9 +425,9 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
-                controller.helpers.url_for.assert_called_once_with(
+                controller.tk.url_for.assert_called_once_with(
                     'datarequest.show', id=datarequest_id)
-                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
@@ -558,7 +558,7 @@ class UIControllerTest(unittest.TestCase):
                 return list_datarequests
 
         controller.tk.get_action.side_effect = _get_action
-        controller.helpers.url_for.return_value = base_url
+        controller.tk.url_for.return_value = base_url
 
         # Call the function
         function = getattr(controller, func)
@@ -608,15 +608,15 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
                           page_arguments['url'](q=query, page=silly_page))
 
-        # When URL function is called, helpers.url_for is called to get the final URL
+        # When URL function is called, tk.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.organization', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.user', id=user)
 
         # Check the facets
@@ -668,9 +668,9 @@ class UIControllerTest(unittest.TestCase):
             'Data Request %s has been deleted' % datarequest.get('title')))
 
         # Redirection
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.index')
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
 
     ######################################################################
     ################################ CLOSE ###############################
@@ -762,9 +762,9 @@ class UIControllerTest(unittest.TestCase):
         result = controller.close(datarequest_id)
 
         # Checks
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.show', id=datarequest_id)
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         self.assertIsNotNone(result)
 
     @parameterized.expand([
@@ -974,9 +974,9 @@ class UIControllerTest(unittest.TestCase):
         delete_datarequest_comment.assert_called_once_with(self.expected_context, {'id': comment_id})
 
         # Check redirection
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.comment', id=datarequest_id)
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
 
     ######################################################################
     ########################## FOLLOW/UNFOLLOW ###########################

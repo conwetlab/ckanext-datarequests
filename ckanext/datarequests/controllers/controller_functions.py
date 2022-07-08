@@ -9,7 +9,8 @@ from six.moves.urllib.parse import urlencode
 
 from ckan import model
 from ckan.lib import helpers
-from ckan.plugins.toolkit import _, abort, c, check_access, get_action, h, redirect_to, render,  url_for, NotAuthorized, ObjectNotFound, ValidationError
+from ckan.plugins import toolkit as tk
+from ckan.plugins.toolkit import c, h
 
 from ckanext.datarequests import constants, request_helpers
 
@@ -39,23 +40,23 @@ def url_with_params(url, params):
 
 
 def search_url(params):
-    url = url_for('datarequest.index')
+    url = tk.url_for('datarequest.index')
     return url_with_params(url, params)
 
 
 def org_datarequest_url(params, id):
-    url = url_for('datarequest.organization', id=id)
+    url = tk.url_for('datarequest.organization', id=id)
     return url_with_params(url, params)
 
 
 def user_datarequest_url(params, id):
-    url = url_for('datarequest.user', id=id)
+    url = tk.url_for('datarequest.user', id=id)
     return url_with_params(url, params)
 
 
 def _get_context():
     return {'model': model, 'session': model.Session,
-            'user': c.user, 'auth_user_obj': c.userobj}
+            'user': tk.c.user, 'auth_user_obj': c.userobj}
 
 
 def _show_index(user_id, organization_id, include_organization_facet, url_func, file_to_render):
@@ -100,10 +101,10 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
         if sort is not None:
             data_dict['sort'] = sort
 
-        check_access(constants.LIST_DATAREQUESTS, context, data_dict)
-        datarequests_list = get_action(constants.LIST_DATAREQUESTS)(context, data_dict)
+        tk.check_access(constants.LIST_DATAREQUESTS, context, data_dict)
+        datarequests_list = tk.get_action(constants.LIST_DATAREQUESTS)(context, data_dict)
 
-        c.filters = [(_('Newest'), 'desc'), (_('Oldest'), 'asc')]
+        c.filters = [(tk._('Newest'), 'desc'), (tk._('Oldest'), 'asc')]
         c.sort = sort
         c.q = q
         c.organization = organization_id
@@ -119,21 +120,21 @@ def _show_index(user_id, organization_id, include_organization_facet, url_func, 
             items_per_page=limit
         )
         c.facet_titles = {
-            'state': _('State'),
+            'state': tk._('State'),
         }
 
         # Organization facet cannot be shown when the user is viewing an org
         if include_organization_facet is True:
-            c.facet_titles['organization'] = _('Organizations')
+            c.facet_titles['organization'] = tk._('Organizations')
 
-        return render(file_to_render, extra_vars={'user_dict': c.user_dict if hasattr(c, 'user_dict') else None, 'group_type': 'organization'})
+        return tk.render(file_to_render, extra_vars={'user_dict': c.user_dict if hasattr(c, 'user_dict') else None, 'group_type': 'organization'})
     except ValueError as e:
         # This exception should only occur if the page value is not valid
         log.warn(e)
-        return abort(400, _('"page" parameter must be an integer'))
-    except NotAuthorized as e:
+        return tk.abort(400, tk._('"page" parameter must be an integer'))
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('Unauthorized to list Data Requests'))
+        return tk.abort(403, tk._('Unauthorized to list Data Requests'))
 
 
 def index():
@@ -152,10 +153,10 @@ def _process_post(action, context):
             data_dict['id'] = request_helpers.get_first_post_param('id', '')
 
         try:
-            result = get_action(action)(context, data_dict)
-            return redirect_to(url_for('datarequest.show', id=result['id']))
+            result = tk.get_action(action)(context, data_dict)
+            return tk.redirect_to(tk.url_for('datarequest.show', id=result['id']))
 
-        except ValidationError as e:
+        except tk.ValidationError as e:
             log.warn(e)
             # Fill the fields that will display some information in the page
             c.datarequest = {
@@ -178,12 +179,12 @@ def new():
 
     # Check access
     try:
-        check_access(constants.CREATE_DATAREQUEST, context, None)
+        tk.check_access(constants.CREATE_DATAREQUEST, context, None)
         post_result = _process_post(constants.CREATE_DATAREQUEST, context)
         return post_result or render('datarequests/new.html')
-    except NotAuthorized as e:
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('Unauthorized to create a Data Request'))
+        return tk.abort(403, tk._('Unauthorized to create a Data Request'))
 
 
 def show(id):
@@ -191,18 +192,18 @@ def show(id):
     context = _get_context()
 
     try:
-        check_access(constants.SHOW_DATAREQUEST, context, data_dict)
-        c.datarequest = get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
+        tk.check_access(constants.SHOW_DATAREQUEST, context, data_dict)
+        c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
 
         context_ignore_auth = context.copy()
         context_ignore_auth['ignore_auth'] = True
 
-        return render('datarequests/show.html')
-    except ObjectNotFound:
-        return abort(404, _('Data Request %s not found') % id)
-    except NotAuthorized as e:
+        return tk.render('datarequests/show.html')
+    except tk.ObjectNotFound:
+        return tk.abort(404, tk._('Data Request %s not found') % id)
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to view the Data Request %s' % id))
+        return tk.abort(403, tk._('You are not authorized to view the Data Request %s' % id))
 
 
 def update(id):
@@ -215,17 +216,17 @@ def update(id):
     c.errors_summary = {}
 
     try:
-        check_access(constants.UPDATE_DATAREQUEST, context, data_dict)
-        c.datarequest = get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
+        tk.check_access(constants.UPDATE_DATAREQUEST, context, data_dict)
+        c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
         c.original_title = c.datarequest.get('title')
         _process_post(constants.UPDATE_DATAREQUEST, context)
-        return render('datarequests/edit.html')
-    except ObjectNotFound as e:
+        return tk.render('datarequests/edit.html')
+    except tk.ObjectNotFound as e:
         log.warn(e)
-        return abort(404, _('Data Request %s not found') % id)
-    except NotAuthorized as e:
+        return tk.abort(404, tk._('Data Request %s not found') % id)
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to update the Data Request %s' % id))
+        return tk.abort(403, tk._('You are not authorized to update the Data Request %s' % id))
 
 
 def delete(id):
@@ -233,28 +234,28 @@ def delete(id):
     context = _get_context()
 
     try:
-        check_access(constants.DELETE_DATAREQUEST, context, data_dict)
-        datarequest = get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
-        h.flash_notice(_('Data Request %s has been deleted') % datarequest.get('title', ''))
-        return redirect_to(url_for('datarequest.index'))
-    except ObjectNotFound as e:
+        tk.check_access(constants.DELETE_DATAREQUEST, context, data_dict)
+        datarequest = tk.get_action(constants.DELETE_DATAREQUEST)(context, data_dict)
+        h.flash_notice(tk._('Data Request %s has been deleted') % datarequest.get('title', ''))
+        return tk.redirect_to(tk.url_for('datarequest.index'))
+    except tk.ObjectNotFound as e:
         log.warn(e)
-        return abort(404, _('Data Request %s not found') % id)
-    except NotAuthorized as e:
+        return tk.abort(404, tk._('Data Request %s not found') % id)
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to delete the Data Request %s' % id))
+        return tk.abort(403, tk._('You are not authorized to delete the Data Request %s' % id))
 
 
 def organization(id):
     context = _get_context()
-    c.group_dict = get_action('organization_show')(context, {'id': id})
+    c.group_dict = tk.get_action('organization_show')(context, {'id': id})
     url_func = functools.partial(org_datarequest_url, id=id)
     return _show_index(None, id, False, url_func, 'organization/datarequests.html')
 
 
 def user(id):
     context = _get_context()
-    c.user_dict = get_action('user_show')(context, {'id': id, 'include_num_followers': True})
+    c.user_dict = tk.get_action('user_show')(context, {'id': id, 'include_num_followers': True})
     url_func = functools.partial(user_datarequest_url, id=id)
     return _show_index(id, request_helpers.get_first_query_param('organization', ''), True, url_func, 'user/datarequests.html')
 
@@ -282,7 +283,7 @@ def close(id):
         else:
             # Expected for CKAN 2.3
             log.debug("Loading first 500 datasets...")
-        base_datasets = get_action('package_search')({'ignore_auth': True}, search_data_dict)['results']
+        base_datasets = tk.get_action('package_search')({'ignore_auth': True}, search_data_dict)['results']
 
         log.debug("Dataset candidates for closing data request: %s", base_datasets)
         c.datasets = []
@@ -295,14 +296,14 @@ def close(id):
             # This is required so the form can set the currently selected close_circumstance option in the select dropdown
             c.datarequest['close_circumstance'] = request_helpers.get_first_post_param('close_circumstance', None)
 
-        return render('datarequests/close.html')
+        return tk.render('datarequests/close.html')
 
     try:
-        check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
-        c.datarequest = get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
+        tk.check_access(constants.CLOSE_DATAREQUEST, context, data_dict)
+        c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
 
         if c.datarequest.get('closed', False):
-            return abort(403, _('This data request is already closed'))
+            return tk.abort(403, tk._('This data request is already closed'))
         elif request_helpers.get_post_params():
             data_dict = {}
             data_dict['accepted_dataset_id'] = request_helpers.get_first_post_param('accepted_dataset_id', None)
@@ -312,21 +313,21 @@ def close(id):
                 data_dict['approx_publishing_date'] = request_helpers.get_first_post_param('approx_publishing_date', None)
                 data_dict['condition'] = request_helpers.get_first_post_param('condition', None)
 
-            get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
-            return redirect_to(url_for('datarequest.show', id=data_dict['id']))
+            tk.get_action(constants.CLOSE_DATAREQUEST)(context, data_dict)
+            return tk.redirect_to(tk.url_for('datarequest.show', id=data_dict['id']))
         else:   # GET
             return _return_page()
 
-    except ValidationError as e:     # Accepted Dataset is not valid
+    except tk.ValidationError as e:     # Accepted Dataset is not valid
         log.warn(e)
         errors_summary = _get_errors_summary(e.error_dict)
         return _return_page(e.error_dict, errors_summary)
-    except ObjectNotFound as e:
+    except tk.ObjectNotFound as e:
         log.warn(e)
-        return abort(404, _('Data Request %s not found') % id)
-    except NotAuthorized as e:
+        return tk.abort(404, tk._('Data Request %s not found') % id)
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to close the Data Request %s' % id))
+        return tk.abort(403, tk._('You are not authorized to close the Data Request %s' % id))
 
 
 def comment(id):
@@ -334,10 +335,10 @@ def comment(id):
         context = _get_context()
         data_dict_comment_list = {'datarequest_id': id}
         data_dict_dr_show = {'id': id}
-        check_access(constants.LIST_DATAREQUEST_COMMENTS, context, data_dict_comment_list)
+        tk.check_access(constants.LIST_DATAREQUEST_COMMENTS, context, data_dict_comment_list)
 
         # Raises 404 Not Found if the data request does not exist
-        c.datarequest = get_action(constants.SHOW_DATAREQUEST)(context, data_dict_dr_show)
+        c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict_dr_show)
 
         comment_text = request_helpers.get_first_post_param('comment', '')
         comment_id = request_helpers.get_first_post_param('comment-id', '')
@@ -353,25 +354,25 @@ def comment(id):
 
             try:
                 comment_data_dict = {'datarequest_id': id, 'comment': comment_text, 'id': comment_id}
-                updated_comment = get_action(action)(context, comment_data_dict)
+                updated_comment = tk.get_action(action)(context, comment_data_dict)
 
                 if not comment_id:
-                    flash_message = _('Comment has been published')
+                    flash_message = tk._('Comment has been published')
                 else:
-                    flash_message = _('Comment has been updated')
+                    flash_message = tk._('Comment has been updated')
 
                 h.flash_notice(flash_message)
 
-            except NotAuthorized as e:
+            except tk.NotAuthorized as e:
                 log.warn(e)
-                return abort(403, _('You are not authorized to %s' % action_text))
-            except ValidationError as e:
+                return tk.abort(403, tk._('You are not authorized to %s' % action_text))
+            except tk.ValidationError as e:
                 log.warn(e)
                 c.errors = e.error_dict
                 c.errors_summary = _get_errors_summary(c.errors)
-            except ObjectNotFound as e:
+            except tk.ObjectNotFound as e:
                 log.warn(e)
-                return abort(404, _(str(e)))
+                return tk.abort(404, tk._(str(e)))
             # Other exceptions are not expected. Otherwise, the request will fail.
 
             # This is required to scroll the user to the appropriate comment
@@ -386,33 +387,33 @@ def comment(id):
         }
         # Comments should be retrieved once that the comment has been created
         get_comments_data_dict = {'datarequest_id': id}
-        c.comments = get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
+        c.comments = tk.get_action(constants.LIST_DATAREQUEST_COMMENTS)(context, get_comments_data_dict)
 
-        return render('datarequests/comment.html')
+        return tk.render('datarequests/comment.html')
 
-    except ObjectNotFound as e:
+    except tk.ObjectNotFound as e:
         log.warn(e)
-        return abort(404, _('Data Request %s not found' % id))
+        return tk.abort(404, tk._('Data Request %s not found' % id))
 
-    except NotAuthorized as e:
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to list the comments of the Data Request %s' % id))
+        return tk.abort(403, tk._('You are not authorized to list the comments of the Data Request %s' % id))
 
 
 def delete_comment(datarequest_id, comment_id):
     try:
         context = _get_context()
         data_dict = {'id': comment_id}
-        check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
-        get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
-        h.flash_notice(_('Comment has been deleted'))
-        return redirect_to(url_for('datarequest.comment', id=datarequest_id))
-    except ObjectNotFound as e:
+        tk.check_access(constants.DELETE_DATAREQUEST_COMMENT, context, data_dict)
+        tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)(context, data_dict)
+        h.flash_notice(tk._('Comment has been deleted'))
+        return tk.redirect_to(tk.url_for('datarequest.comment', id=datarequest_id))
+    except tk.ObjectNotFound as e:
         log.warn(e)
-        return abort(404, _('Comment %s not found') % comment_id)
-    except NotAuthorized as e:
+        return tk.abort(404, tk._('Comment %s not found') % comment_id)
+    except tk.NotAuthorized as e:
         log.warn(e)
-        return abort(403, _('You are not authorized to delete this comment'))
+        return tk.abort(403, tk._('You are not authorized to delete this comment'))
 
 
 def follow(datarequest_id):
