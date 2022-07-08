@@ -19,11 +19,12 @@
 
 from ckanext.datarequests import actions, constants
 import datetime
-import test_actions_data as test_data
 import unittest
 
 from mock import MagicMock, patch
 from parameterized import parameterized
+
+from . import test_actions_data as test_data
 
 
 class ActionsTest(unittest.TestCase):
