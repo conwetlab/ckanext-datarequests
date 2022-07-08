@@ -20,14 +20,13 @@
 
 import datetime
 import cgi
-import db
 import logging
 
 from ckan import model
 from ckan.plugins.toolkit import _, check_access, config, get_action, h, \
     mail_user, render, ObjectNotFound, ValidationError
 
-from . import constants, validator
+from . import constants, db, validator
 
 
 log = logging.getLogger(__name__)
