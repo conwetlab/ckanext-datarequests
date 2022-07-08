@@ -36,7 +36,7 @@ class ActionsTest(unittest.TestCase):
         actions.USERS_CACHE = {}
         actions.tk.ObjectNotFound = self._tk.ObjectNotFound
         actions.tk.ValidationError = self._tk.ValidationError
-        actions.tk.h.closing_circumstances_enabled = False
+        actions.h.closing_circumstances_enabled = False
 
         self._db = actions.db
         actions.db = MagicMock()
