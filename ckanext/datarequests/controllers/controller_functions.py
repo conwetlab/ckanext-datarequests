@@ -181,7 +181,7 @@ def new():
     try:
         tk.check_access(constants.CREATE_DATAREQUEST, context, None)
         post_result = _process_post(constants.CREATE_DATAREQUEST, context)
-        return post_result or render('datarequests/new.html')
+        return post_result or tk.render('datarequests/new.html')
     except tk.NotAuthorized as e:
         log.warn(e)
         return tk.abort(403, tk._('Unauthorized to create a Data Request'))
