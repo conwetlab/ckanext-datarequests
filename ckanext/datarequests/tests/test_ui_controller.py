@@ -45,9 +45,6 @@ def _patch_POST(params):
 class UIControllerTest(unittest.TestCase):
 
     def setUp(self):
-        self._plugins = controller.plugins
-        controller.plugins = MagicMock()
-
         self._tk = controller.tk
         controller.tk = MagicMock()
         controller.tk._ = self._tk._
@@ -67,8 +64,6 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
-        self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
-
         self.expected_context = {
             'model': controller.model,
             'session': controller.model.Session,
@@ -77,13 +72,11 @@ class UIControllerTest(unittest.TestCase):
         }
 
     def tearDown(self):
-        controller.plugins = self._plugins
         controller.tk = self._tk
         controller.c = self._c
         request_helpers.request = self._request
         controller.model = self._model
         controller.helpers = self._helpers
-        controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
 
     ######################################################################
     ################################# AUX ################################
