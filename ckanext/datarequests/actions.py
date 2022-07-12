@@ -25,7 +25,7 @@ import logging
 from ckan import model
 from ckan.lib import mailer
 from ckan.plugins import toolkit as tk
-from ckan.plugins.toolkit import h
+from ckan.plugins.toolkit import h, config
 
 from . import constants, db, validator
 
@@ -164,8 +164,8 @@ def _send_mail(user_ids, action_type, datarequest):
             extra_vars = {
                 'datarequest': datarequest,
                 'user': user_data,
-                'site_title': tk.config.get('ckan.site_title'),
-                'site_url': tk.config.get('ckan.site_url')
+                'site_title': config.get('ckan.site_title'),
+                'site_url': config.get('ckan.site_url')
             }
 
             subject = tk.render('emails/subjects/{0}.txt'.format(action_type), extra_vars)
