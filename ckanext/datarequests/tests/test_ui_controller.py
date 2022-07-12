@@ -51,6 +51,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.ValidationError = self._tk.ValidationError
         controller.tk.NotAuthorized = self._tk.NotAuthorized
         controller.tk.ObjectNotFound = self._tk.ObjectNotFound
+        controller.tk.abort.side_effect = 'aborted'
 
         self._c = controller.c
         controller.c = MagicMock()
@@ -93,7 +94,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(check_access_func, self.expected_context, {'id': datarequest_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to %s the Data Request %s' % (action, datarequest_id))
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def _test_not_found(self, function, get_action_func):
         datarequest_id = 'example_uuidv4'
@@ -114,7 +115,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.assert_any_call(get_action_func)
         controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     ######################################################################
     ################################# NEW ################################
@@ -443,7 +444,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.abort.assert_called_once_with(403, 'Unauthorized to list Data Requests')
         self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_index_invalid_page(self):
         _patch_GET({'page': '2a'})
@@ -456,7 +457,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.check_access.call_count)
         self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     @parameterized.expand([
         (INDEX_FUNCTION, '1', 'conwet', '', 0,    10),
@@ -788,7 +789,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(constants.LIST_DATAREQUEST_COMMENTS, self.expected_context, {'datarequest_id': datarequest_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to list the comments of the Data Request %s' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_comment_list_not_found(self):
         datarequest_id = 'example_uuidv4'
@@ -801,7 +802,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action(constants.COMMENT_DATAREQUEST)
         controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     @parameterized.expand([
         (),
@@ -938,7 +939,7 @@ class UIControllerTest(unittest.TestCase):
                                                            self.expected_context, {'id': comment_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to delete this comment')
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_delete_comment_not_found(self):
         datarequest_id = 'example_uuidv4'
@@ -952,7 +953,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)
         controller.tk.abort.assert_called_once_with(404, 'Comment %s not found' % comment_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_delete_comment(self):
         datarequest_id = 'example_uuidv4'
