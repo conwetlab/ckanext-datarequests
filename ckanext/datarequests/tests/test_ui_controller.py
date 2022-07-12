@@ -65,6 +65,9 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
+        self._h = controller.h
+        controller.h = MagicMock()
+
         self.expected_context = {
             'model': controller.model,
             'session': controller.model.Session,
@@ -78,6 +81,7 @@ class UIControllerTest(unittest.TestCase):
         request_helpers.request = self._request
         controller.model = self._model
         controller.helpers = self._helpers
+        controller.h = self._h
 
     ######################################################################
     ################################# AUX ################################
@@ -658,7 +662,7 @@ class UIControllerTest(unittest.TestCase):
         expected_data_dict = {'id': datarequest_id}
         controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST, self.expected_context, expected_data_dict)
         delete_datarequest.assert_called_once_with(self.expected_context, expected_data_dict)
-        controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
+        controller.h.flash_notice.assert_called_once_with(controller.tk._(
             'Data Request %s has been deleted' % datarequest.get('title')))
 
         # Redirection
