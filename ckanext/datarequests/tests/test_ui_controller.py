@@ -51,7 +51,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.ValidationError = self._tk.ValidationError
         controller.tk.NotAuthorized = self._tk.NotAuthorized
         controller.tk.ObjectNotFound = self._tk.ObjectNotFound
-        controller.tk.abort.side_effect = 'aborted'
+        controller.tk.abort.return_value = 'aborted'
 
         self._c = controller.c
         controller.c = MagicMock()
