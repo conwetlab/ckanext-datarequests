@@ -56,7 +56,7 @@ def user_datarequest_url(params, id):
 
 def _get_context():
     return {'model': model, 'session': model.Session,
-            'user': tk.c.user, 'auth_user_obj': c.userobj}
+            'user': c.user, 'auth_user_obj': c.userobj}
 
 
 def _show_index(user_id, organization_id, include_organization_facet, url_func, file_to_render):
