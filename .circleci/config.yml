@@ -23,7 +23,10 @@ jobs:
           at: /workspace
       - checkout
       - *step_setup_remote_docker
-      - run: .circleci/build.sh
+      - run:
+          command: .circleci/build.sh
+          environment:
+            CKAN_VERSION: 2.9.5
       - run: .circleci/test.sh
       - run:
           name: Process artifacts
