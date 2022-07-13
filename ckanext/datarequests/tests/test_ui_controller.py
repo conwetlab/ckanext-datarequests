@@ -870,8 +870,8 @@ class UIControllerTest(unittest.TestCase):
         result = controller.comment(datarequest_id)
 
         # Check the result
-        controller.tk.render.assert_called_once_with('datarequests/comment.html')
         self.assertEquals(result, controller.tk.render.return_value)
+        controller.tk.render.assert_called_once_with('datarequests/comment.html')
 
         # Verify comments and data request
         self.assertEquals(controller.c.datarequest, datarequest)
