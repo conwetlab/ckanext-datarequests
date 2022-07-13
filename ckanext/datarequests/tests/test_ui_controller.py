@@ -361,7 +361,7 @@ class UIControllerTest(unittest.TestCase):
 
         original_dr = {
             'id': datarequest_id,
-            'title': 'A completly different title',
+            'title': 'A completely different title',
             'description': 'Other description'
         }
 
@@ -402,8 +402,6 @@ class UIControllerTest(unittest.TestCase):
 
         if authorized:
             self.assertEquals(0, controller.tk.abort.call_count)
-            self.assertEquals(controller.tk.render.return_value, result)
-            controller.tk.render.assert_called_once_with('datarequests/edit.html')
 
             show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
             update_datarequest.assert_called_once_with(self.expected_context, request_data)
@@ -419,10 +417,13 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals(expected_request_data, controller.c.datarequest)
                 self.assertEquals(errors_summary, controller.c.errors_summary)
                 self.assertEquals(original_dr['title'], controller.c.original_title)
+                self.assertEquals(controller.tk.render.return_value, result)
+                controller.tk.render.assert_called_once_with('datarequests/edit.html')
             else:
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
+                self.assertEquals(controller.tk.redirect_to.return_value, result)
                 controller.tk.url_for.assert_called_once_with(
                     'datarequest.show', id=datarequest_id)
                 controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
