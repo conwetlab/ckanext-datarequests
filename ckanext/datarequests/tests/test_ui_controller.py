@@ -816,8 +816,8 @@ class UIControllerTest(unittest.TestCase):
         (False, True,  controller.tk.NotAuthorized),
         (True,  False, controller.tk.ObjectNotFound('Exception')),
         (False, True,  controller.tk.ObjectNotFound('Exception')),
-        (True,  False, controller.tk.ValidationError({'commnet': ['error1', 'error2']})),
-        (False, True, controller.tk.ValidationError({'commnet': ['error1', 'error2']}))
+        (True,  False, controller.tk.ValidationError({'comment': ['error1', 'error2']})),
+        (False, True, controller.tk.ValidationError({'comment': ['error1', 'error2']}))
 
     ])
     def test_comment_list(self, new_comment=False, update_comment=False,
@@ -839,10 +839,10 @@ class UIControllerTest(unittest.TestCase):
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
         comments_list = [
             {'comment': 'Comment 1\nwith new line'},
-            {'comment': 'Commnet 2\nwith two\nnew lines'},
+            {'comment': 'Comment 2\nwith two\nnew lines'},
             {'comment': 'Comment 3 with link https://fiware.org/some/path?param1=1&param2=2'},
             {'comment': 'Comment 4 with two links https://fiware.org/some/path?param1=1&param2=2 and https://google.es'},
-            {'comment': 'Coment\nwith http://fiware.org\nhttp://fiware.eu'}
+            {'comment': 'Comment\nwith http://fiware.org\nhttp://fiware.eu'}
         ]
 
         default_action_return = {
