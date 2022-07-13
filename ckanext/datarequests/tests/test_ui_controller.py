@@ -869,40 +869,19 @@ class UIControllerTest(unittest.TestCase):
         # Call the function
         result = controller.comment(datarequest_id)
 
-        # Check the result
-        self.assertEquals(result, controller.tk.render.return_value)
-        controller.tk.render.assert_called_once_with('datarequests/comment.html')
-
-        # Verify comments and data request
-        self.assertEquals(controller.c.datarequest, datarequest)
-        self.assertEquals(controller.c.comments, comments_list)
-
-        # Check calls
-        show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
-        list_datarequest_comments.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id})
-
-        if new_comment:
-            controller.tk.get_action.assert_any_call(constants.COMMENT_DATAREQUEST)
-        elif update_comment:
-            controller.tk.get_action.assert_any_call(constants.UPDATE_DATAREQUEST_COMMENT)
-
-        if new_comment or update_comment:
-            default_action.assert_called_once_with(
-                self.expected_context, {
-                    'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else ''
-                })
-
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to %s' % action)
+            self.assertEquals(result, 'aborted')
 
-        if type(comment_or_update_exception) == controller.tk.ObjectNotFound:
+        elif type(comment_or_update_exception) == controller.tk.ObjectNotFound:
             controller.tk.abort.assert_called_once_with(404, str(comment_or_update_exception))
+            self.assertEquals(result, 'aborted')
 
-        if type(comment_or_update_exception) == controller.tk.ValidationError:
+        elif type(comment_or_update_exception) == controller.tk.ValidationError:
             # Abort never called
             self.assertEquals(0, controller.tk.abort.call_count)
+            self.assertEquals(result, 'aborted')
 
             # Check controller.c values
             self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
@@ -912,20 +891,43 @@ class UIControllerTest(unittest.TestCase):
                 for key, error in comment_or_update_exception.error_dict.items()}
 
             self.assertEquals(errors_summary, controller.c.errors_summary)
+        else:
 
-        if new_comment or update_comment:
+            # Check the result
+            self.assertEquals(result, controller.tk.render.return_value)
+            controller.tk.render.assert_called_once_with('datarequests/comment.html')
 
-            # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
+            # Verify comments and data request
+            self.assertEquals(controller.c.datarequest, datarequest)
+            self.assertEquals(controller.c.comments, comments_list)
 
-            updated_comment_id = controller.c.updated_comment['comment']['id']
+            # Check calls
+            show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
+            list_datarequest_comments.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id})
+
             if new_comment:
-                if comment_or_update_exception:
-                    self.assertEquals('', updated_comment_id)
-                else:
-                    self.assertEquals(new_comment_id, updated_comment_id)
+                controller.tk.get_action.assert_any_call(constants.COMMENT_DATAREQUEST)
+            elif update_comment:
+                controller.tk.get_action.assert_any_call(constants.UPDATE_DATAREQUEST_COMMENT)
 
-            if update_comment:
-                self.assertEquals(comment_id, updated_comment_id)
+            if new_comment or update_comment:
+                default_action.assert_called_once_with(
+                    self.expected_context, {
+                        'datarequest_id': datarequest_id,
+                        'comment': comment, 'id': comment_id if update_comment else ''
+                    })
+
+                # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
+
+                updated_comment_id = controller.c.updated_comment['comment']['id']
+                if new_comment:
+                    if comment_or_update_exception:
+                        self.assertEquals('', updated_comment_id)
+                    else:
+                        self.assertEquals(new_comment_id, updated_comment_id)
+
+                if update_comment:
+                    self.assertEquals(comment_id, updated_comment_id)
 
     ######################################################################
     ########################### DELETE COMMENT ###########################
