@@ -219,8 +219,8 @@ def update(id):
         tk.check_access(constants.UPDATE_DATAREQUEST, context, data_dict)
         c.datarequest = tk.get_action(constants.SHOW_DATAREQUEST)(context, data_dict)
         c.original_title = c.datarequest.get('title')
-        _process_post(constants.UPDATE_DATAREQUEST, context)
-        return tk.render('datarequests/edit.html')
+        post_result = _process_post(constants.UPDATE_DATAREQUEST, context)
+        return post_result or tk.render('datarequests/edit.html')
     except tk.ObjectNotFound as e:
         log.warn(e)
         return tk.abort(404, tk._('Data Request %s not found') % id)
