@@ -878,20 +878,19 @@ class UIControllerTest(unittest.TestCase):
             controller.tk.abort.assert_called_once_with(404, str(comment_or_update_exception))
             self.assertEquals(result, 'aborted')
 
-        elif type(comment_or_update_exception) == controller.tk.ValidationError:
-            # Abort never called
-            self.assertEquals(0, controller.tk.abort.call_count)
-            self.assertEquals(result, 'aborted')
-
-            # Check controller.c values
-            self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
-
-            errors_summary = {
-                key: ', '.join(error)
-                for key, error in comment_or_update_exception.error_dict.items()}
-
-            self.assertEquals(errors_summary, controller.c.errors_summary)
         else:
+            if type(comment_or_update_exception) == controller.tk.ValidationError:
+                # Abort never called
+                self.assertEquals(0, controller.tk.abort.call_count)
+
+                # Check controller.c values
+                self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
+
+                errors_summary = {
+                    key: ', '.join(error)
+                    for key, error in comment_or_update_exception.error_dict.items()}
+
+                self.assertEquals(errors_summary, controller.c.errors_summary)
 
             # Check the result
             self.assertEquals(result, controller.tk.render.return_value)
