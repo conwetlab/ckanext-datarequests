@@ -45,15 +45,13 @@ def _patch_POST(params):
 class UIControllerTest(unittest.TestCase):
 
     def setUp(self):
-        self._plugins = controller.plugins
-        controller.plugins = MagicMock()
-
         self._tk = controller.tk
         controller.tk = MagicMock()
         controller.tk._ = self._tk._
         controller.tk.ValidationError = self._tk.ValidationError
         controller.tk.NotAuthorized = self._tk.NotAuthorized
         controller.tk.ObjectNotFound = self._tk.ObjectNotFound
+        controller.tk.abort.return_value = 'aborted'
 
         self._c = controller.c
         controller.c = MagicMock()
@@ -67,7 +65,8 @@ class UIControllerTest(unittest.TestCase):
         self._helpers = controller.helpers
         controller.helpers = MagicMock()
 
-        self._datarequests_per_page = controller.constants.DATAREQUESTS_PER_PAGE
+        self._h = controller.h
+        controller.h = MagicMock()
 
         self.expected_context = {
             'model': controller.model,
@@ -77,13 +76,12 @@ class UIControllerTest(unittest.TestCase):
         }
 
     def tearDown(self):
-        controller.plugins = self._plugins
         controller.tk = self._tk
         controller.c = self._c
         request_helpers.request = self._request
         controller.model = self._model
         controller.helpers = self._helpers
-        controller.constants.DATAREQUESTS_PER_PAGE = self._datarequests_per_page
+        controller.h = self._h
 
     ######################################################################
     ################################# AUX ################################
@@ -100,7 +98,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(check_access_func, self.expected_context, {'id': datarequest_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to %s the Data Request %s' % (action, datarequest_id))
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def _test_not_found(self, function, get_action_func):
         datarequest_id = 'example_uuidv4'
@@ -121,7 +119,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action.assert_any_call(get_action_func)
         controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     ######################################################################
     ################################# NEW ################################
@@ -215,9 +213,9 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals({}, controller.c.datarequest)
-                controller.helpers.url_for.assert_called_once_with(
+                controller.tk.url_for.assert_called_once_with(
                     'datarequest.show', id=datarequest_id)
-                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'Unauthorized to create a Data Request')
             self.assertEquals(0, controller.tk.render.call_count)
@@ -363,7 +361,7 @@ class UIControllerTest(unittest.TestCase):
 
         original_dr = {
             'id': datarequest_id,
-            'title': 'A completly different title',
+            'title': 'A completely different title',
             'description': 'Other description'
         }
 
@@ -404,8 +402,6 @@ class UIControllerTest(unittest.TestCase):
 
         if authorized:
             self.assertEquals(0, controller.tk.abort.call_count)
-            self.assertEquals(controller.tk.render.return_value, result)
-            controller.tk.render.assert_called_once_with('datarequests/edit.html')
 
             show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
             update_datarequest.assert_called_once_with(self.expected_context, request_data)
@@ -421,13 +417,16 @@ class UIControllerTest(unittest.TestCase):
                 self.assertEquals(expected_request_data, controller.c.datarequest)
                 self.assertEquals(errors_summary, controller.c.errors_summary)
                 self.assertEquals(original_dr['title'], controller.c.original_title)
+                self.assertEquals(controller.tk.render.return_value, result)
+                controller.tk.render.assert_called_once_with('datarequests/edit.html')
             else:
                 self.assertEquals({}, controller.c.errors)
                 self.assertEquals({}, controller.c.errors_summary)
                 self.assertEquals(original_dr, controller.c.datarequest)
-                controller.helpers.url_for.assert_called_once_with(
+                self.assertEquals(controller.tk.redirect_to.return_value, result)
+                controller.tk.url_for.assert_called_once_with(
                     'datarequest.show', id=datarequest_id)
-                controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+                controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         else:
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to update the Data Request %s' % datarequest_id)
             self.assertEquals(0, controller.tk.render.call_count)
@@ -450,7 +449,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.abort.assert_called_once_with(403, 'Unauthorized to list Data Requests')
         self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_index_invalid_page(self):
         _patch_GET({'page': '2a'})
@@ -463,7 +462,7 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals(0, controller.tk.check_access.call_count)
         self.assertEquals(0, controller.tk.get_action.call_count)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     @parameterized.expand([
         (INDEX_FUNCTION, '1', 'conwet', '', 0,    10),
@@ -558,7 +557,7 @@ class UIControllerTest(unittest.TestCase):
                 return list_datarequests
 
         controller.tk.get_action.side_effect = _get_action
-        controller.helpers.url_for.return_value = base_url
+        controller.tk.url_for.return_value = base_url
 
         # Call the function
         function = getattr(controller, func)
@@ -608,15 +607,15 @@ class UIControllerTest(unittest.TestCase):
         self.assertEquals("%s?%ssort=%s&page=%d" % (base_url, query_param, expected_sort, silly_page),
                           page_arguments['url'](q=query, page=silly_page))
 
-        # When URL function is called, helpers.url_for is called to get the final URL
+        # When URL function is called, tk.url_for is called to get the final URL
         if func == INDEX_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.index')
         elif func == ORGANIZATION_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.organization', id=organization)
         elif func == USER_DATAREQUESTS_FUNCTION:
-            controller.helpers.url_for.assert_called_once_with(
+            controller.tk.url_for.assert_called_once_with(
                 'datarequest.user', id=user)
 
         # Check the facets
@@ -664,13 +663,13 @@ class UIControllerTest(unittest.TestCase):
         expected_data_dict = {'id': datarequest_id}
         controller.tk.check_access.assert_called_once_with(constants.DELETE_DATAREQUEST, self.expected_context, expected_data_dict)
         delete_datarequest.assert_called_once_with(self.expected_context, expected_data_dict)
-        controller.helpers.flash_notice.assert_called_once_with(controller.tk._(
+        controller.h.flash_notice.assert_called_once_with(controller.tk._(
             'Data Request %s has been deleted' % datarequest.get('title')))
 
         # Redirection
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.index')
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
 
     ######################################################################
     ################################ CLOSE ###############################
@@ -762,9 +761,9 @@ class UIControllerTest(unittest.TestCase):
         result = controller.close(datarequest_id)
 
         # Checks
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.show', id=datarequest_id)
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
         self.assertIsNotNone(result)
 
     @parameterized.expand([
@@ -795,7 +794,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.check_access.assert_called_once_with(constants.LIST_DATAREQUEST_COMMENTS, self.expected_context, {'datarequest_id': datarequest_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to list the comments of the Data Request %s' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_comment_list_not_found(self):
         datarequest_id = 'example_uuidv4'
@@ -808,7 +807,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action(constants.COMMENT_DATAREQUEST)
         controller.tk.abort.assert_called_once_with(404, 'Data Request %s not found' % datarequest_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     @parameterized.expand([
         (),
@@ -818,8 +817,8 @@ class UIControllerTest(unittest.TestCase):
         (False, True,  controller.tk.NotAuthorized),
         (True,  False, controller.tk.ObjectNotFound('Exception')),
         (False, True,  controller.tk.ObjectNotFound('Exception')),
-        (True,  False, controller.tk.ValidationError({'commnet': ['error1', 'error2']})),
-        (False, True, controller.tk.ValidationError({'commnet': ['error1', 'error2']}))
+        (True,  False, controller.tk.ValidationError({'comment': ['error1', 'error2']})),
+        (False, True, controller.tk.ValidationError({'comment': ['error1', 'error2']}))
 
     ])
     def test_comment_list(self, new_comment=False, update_comment=False,
@@ -841,10 +840,10 @@ class UIControllerTest(unittest.TestCase):
         datarequest = {'id': 'uuid4', 'user_id': 'user_uuid4', 'title': 'example_title'}
         comments_list = [
             {'comment': 'Comment 1\nwith new line'},
-            {'comment': 'Commnet 2\nwith two\nnew lines'},
+            {'comment': 'Comment 2\nwith two\nnew lines'},
             {'comment': 'Comment 3 with link https://fiware.org/some/path?param1=1&param2=2'},
             {'comment': 'Comment 4 with two links https://fiware.org/some/path?param1=1&param2=2 and https://google.es'},
-            {'comment': 'Coment\nwith http://fiware.org\nhttp://fiware.eu'}
+            {'comment': 'Comment\nwith http://fiware.org\nhttp://fiware.eu'}
         ]
 
         default_action_return = {
@@ -871,63 +870,64 @@ class UIControllerTest(unittest.TestCase):
         # Call the function
         result = controller.comment(datarequest_id)
 
-        # Check the result
-        controller.tk.render.assert_called_once_with('datarequests/comment.html')
-        self.assertEquals(result, controller.tk.render.return_value)
-
-        # Verify comments and data request
-        self.assertEquals(controller.c.datarequest, datarequest)
-        self.assertEquals(controller.c.comments, comments_list)
-
-        # Check calls
-        show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
-        list_datarequest_comments.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id})
-
-        if new_comment:
-            controller.tk.get_action.assert_any_call(constants.COMMENT_DATAREQUEST)
-        elif update_comment:
-            controller.tk.get_action.assert_any_call(constants.UPDATE_DATAREQUEST_COMMENT)
-
-        if new_comment or update_comment:
-            default_action.assert_called_once_with(
-                self.expected_context, {
-                    'datarequest_id': datarequest_id,
-                    'comment': comment, 'id': comment_id if update_comment else ''
-                })
-
         if comment_or_update_exception == controller.tk.NotAuthorized:
             action = 'comment' if new_comment else 'update comment'
             controller.tk.abort.assert_called_once_with(403, 'You are not authorized to %s' % action)
+            self.assertEquals(result, 'aborted')
 
-        if type(comment_or_update_exception) == controller.tk.ObjectNotFound:
+        elif type(comment_or_update_exception) == controller.tk.ObjectNotFound:
             controller.tk.abort.assert_called_once_with(404, str(comment_or_update_exception))
+            self.assertEquals(result, 'aborted')
 
-        if type(comment_or_update_exception) == controller.tk.ValidationError:
-            # Abort never called
-            self.assertEquals(0, controller.tk.abort.call_count)
+        else:
+            if type(comment_or_update_exception) == controller.tk.ValidationError:
+                # Abort never called
+                self.assertEquals(0, controller.tk.abort.call_count)
 
-            # Check controller.c values
-            self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
+                # Check controller.c values
+                self.assertEquals(comment_or_update_exception.error_dict, controller.c.errors)
 
-            errors_summary = {
-                key: ', '.join(error)
-                for key, error in comment_or_update_exception.error_dict.items()}
+                errors_summary = {
+                    key: ', '.join(error)
+                    for key, error in comment_or_update_exception.error_dict.items()}
 
-            self.assertEquals(errors_summary, controller.c.errors_summary)
+                self.assertEquals(errors_summary, controller.c.errors_summary)
 
-        if new_comment or update_comment:
+            # Check the result
+            self.assertEquals(result, controller.tk.render.return_value)
+            controller.tk.render.assert_called_once_with('datarequests/comment.html')
 
-            # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
+            # Verify comments and data request
+            self.assertEquals(controller.c.datarequest, datarequest)
+            self.assertEquals(controller.c.comments, comments_list)
 
-            updated_comment_id = controller.c.updated_comment['comment']['id']
+            # Check calls
+            show_datarequest.assert_called_once_with(self.expected_context, {'id': datarequest_id})
+            list_datarequest_comments.assert_called_once_with(self.expected_context, {'datarequest_id': datarequest_id})
+
             if new_comment:
-                if comment_or_update_exception:
-                    self.assertEquals('', updated_comment_id)
-                else:
-                    self.assertEquals(new_comment_id, updated_comment_id)
+                controller.tk.get_action.assert_any_call(constants.COMMENT_DATAREQUEST)
+            elif update_comment:
+                controller.tk.get_action.assert_any_call(constants.UPDATE_DATAREQUEST_COMMENT)
 
-            if update_comment:
-                self.assertEquals(comment_id, updated_comment_id)
+            if new_comment or update_comment:
+                default_action.assert_called_once_with(
+                    self.expected_context, {
+                        'datarequest_id': datarequest_id,
+                        'comment': comment, 'id': comment_id if update_comment else ''
+                    })
+
+                # self.assertEquals(comment, controller.c.updated_comment.comment['comment'])
+
+                updated_comment_id = controller.c.updated_comment['comment']['id']
+                if new_comment:
+                    if comment_or_update_exception:
+                        self.assertEquals('', updated_comment_id)
+                    else:
+                        self.assertEquals(new_comment_id, updated_comment_id)
+
+                if update_comment:
+                    self.assertEquals(comment_id, updated_comment_id)
 
     ######################################################################
     ########################### DELETE COMMENT ###########################
@@ -945,7 +945,7 @@ class UIControllerTest(unittest.TestCase):
                                                            self.expected_context, {'id': comment_id})
         controller.tk.abort.assert_called_once_with(403, 'You are not authorized to delete this comment')
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_delete_comment_not_found(self):
         datarequest_id = 'example_uuidv4'
@@ -959,7 +959,7 @@ class UIControllerTest(unittest.TestCase):
         controller.tk.get_action(constants.DELETE_DATAREQUEST_COMMENT)
         controller.tk.abort.assert_called_once_with(404, 'Comment %s not found' % comment_id)
         self.assertEquals(0, controller.tk.render.call_count)
-        self.assertIsNone(result)
+        self.assertEquals(result, 'aborted')
 
     def test_delete_comment(self):
         datarequest_id = 'example_uuidv4'
@@ -974,9 +974,9 @@ class UIControllerTest(unittest.TestCase):
         delete_datarequest_comment.assert_called_once_with(self.expected_context, {'id': comment_id})
 
         # Check redirection
-        controller.helpers.url_for.assert_called_once_with(
+        controller.tk.url_for.assert_called_once_with(
             'datarequest.comment', id=datarequest_id)
-        controller.tk.redirect_to.assert_called_once_with(controller.helpers.url_for.return_value)
+        controller.tk.redirect_to.assert_called_once_with(controller.tk.url_for.return_value)
 
     ######################################################################
     ########################## FOLLOW/UNFOLLOW ###########################

@@ -10,7 +10,7 @@ Feature: Comments
         Then I should see "This is a test comment" within 10 seconds
 
     @comment-delete
-    Scenario: When an Sysadmin visits a data request, they can delete a comment and should not see text 'This comment was deleted.'
+    Scenario: When an admin visits a data request, they can delete a comment and should not see text 'This comment was deleted.'
         Given "SysAdmin" as the persona
         When I log in
         And I go to data request "Test Request" comments

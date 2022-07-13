@@ -20,18 +20,17 @@
 
 import datetime
 import cgi
-import db
 import logging
-import validator
-from ckan import model, plugins
-from ckan.common import config
-from ckan.lib import base, mailer
-from ckanext.datarequests import constants
+
+from ckan import model
+from ckan.lib import mailer
+from ckan.plugins import toolkit as tk
+from ckan.plugins.toolkit import h, config
+
+from . import constants, db, validator
 
 
-c = plugins.toolkit.c
 log = logging.getLogger(__name__)
-tk = plugins.toolkit
 
 # Avoid user_show lag
 USERS_CACHE = {}
@@ -99,7 +98,7 @@ def _dictize_datarequest(datarequest):
     data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
         datarequest_id=datarequest.id)
 
-    if tk.h.closing_circumstances_enabled:
+    if h.closing_circumstances_enabled:
         data_dict['close_circumstance'] = datarequest.close_circumstance
         data_dict['approx_publishing_date'] = datarequest.approx_publishing_date
 
@@ -115,7 +114,7 @@ def _undictize_datarequest_basic(datarequest, data_dict):
 
 
 def _undictize_datarequest_closing_circumstances(datarequest, data_dict):
-    if tk.h.closing_circumstances_enabled:
+    if h.closing_circumstances_enabled:
         datarequest.close_circumstance = data_dict.get('close_circumstance') or None
         datarequest.approx_publishing_date = data_dict.get('approx_publishing_date') or None
 
@@ -169,8 +168,8 @@ def _send_mail(user_ids, action_type, datarequest):
                 'site_url': config.get('ckan.site_url')
             }
 
-            subject = base.render_jinja2('emails/subjects/{0}.txt'.format(action_type), extra_vars)
-            body = base.render_jinja2('emails/bodies/{0}.txt'.format(action_type), extra_vars)
+            subject = tk.render('emails/subjects/{0}.txt'.format(action_type), extra_vars)
+            body = tk.render('emails/bodies/{0}.txt'.format(action_type), extra_vars)
 
             mailer.mail_user(user_data, subject, body)
 
