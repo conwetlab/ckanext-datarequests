@@ -19,11 +19,12 @@
 
 from ckanext.datarequests import actions, constants
 import datetime
-import test_actions_data as test_data
 import unittest
 
 from mock import MagicMock, patch
 from parameterized import parameterized
+
+from . import test_actions_data as test_data
 
 
 class ActionsTest(unittest.TestCase):
@@ -35,10 +36,7 @@ class ActionsTest(unittest.TestCase):
         actions.USERS_CACHE = {}
         actions.tk.ObjectNotFound = self._tk.ObjectNotFound
         actions.tk.ValidationError = self._tk.ValidationError
-        actions.tk.h.closing_circumstances_enabled = False
-
-        self._c = actions.c
-        actions.c = MagicMock()
+        actions.h.closing_circumstances_enabled = False
 
         self._db = actions.db
         actions.db = MagicMock()
@@ -59,7 +57,6 @@ class ActionsTest(unittest.TestCase):
     def tearDown(self):
         # Unmock
         actions.tk = self._tk
-        actions.c = self._c
         actions.db = self._db
         actions.validator = self._validator
         actions.datetime = self._datetime
@@ -235,9 +232,9 @@ class ActionsTest(unittest.TestCase):
 
     @patch('ckanext.datarequests.actions.config')
     @patch('ckanext.datarequests.actions.mailer')
-    @patch('ckanext.datarequests.actions.base')
+    @patch('ckanext.datarequests.actions.tk')
     @patch('ckanext.datarequests.actions.model')
-    def test_send_mail_two_users(self, model_mock, base_mock, mailer_mock, config_mock):
+    def test_send_mail_two_users(self, model_mock, toolkit_mock, mailer_mock, config_mock):
 
         subject = 'SUBJECT'
         body = 'BODY'
@@ -246,7 +243,7 @@ class ActionsTest(unittest.TestCase):
         get_users_side_effect = [user1, user2]
         model_mock.User.get.side_effect = get_users_side_effect
         config_mock.get.side_effect = lambda x: x
-        base_mock.render_jinja2.side_effect = lambda x, y: body if 'bodies' in x else subject
+        toolkit_mock.render.side_effect = lambda x, y: body if 'bodies' in x else subject
 
         users = ['user1', 'user2']
         action_type = 'new_datarequest'
@@ -261,23 +258,23 @@ class ActionsTest(unittest.TestCase):
                 'site_title': 'ckan.site_title',
                 'site_url': 'ckan.site_url'
             }
-            base_mock.render_jinja2.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
-            base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
+            toolkit_mock.render.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
+            toolkit_mock.render.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
 
             mailer_mock.mail_user.assert_any_call(get_users_side_effect[i], subject, body)
 
     @patch('ckanext.datarequests.actions.config')
     @patch('ckanext.datarequests.actions.mailer')
-    @patch('ckanext.datarequests.actions.base')
+    @patch('ckanext.datarequests.actions.tk')
     @patch('ckanext.datarequests.actions.model')
-    def test_send_mail_exception_no_risen(self, model_mock, base_mock, mailer_mock, config_mock):
+    def test_send_mail_exception_no_risen(self, model_mock, toolkit_mock, mailer_mock, config_mock):
 
         subject = 'SUBJECT'
         body = 'BODY'
         user = MagicMock()
         model_mock.User.get.return_value = user
         config_mock.get.side_effect = lambda x: x
-        base_mock.render_jinja2.side_effect = lambda x, y: body if 'bodies' in x else subject
+        toolkit_mock.render.side_effect = lambda x, y: body if 'bodies' in x else subject
         mailer_mock.mail_user.side_effect = Exception()
 
         users = ['user1']
@@ -292,8 +289,8 @@ class ActionsTest(unittest.TestCase):
             'site_title': 'ckan.site_title',
             'site_url': 'ckan.site_url'
         }
-        base_mock.render_jinja2.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
-        base_mock.render_jinja2.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
+        toolkit_mock.render.assert_any_call('emails/subjects/{0}.txt'.format(action_type), extra_args)
+        toolkit_mock.render.assert_any_call('emails/bodies/{0}.txt'.format(action_type), extra_args)
 
         mailer_mock.mail_user.assert_any_call(user, subject, body)
 
