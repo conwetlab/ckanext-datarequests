@@ -18,12 +18,11 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
-import ckanext.datarequests.constants as constants
-import ckanext.datarequests.auth as auth
+from ckanext.datarequests import auth, constants
 import unittest
 
 from mock import MagicMock
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 # Needed for the test
 context = {
@@ -46,17 +45,18 @@ request_data_comment = {
 }
 
 request_follow = {
-       'datarequest_id': 'example_uuid_v4', 
+    'datarequest_id': 'example_uuid_v4',
 }
+
 
 class AuthTest(unittest.TestCase):
 
     def setUp(self):
-        self._tk = auth.tk
-        auth.tk = MagicMock()
+        self._get_action = auth.get_action
+        auth.get_action = MagicMock()
 
     def tearDown(self):
-        auth.tk = self._tk
+        auth.get_action = self._get_action
 
     @parameterized.expand([
         # Data Requests
@@ -130,7 +130,7 @@ class AuthTest(unittest.TestCase):
 
         if action_called:
             initial_request_data = {'id': request_data['id']}
-            xyz_show = auth.tk.get_action.return_value
+            xyz_show = auth.get_action.return_value
             xyz_show.return_value = request_data
         else:
             initial_request_data = request_data
@@ -139,8 +139,8 @@ class AuthTest(unittest.TestCase):
         self.assertEquals(expected_result, result)
 
         if action_called:
-            auth.tk.get_action.assert_called_once_with(show_function)
-            xyz_show = auth.tk.get_action.return_value
+            auth.get_action.assert_called_once_with(show_function)
+            xyz_show = auth.get_action.return_value
             xyz_show.assert_called_once_with({'ignore_auth': True}, {'id': request_data['id']})
         else:
-            self.assertEquals(0, auth.tk.get_action.call_count)
+            self.assertEquals(0, auth.get_action.call_count)

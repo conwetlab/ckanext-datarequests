@@ -18,22 +18,19 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 
-import ckan.lib.base as base
-import ckan.model as model
-import ckan.plugins as plugins
-import constants
 import datetime
 import cgi
-import db
 import logging
-import validator
-import ckan.lib.mailer as mailer
 
-from pylons import config
+from ckan import model
+from ckan.lib import mailer
+from ckan.plugins import toolkit as tk
+from ckan.plugins.toolkit import h, config
 
-c = plugins.toolkit.c
+from . import constants, db, validator
+
+
 log = logging.getLogger(__name__)
-tk = plugins.toolkit
 
 # Avoid user_show lag
 USERS_CACHE = {}
@@ -54,7 +51,7 @@ def _get_user(user_id):
 def _get_organization(organization_id):
     try:
         organization_show = tk.get_action('organization_show')
-        return organization_show({'ignore_auth': True}, {'id': organization_id})
+        return organization_show({'ignore_auth': True}, {'id': organization_id, 'include_users': True})
     except Exception as e:
         log.warn(e)
 
@@ -101,14 +98,25 @@ def _dictize_datarequest(datarequest):
     data_dict['followers'] = db.DataRequestFollower.get_datarequest_followers_number(
         datarequest_id=datarequest.id)
 
+    if h.closing_circumstances_enabled:
+        data_dict['close_circumstance'] = datarequest.close_circumstance
+        data_dict['approx_publishing_date'] = datarequest.approx_publishing_date
+
     return data_dict
 
 
-def _undictize_datarequest_basic(data_request, data_dict):
-    data_request.title = data_dict['title']
-    data_request.description = data_dict['description']
+def _undictize_datarequest_basic(datarequest, data_dict):
+    datarequest.title = data_dict['title']
+    datarequest.description = data_dict['description']
     organization = data_dict['organization_id']
-    data_request.organization_id = organization if organization else None
+    datarequest.organization_id = organization if organization else None
+    _undictize_datarequest_closing_circumstances(datarequest, data_dict)
+
+
+def _undictize_datarequest_closing_circumstances(datarequest, data_dict):
+    if h.closing_circumstances_enabled:
+        datarequest.close_circumstance = data_dict.get('close_circumstance') or None
+        datarequest.approx_publishing_date = data_dict.get('approx_publishing_date') or None
 
 
 def _dictize_comment(comment):
@@ -131,7 +139,7 @@ def _undictize_comment_basic(comment, data_dict):
 def _get_datarequest_involved_users(context, datarequest_dict):
 
     datarequest_id = datarequest_dict['id']
-    new_context = {'ignore_auth': True, 'model': context['model'] }
+    new_context = {'ignore_auth': True, 'model': context['model']}
 
     # Creator + Followers + People who has commented + Organization Staff
     users = set()
@@ -141,7 +149,7 @@ def _get_datarequest_involved_users(context, datarequest_dict):
 
     if datarequest_dict['organization']:
         users.update([user['id'] for user in datarequest_dict['organization']['users']])
-    
+
     # Notifications are not sent to the user that performs the action
     users.discard(context['auth_user_obj'].id)
 
@@ -160,13 +168,13 @@ def _send_mail(user_ids, action_type, datarequest):
                 'site_url': config.get('ckan.site_url')
             }
 
-            subject = base.render_jinja2('emails/subjects/{0}.txt'.format(action_type), extra_vars)
-            body = base.render_jinja2('emails/bodies/{0}.txt'.format(action_type), extra_vars)
+            subject = tk.render('emails/subjects/{0}.txt'.format(action_type), extra_vars)
+            body = tk.render('emails/bodies/{0}.txt'.format(action_type), extra_vars)
 
             mailer.mail_user(user_data, subject, body)
 
         except Exception:
-            logging.exception("Error sending notification to {0}".format(user_id))
+            log.exception("Error sending notification to {0}".format(user_id))
 
 
 def create_datarequest(context, data_dict):
@@ -190,7 +198,7 @@ def create_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -211,15 +219,15 @@ def create_datarequest(context, data_dict):
     data_req = db.DataRequest()
     _undictize_datarequest_basic(data_req, data_dict)
     data_req.user_id = context['auth_user_obj'].id
-    data_req.open_time = datetime.datetime.now()
+    data_req.open_time = datetime.datetime.utcnow()
 
     session.add(data_req)
-    session.commit()    
+    session.commit()
 
     datarequest_dict = _dictize_datarequest(data_req)
 
     if datarequest_dict['organization']:
-        users = set([user['id'] for user in datarequest_dict['organization']['users']])
+        users = {user['id'] for user in datarequest_dict['organization']['users']}
         users.discard(context['auth_user_obj'].id)
         _send_mail(users, 'new_datarequest', datarequest_dict)
 
@@ -239,7 +247,7 @@ def show_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -291,7 +299,7 @@ def update_datarequest(context, data_dict):
     :type organization_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -444,7 +452,7 @@ def list_datarequests(context, data_dict):
                 'display_name': organization.get('display_name'),
                 'count': no_processed_organization_facet[organization_id]
             })
-        except:
+        except Exception:
             pass
 
     state_facet = []
@@ -482,7 +490,7 @@ def delete_datarequest(context, data_dict):
     :type id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
     '''
@@ -527,7 +535,7 @@ def close_datarequest(context, data_dict):
     :type accepted_dataset_id: string
 
     :returns: A dict with the data request (id, user_id, title, description,
-        organization_id, open_time, accepted_dataset, close_time, closed, 
+        organization_id, open_time, accepted_dataset, close_time, closed,
         followers)
     :rtype: dict
 
@@ -562,8 +570,9 @@ def close_datarequest(context, data_dict):
         raise tk.ValidationError([tk._('This Data Request is already closed')])
 
     data_req.closed = True
-    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id', None)
-    data_req.close_time = datetime.datetime.now()
+    data_req.accepted_dataset_id = data_dict.get('accepted_dataset_id') or None
+    data_req.close_time = datetime.datetime.utcnow()
+    _undictize_datarequest_closing_circumstances(data_req, data_dict)
 
     session.add(data_req)
     session.commit()
@@ -616,7 +625,7 @@ def comment_datarequest(context, data_dict):
     comment = db.Comment()
     _undictize_comment_basic(comment, data_dict)
     comment.user_id = context['auth_user_obj'].id
-    comment.time = datetime.datetime.now()
+    comment.time = datetime.datetime.utcnow()
 
     session.add(comment)
     session.commit()
@@ -806,13 +815,14 @@ def delete_datarequest_comment(context, data_dict):
 
     return _dictize_comment(comment)
 
+
 def follow_datarequest(context, data_dict):
     '''
-    Action to follow a data request. Access rights will be cheked before 
+    Action to follow a data request. Access rights will be cheked before
     following a datarequest and a NotAuthorized exception will be risen if the
     user is not allowed to follow the given datarequest. ValidationError will
     be risen if the datarequest ID is not included or if the user is already
-    following the datarequest. ObjectNotFound will be risen if the given 
+    following the datarequest. ObjectNotFound will be risen if the given
     datarequest does not exist.
 
     :param id: The ID of the datarequest to be followed
@@ -857,13 +867,14 @@ def follow_datarequest(context, data_dict):
 
     return True
 
+
 def unfollow_datarequest(context, data_dict):
     '''
-    Action to unfollow a data request. Access rights will be cheked before 
+    Action to unfollow a data request. Access rights will be cheked before
     unfollowing a datarequest and a NotAuthorized exception will be risen if
     the user is not allowed to unfollow the given datarequest. ValidationError
-    will be risen if the datarequest ID is not included in the request. 
-    ObjectNotFound will be risen if the user is not following the given 
+    will be risen if the datarequest ID is not included in the request.
+    ObjectNotFound will be risen if the user is not following the given
     datarequest.
 
     :param id: The ID of the datarequest to be unfollowed

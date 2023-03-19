@@ -31,6 +31,7 @@ DEFAULT_FOLLOWERS = 3
 ############################## FUNCTIONS #############################
 ######################################################################
 
+
 def dictice_ddbb_response(datarequest):
     return {
         'id': datarequest.id,
@@ -62,23 +63,20 @@ def _generate_basic_ddbb_response(number, organizations=None, closed=None):
     an exception will be risen
     '''
     if not organizations:
-        organizations = list()
-        for _ in range(number):
-            organizations.append(None)
+        organizations = [None for _ in range(number)]
 
     if not closed:
-        closed = list()
-        for _ in range(number):
-            closed.append(False)
+        closed = [False for _ in range(number)]
 
     # Check that length of the arrays is correct
     assert number == len(organizations)
     assert number == len(closed)
 
-    response = list()
-    for n in range(number):
-        response.append(_generate_basic_datarequest(organization_id=organizations[n], 
-                                                    closed=closed[n]))
+    response = [
+        _generate_basic_datarequest(
+            organization_id=organizations[n],
+            closed=closed[n]) for n in range(number)
+    ]
 
     return response
 
@@ -92,7 +90,7 @@ def _generate_basic_datarequest(id=DATAREQUEST_ID, user_id='example_uuidv4_user'
     datarequest.title = title
     datarequest.description = description
     datarequest.organization_id = organization_id
-    datarequest.open_time = datetime.datetime.now()
+    datarequest.open_time = datetime.datetime.utcnow()
     datarequest.closed = closed
     datarequest.close_time = None
     datarequest.accepted_dataset_id = None
@@ -108,7 +106,7 @@ def _generate_basic_comment(id=COMMENT_ID, user_id='example_uuidv4_user',
     comment.user_id = user_id
     comment.comment = comment
     comment.datarequest_id = datarequest_id
-    comment.time = datetime.datetime.now()
+    comment.time = datetime.datetime.utcnow()
 
     return comment
 

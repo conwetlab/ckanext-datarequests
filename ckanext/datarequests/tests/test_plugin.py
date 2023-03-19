@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckanext.datarequests.plugin as plugin
-import ckanext.datarequests.constants as constants
+from ckanext.datarequests import common, plugin, constants
 import unittest
 
 from mock import MagicMock, patch
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 TOTAL_ACTIONS = 13
 COMMENTS_ACTIONS = 5
@@ -41,7 +40,7 @@ class DataRequestPluginTest(unittest.TestCase):
         self.tk_patch = patch('ckanext.datarequests.plugin.tk')
         self.tk_mock = self.tk_patch.start()
 
-        self.config_patch = patch('ckanext.datarequests.plugin.config')
+        self.config_patch = patch('ckanext.datarequests.common.config')
         self.config_mock = self.config_patch.start()
 
         self.helpers_patch = patch('ckanext.datarequests.plugin.helpers')
@@ -49,9 +48,6 @@ class DataRequestPluginTest(unittest.TestCase):
 
         self.partial_patch = patch('ckanext.datarequests.plugin.partial')
         self.partial_mock = self.partial_patch.start()
-
-        self.h_patch = patch('ckanext.datarequests.plugin.h')
-        self.h_mock = self.h_patch.start()
 
         self.create_datarequest = constants.CREATE_DATAREQUEST
         self.show_datarequest = constants.SHOW_DATAREQUEST
@@ -73,51 +69,6 @@ class DataRequestPluginTest(unittest.TestCase):
         self.config_patch.stop()
         self.helpers_patch.stop()
         self.partial_patch.stop()
-        self.h_patch.stop()
-
-    def test_is_fontawesome_4_false_ckan_version_does_not_exist(self):
-        delattr(self.h_mock, 'ckan_version')
-        self.assertFalse(plugin.is_fontawesome_4())
-
-    def test_is_fontawesome_4_false_old_ckan_version(self):
-        self.h_mock.ckan_version.return_value = '2.6.0'
-        self.assertFalse(plugin.is_fontawesome_4())
-
-    def test_is_fontawesome_4_true_new_ckan_version(self):
-        self.h_mock.ckan_version.return_value = '2.7.0'
-        self.assertTrue(plugin.is_fontawesome_4())
-
-    def test_get_plus_icon_new(self):
-
-        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=True)
-        is_fontawesome_4_patch.start()
-        self.addCleanup(is_fontawesome_4_patch.stop)
-
-        self.assertEquals('plus-square', plugin.get_plus_icon())
-
-    def test_get_plus_icon_old(self):
-
-        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=False)
-        is_fontawesome_4_patch.start()
-        self.addCleanup(is_fontawesome_4_patch.stop)
-
-        self.assertEquals('plus-sign-alt', plugin.get_plus_icon())
-
-    def test_get_question_icon_new(self):
-
-        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=True)
-        is_fontawesome_4_patch.start()
-        self.addCleanup(is_fontawesome_4_patch.stop)
-
-        self.assertEquals('question-circle', plugin.get_question_icon())
-
-    def test_get_question_icon_old(self):
-
-        is_fontawesome_4_patch = patch('ckanext.datarequests.plugin.is_fontawesome_4', return_value=False)
-        is_fontawesome_4_patch.start()
-        self.addCleanup(is_fontawesome_4_patch.stop)
-
-        self.assertEquals('question-sign', plugin.get_question_icon())
 
     @parameterized.expand([
         ('True',),
@@ -128,7 +79,7 @@ class DataRequestPluginTest(unittest.TestCase):
         actions_len = TOTAL_ACTIONS if comments_enabled == 'True' else ACTIONS_NO_COMMENTS
 
         # Configure config and create instance
-        plugin.config.get.return_value = comments_enabled
+        common.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
         # Get actions
@@ -159,7 +110,7 @@ class DataRequestPluginTest(unittest.TestCase):
         auth_functions_len = TOTAL_ACTIONS if comments_enabled == 'True' else ACTIONS_NO_COMMENTS
 
         # Configure config and create instance
-        plugin.config.get.return_value = comments_enabled
+        common.config.get.return_value = comments_enabled
         self.plg_instance = plugin.DataRequestsPlugin()
 
         # Get auth functions
@@ -188,101 +139,18 @@ class DataRequestPluginTest(unittest.TestCase):
         # Test
         config = MagicMock()
         self.plg_instance.update_config(config)
-        plugin.tk.add_template_directory.assert_called_once_with(config, 'templates')
+        plugin.tk.add_template_directory.assert_called_once_with(config, '../templates')
 
     @parameterized.expand([
-        ('True',),
-        ('False')
-    ])
-    def test_before_map(self, comments_enabled):
-
-        urls_set = 12
-        mapa_calls = urls_set if comments_enabled == 'True' else urls_set - 2
-
-        # Configure config and get instance
-        plugin.config.get.return_value = comments_enabled
-        self.plg_instance = plugin.DataRequestsPlugin()
-
-        mock_icon = 'icon'
-        get_question_icon_patch = patch('ckanext.datarequests.plugin.get_question_icon', return_value=mock_icon)
-        get_question_icon_patch.start()
-        self.addCleanup(get_question_icon_patch.stop)
-
-        # Test
-        mapa = MagicMock()
-        dr_basic_path = 'datarequest'
-        self.plg_instance.before_map(mapa)
-
-        self.assertEquals(mapa_calls, mapa.connect.call_count)
-        mapa.connect.assert_any_call('datarequests_index', "/%s" % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='index', conditions=dict(method=['GET']))
-
-        mapa.connect.assert_any_call('/%s/new' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='new', conditions=dict(method=['GET', 'POST']))
-
-        mapa.connect.assert_any_call('show_datarequest', '/%s/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='show', conditions=dict(method=['GET']), ckan_icon=mock_icon)
-
-        mapa.connect.assert_any_call('/%s/edit/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='update', conditions=dict(method=['GET', 'POST']))
-
-        mapa.connect.assert_any_call('/%s/delete/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='delete', conditions=dict(method=['POST']))
-
-        mapa.connect.assert_any_call('/%s/close/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='close', conditions=dict(method=['GET', 'POST']))
-
-        mapa.connect.assert_any_call('organization_datarequests', 
-            '/organization/%s/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='organization_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon=mock_icon)
-
-        mapa.connect.assert_any_call('user_datarequests',
-            '/user/%s/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='user_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon=mock_icon)
-
-        mapa.connect.assert_any_call('user_datarequests',
-            '/user/%s/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='user_datarequests', conditions=dict(method=['GET']), 
-            ckan_icon=mock_icon)
-
-        mapa.connect('/%s/follow/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='follow', conditions=dict(method=['POST']))
-
-        mapa.connect('/%s/unfollow/{id}' % dr_basic_path,
-            controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-            action='unfollow', conditions=dict(method=['POST']))
-
-        if comments_enabled == 'True':
-            mapa.connect.assert_any_call('comment_datarequest', '/%s/comment/{id}' % dr_basic_path,
-                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                action='comment', conditions=dict(method=['GET', 'POST']), ckan_icon='comment')
-
-            mapa.connect.assert_any_call('/%s/comment/{datarequest_id}/delete/{comment_id}' % dr_basic_path,
-                controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI',
-                action='delete_comment', conditions=dict(method=['GET', 'POST']))
-
-    @parameterized.expand([
-        ('True',  'True'),
-        ('True',  'False'),
+        ('True', 'True'),
+        ('True', 'False'),
         ('False', 'True'),
         ('False', 'False')
     ])
     def test_helpers(self, comments_enabled, show_datarequests_badge):
 
         # Configure config and get instance
-        plugin.config = {
+        common.config = {
             'ckan.datarequests.comments': comments_enabled,
             'ckan.datarequests.show_datarequests_badge': show_datarequests_badge
         }

@@ -1,8 +1,18 @@
 {% ckan_extends %}
 
 {% block content_primary_nav %}
-  {{ h.build_nav_icon('organization_read', _('Datasets'), id=c.group_dict.name) }}
-  {{ h.build_nav_icon('organization_activity', _('Activity Stream'), id=c.group_dict.name, offset=0) }}
-  {{ h.build_nav_icon('organization_datarequests', _('Data Requests'), id=c.group_dict.name)}}
-  {{ h.build_nav_icon('organization_about', _('About'), id=c.group_dict.name) }}
+  {% if h.ckan_version()[:3] <= '2.8' %}
+    {% set org_datasets_nav = 'organization_read' %}
+    {% set org_activity_nav = 'organization_activity' %}
+    {% set org_about_nav = 'organization_about' %}
+  {% else %}
+    {% set org_datasets_nav = 'organization.read' %}
+    {% set org_activity_nav = 'organization.activity' %}
+    {% set org_about_nav = 'organization.about' %}
+  {% endif %}
+
+  {{ h.build_nav_icon(org_datasets_nav, _('Datasets'), id=c.group_dict.name) }}
+  {{ h.build_nav_icon(org_activity_nav, _('Activity Stream'), id=c.group_dict.name, offset=0) }}
+  {{ h.build_nav_icon('datarequest.organization', _('Data Requests'), id=c.group_dict.name, icon=h.get_question_icon())}}
+  {{ h.build_nav_icon(org_about_nav, _('About'), id=c.group_dict.name) }}
 {% endblock %}

@@ -17,9 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import constants
+import datetime
+
 import ckan.plugins.toolkit as tk
-import ckanext.datarequests.db as db
+from ckanext.datarequests import db, common, constants
 
 
 def validate_datarequest(context, request_data):
@@ -41,6 +42,9 @@ def validate_datarequest(context, request_data):
             errors[tk._('Title')] = [tk._('That title is already in use')]
 
     # Check description
+    if common.get_config_bool_value('ckan.datarequests.description_required', False) and not request_data['description']:
+        errors[tk._('Description')] = [tk._('Description cannot be empty')]
+
     if len(request_data['description']) > constants.DESCRIPTION_MAX_LENGTH:
         errors[tk._('Description')] = [tk._('Description must be a maximum of %d characters long') % constants.DESCRIPTION_MAX_LENGTH]
 
@@ -56,6 +60,23 @@ def validate_datarequest(context, request_data):
 
 
 def validate_datarequest_closing(context, request_data):
+    if tk.h.closing_circumstances_enabled:
+        close_circumstance = request_data.get('close_circumstance', None)
+        if not close_circumstance:
+            raise tk.ValidationError({tk._('Circumstances'): [tk._('Circumstances cannot be empty')]})
+        condition = request_data.get('condition', None)
+        if condition:
+            if condition == 'nominate_dataset' and request_data.get('accepted_dataset_id', '') == '':
+                raise tk.ValidationError({tk._('Accepted dataset'): [tk._('Accepted dataset cannot be empty')]})
+            elif condition == 'nominate_approximate_date':
+                if request_data.get('approx_publishing_date', '') == '':
+                    raise tk.ValidationError({tk._('Approximate publishing date'): [tk._('Approximate publishing date cannot be empty')]})
+                try:
+                    # This validation is required for the Safari browser as the date type input is not supported and falls back to using a text type input
+                    # SQLAlchemy throws an error if the date value is not in the format yyyy-mm-dd
+                    datetime.datetime.strptime(request_data.get('approx_publishing_date', ''), '%Y-%m-%d')
+                except ValueError:
+                    raise tk.ValidationError({tk._('Approximate publishing date'): [tk._('Approximate publishing date must be in format yyyy-mm-dd')]})
 
     accepted_dataset_id = request_data.get('accepted_dataset_id', '')
     if accepted_dataset_id:

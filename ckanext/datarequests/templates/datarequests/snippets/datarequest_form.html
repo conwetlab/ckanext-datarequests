@@ -5,6 +5,7 @@
 {% set organization_id = data.get('organization_id', h.get_request_param('organization')) %}
 {% set organizations_available = h.organizations_available('read') %}
 {% set form_horizontal = 'form-horizontal' if h.ckan_version()[:3] <= '2.7' else '' %}
+{% set description_required = h.is_description_required %}
 
 {# This provides a full page that renders a form for publishing a dataset. It can
 then itself be extended to add/remove blocks of functionality. #}
@@ -19,9 +20,10 @@ then itself be extended to add/remove blocks of functionality. #}
   {% endblock %}
 
   {% block offering_description %}
-    {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description']) }}
+    {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('eg. Data Request description'), value=description, error=errors['Description'], is_required=description_required) }}
   {% endblock %}
 
+  {% block offering_organizations %}
   <div class="control-group form-group">
     <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
     <div class="controls">
@@ -36,13 +38,14 @@ then itself be extended to add/remove blocks of functionality. #}
       </select>
     </div>
   </div>
+  {% endblock %}
 
   {% block form_actions %}
     <div class="form-actions">
       {% block delete_button %}
         {% if h.check_access('delete_datarequest', {'id': data.get('id', '')}) and not data.state == 'deleted' %}
           {% set locale = h.dump_json({'content': _('Are you sure you want to delete this data request?')}) %}
-          <a class="btn btn-danger pull-left" href="{% url_for controller='ckanext.datarequests.controllers.ui_controller:DataRequestsUI', action='delete', id=data.get('id') %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
+          <a class="btn btn-danger pull-left" href="{% url_for 'datarequest.delete', id=data.get('id') %}" data-module="confirm-action" data-module-i18n="{{ locale }}">{% block delete_button_text %}{{ _('Delete') }}{% endblock %}</a>
         {% endif %}
       {% endblock %}
       <button class="btn btn-primary" type="submit" name="save">{% block save_button_text %}{{ _('Create Data Request') }}{% endblock %}</button>

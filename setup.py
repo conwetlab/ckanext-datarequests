@@ -18,7 +18,6 @@
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
 from setuptools import setup, find_packages
-import sys, os
 
 version = '1.1.0'
 
@@ -27,10 +26,10 @@ setup(
     version=version,
     description="CKAN Extension - Data Requests",
     long_description='''
-    CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance. 
+    CKAN extension that allows users to ask for datasets that are not already published in the CKAN instance.
     In this way we can set up a Data Market, not only with data supplies but also with data demands.
     ''',
-    classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
+    classifiers=[],  # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     keywords='',
     author='CoNWeT Lab.',
     author_email='amagan@conwet.com',
@@ -41,16 +40,15 @@ setup(
     namespace_packages=['ckanext', 'ckanext.datarequests'],
     include_package_data=True,
     zip_safe=False,
-    setup_requires=['nose>=1.3.0'],
+    setup_requires=[],
     install_requires=[
         # -*- Extra requirements: -*-
     ],
     tests_require=[
-        'nose_parameterized==0.3.3',
-        'selenium==2.53',
-        'coveralls==1.1'
+        'parameterized==0.8.1',
+        'selenium==3.141.0',
+        'coveralls==2.1.2'
     ],
-    test_suite='nosetests',
     entry_points='''
 
         [ckan.plugins]

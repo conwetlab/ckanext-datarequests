@@ -1,3 +1,7 @@
+.ropeproject
+node_modules
+bower_components
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,27 +9,17 @@ __pycache__/
 # C extensions
 *.so
 
-### OSX Stuff
-*.DS_Store
-.AppleDouble
-.LSOverride
-
 # Distribution / packaging
 .Python
 env/
 build/
 develop-eggs/
 dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
 sdist/
-var/
 *.egg-info/
 .installed.cfg
 *.egg
+*.eggs
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -54,6 +48,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-
-# PyBuilder
-target/
+.env.local
+screenshots
+!/test/screenshots/.gitkeep
+.idea

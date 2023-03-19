@@ -17,11 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with CKAN Data Requests Extension. If not, see <http://www.gnu.org/licenses/>.
 
-import ckan.model as model
-import ckan.plugins.toolkit as tk
-import db
-
+from ckan import model
 from ckan.common import c
+import ckan.plugins.toolkit as tk
+
+from . import db
 
 
 def get_comments_number(datarequest_id):
@@ -54,3 +54,19 @@ def get_open_datarequests_badge(show_badge):
                                  {'comments_count': get_open_datarequests_number()})
     else:
         return ''
+
+
+def get_closing_circumstances():
+    """Returns a list of datarequest closing circumstances from admin config
+
+    :rtype: List of circumstance objects {'circumstance': circumstance, 'condition': condition}
+
+    """
+    closing_circumstances = []
+    for closing_circumstance in tk.config.get('ckan.datarequests.closing_circumstances', '').split('\n'):
+        option = closing_circumstance.split('|')
+        circumstance = option[0].strip()
+        condition = option[1].strip() if len(option) == 2 else ''
+        closing_circumstances.append({'circumstance': circumstance, 'condition': condition})
+
+    return closing_circumstances

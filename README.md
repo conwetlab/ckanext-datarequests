@@ -38,7 +38,6 @@ In addition, you should note that the parameters will be checked and an exceptio
 ##### Returns:
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
-
 #### `show_datarequest(context, data_dict)`
 Action to retrieve the information of a data request. The only required parameter is the `id` of the data request. A `NotFound` exception will be risen if the `id` is not found.
 
@@ -50,6 +49,85 @@ Access rights will be checked before returning the information and an exception 
 ##### Returns:
 A dict with the data request (`id`, `user_id`, `title`, `description`,`organization_id`, `open_time`, `accepted_dataset`, `close_time`, `closed`, `followers`).
 
+
+## Local environment setup
+- Make sure that you have latest versions of all required software installed:
+  - [Docker](https://www.docker.com/)
+  - [Pygmy](https://pygmy.readthedocs.io/)
+  - [Ahoy](https://github.com/ahoy-cli/ahoy)
+- Make sure that all local web development services are shut down (Apache/Nginx, Mysql, MAMP etc).
+- Checkout project repository (in one of the [supported Docker directories](https://docs.docker.com/docker-for-mac/osxfs/#access-control)).
+- `pygmy up`
+- `ahoy build`
+
+Use `admin`/`password` to login to CKAN.
+
+## Available `ahoy` commands
+Run each command as `ahoy <command>`.
+  ```
+   build        Build or rebuild project.
+   clean        Remove containers and all build files.
+   cli          Start a shell inside CLI container or run a command.
+   doctor       Find problems with current project setup.
+   down         Stop Docker containers and remove container, images, volumes and networks.
+   flush-redis  Flush Redis cache.
+   info         Print information about this project.
+   install-site Install a site.
+   lint         Lint code.
+   logs         Show Docker logs.
+   pull         Pull latest docker images.
+   reset        Reset environment: remove containers, all build, manually created and Drupal-Dev files.
+   restart      Restart all stopped and running Docker containers.
+   start        Start existing Docker containers.
+   stop         Stop running Docker containers.
+   test-bdd     Run BDD tests.
+   test-unit    Run unit tests.
+   up           Build and start Docker containers.
+  ```
+
+## Coding standards
+Python code linting uses [flake8](https://github.com/PyCQA/flake8) with configuration captured in `.flake8` file.
+
+Set `ALLOW_LINT_FAIL=1` in `.env` to allow lint failures.
+
+## Nose tests
+`ahoy test-unit`
+
+Set `ALLOW_UNIT_FAIL=1` in `.env` to allow unit test failures.
+
+## Behavioral tests
+`ahoy test-bdd`
+
+Set `ALLOW_BDD_FAIL=1` in `.env` to allow BDD test failures.
+
+### How it works
+We are using [Behave](https://github.com/behave/behave) BDD _framework_ with additional _step definitions_ provided by [Behaving](https://github.com/ggozad/behaving) library.
+
+Custom steps described in `test/features/steps/steps.py`.
+
+Test scenarios located in `test/features/*.feature` files.
+
+Test environment configuration is located in `test/features/environment.py` and is setup to connect to a remote Chrome
+instance running in a separate Docker container.
+
+During the test, Behaving passes connection information to [Splinter](https://github.com/cobrateam/splinter) which
+instantiates WebDriver object and establishes connection with Chrome instance. All further communications with Chrome
+are handled through this driver, but in a developer-friendly way.
+
+For a list of supported step-definitions, see https://github.com/ggozad/behaving#behavingweb-supported-matcherssteps.
+
+## Automated builds (Continuous Integration)
+In software engineering, continuous integration (CI) is the practice of merging all developer working copies to a shared mainline several times a day.
+Before feature changes can be merged into a shared mainline, a complete build must run and pass all tests on CI server.
+
+This project uses [Circle CI](https://circleci.com/) as a CI server: it imports production backups into fully built codebase and runs code linting and tests. When tests pass, a deployment process is triggered for nominated branches (usually, `master` and `develop`).
+
+Add `[skip ci]` to the commit subject to skip CI build. Useful for documentation changes.
+
+### SSH
+Circle CI supports shell access to the build for 120 minutes after the build is finished when the build is started with SSH support. Use "Rerun job with SSH" button in Circle CI UI to start build with SSH support.
+
+## Actions
 
 #### `update_datarequest(context, data_dict)`
 Action to update a data request. The function checks the access rights of the user before updating the data request. If the user is not allowed, a `NotAuthorized` exception will be risen
@@ -178,7 +256,7 @@ Action to unfollow a data request. Access rights will be cheked before unfollowi
 
 ## Installation
 
-Install this extension in your CKAN instance is as easy as install any other CKAN extension.
+Install this extension in your CKAN instance is as easy as installing any other CKAN extension.
 
 * Activate your virtual environment
 ```
@@ -186,13 +264,11 @@ Install this extension in your CKAN instance is as easy as install any other CKA
 ```
 * Install the extension
 ```
-pip install ckanext-datarequests
+pip install 'git+https://github.com/conwetlab/ckanext-datarequests.git#egg=ckanext-datarequests'
 ```
-> **Note**: If you prefer, you can also download the source code and install the extension manually. To do so, execute the following commands:
+> **Note**: If you prefer, you can download the source code as well and install in 'develop' mode for easy editing. To do so, use the '-e' flag:
 > ```
-> $ git clone https://github.com/conwetlab/ckanext-datarequests.git
-> $ cd ckanext-datarequests
-> $ python setup.py install
+> pip install -e 'git+https://github.com/conwetlab/ckanext-datarequests.git#egg=ckanext-datarequests'
 > ```
 
 * Modify your configuration file (generally in `/etc/ckan/default/production.ini`) and add `datarequests` in the `ckan.plugins` property.
@@ -207,6 +283,10 @@ ckan.datarequests.comments = [true|false]
 ```
 ckan.datarequests.show_datarequests_badge = [true|false]
 ```
+* Enable or disable description as a required field on data request forms. False by default
+```
+ckan.datarequests.description_required = [True|False]
+```
 * Restart your apache2 reserver
 ```
 sudo service apache2 restart
@@ -215,7 +295,7 @@ sudo service apache2 restart
 
 ## Translations
 
-Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German and Brazilian Portuguese. If you want to contribute with your translation, the first step is to clone this repo and move to the `develop` branch. Then, create the locale for your translation by executing:
+Help us to translate this extension so everyone can create data requests. Currently, the extension is translated to English, Spanish, German, French, Somali, Romanian and Brazilian Portuguese. If you want to contribute with your translation, the first step is to clone this repo and move to the `develop` branch. Then, create the locale for your translation by executing:
 
 ```
 python setup.py init_catalog -l <YOUR_LOCALE>
@@ -234,7 +314,7 @@ Once the translation files (`po`) have been updated, compile them by running:
 python setup.py compile_catalog
 ```
 
-This will generate the required `mo` file. Once this file has been generated, commit your changes and create a Pull Request (to the `develop` branch). 
+This will generate the required `mo` file. Once this file has been generated, commit your changes and create a Pull Request (to the `develop` branch).
 
 ## Tests
 
@@ -247,6 +327,14 @@ python setup.py nosetests
 **Note 2:** When creating a PR that includes code changes, please, ensure your new code is tested. No PR will be merged until the Travis CI system marks it as valid.
 
 ## Changelog
+
+### v1.2.0 (UNRELEASED)
+
+* New: French translations (thanks to @bobeal)
+* New: Romanian translations (thanks to @costibleotu)
+* New: Option to force users to introduce a request description (thanks to @MarkCalvert)
+* Fix: Documentation fixes (thanks to @nykc)
+* Fix: Datarequests creation and closing times displayed incorrectly (thanks to @iamarnavgarg)
 
 ### v1.1.0
 
@@ -285,4 +373,3 @@ python setup.py nosetests
 ### v0.3.3
 
 * New: German Translation (thanks to @kvlahrosch)
-
