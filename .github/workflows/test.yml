@@ -15,7 +15,7 @@ jobs:
 
     name: Continuous Integration build on CKAN ${{ matrix.ckan-version }}
     runs-on: ubuntu-latest
-    container: integratedexperts/ci-builder
+    container: drevops/ci-builder
     env:
       CKAN_REPO: ckan/ckan
       CKAN_VERSION: ${{ matrix.ckan-version }}
